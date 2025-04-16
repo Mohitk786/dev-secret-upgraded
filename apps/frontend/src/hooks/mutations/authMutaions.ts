@@ -8,7 +8,7 @@ export const useLoginMutation = () => {
     const router = useRouter();
     const {showToast} = useToast();
     const params = new URLSearchParams(location.search);
-    const redirectTo = params.get('redirectTo') || '/';
+    const redirectTo = params.get('redirectTo') || '/u/dashboard';
 
     return useMutation({
         mutationFn: login,
@@ -28,7 +28,7 @@ export const useSignupMutation = () => {
    
     return useMutation({
         mutationFn: signup,
-        onSuccess: (data) => {
+        onSuccess: () => {
             showToast({type: "success", message:"Private key saved to your device. Please keep it safe. You will need it in future to login to your account otherwise you will not be able to access your account."});
             router.push("/login");
         },

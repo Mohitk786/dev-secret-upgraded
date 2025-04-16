@@ -94,12 +94,12 @@ function Login() {
 
             <div>
               <button
-                disabled={false}
+                disabled={isPending}
                 onClick={handleSubmit}
                 type="submit"
-                className={`w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${false ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${isPending ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                {false ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <LogIn className="w-5 h-5 mr-2" />}
+                {isPending ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <LogIn className="w-5 h-5 mr-2" />}
                 Sign in
               </button>
             </div>
