@@ -1,0 +1,179 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String       @id @default(uuid())
+  email       String       @unique
+  name        String?
+  password    String
+  avatarUrl   String?
+  publicKey   String
+ 
+  vaults      Vault[]
+  secrets     Secret[]     @relation("CreatedSecrets")
+  
+  memberships Membership[]  @relation("MemberRelation")
+  creater     Membership[]    @relation("CreatorRelation")
+
+  sentInvites VaultInvite[] @relation("UserSentInvites")
+  receivedInvites VaultInvite[] @relation("UserReceivedInvites")
+
+  encryptedSecrets EncryptedSecret[]
+
+
+  auditLogs   AuditLog[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Vault {
+  id          String       @id @default(uuid())
+  name        String
+  description String?
+  icon        String
+
+  ownerId     String
+  owner       User         @relation(fields: [ownerId], references: [id])
+  
+  secrets     Secret[]
+  memberships Membership[]
+  
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  VaultInvite VaultInvite[]
+}
+
+model Secret {
+  id          String      @id @default(uuid())
+  key         String
+  value       String     
+  type        SecretType  @default(GENERIC)
+  environment Environment @default(DEVELOPMENT)
+  deleted     Boolean     @default(false) 
+
+  vaultId     String
+  vault       Vault    @relation(fields: [vaultId], references: [id])
+
+  creatorId   String
+  creator     User     @relation("CreatedSecrets", fields: [creatorId], references: [id])
+
+  auditLogs   AuditLog[]
+  encryptedSecrets EncryptedSecret[]
+
+
+  deletedAt   DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model EncryptedSecret {
+  id         String   @id @default(uuid())
+
+  
+  userId     String     // Who this encrypted version is for
+  user       User       @relation(fields: [userId], references: [id])
+
+  secretId   String
+  secret     Secret     @relation(fields: [secretId], references: [id])
+
+  key   String
+  value String
+
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, secretId]) // one encrypted version per user per secret
+}
+
+
+model Membership {
+  id        String @id @default(uuid())
+  role      Role   @default(MEMBER)
+  canView   Boolean @default(true)
+  canEdit   Boolean @default(false)
+  canDelete Boolean @default(false)
+
+  hasSecretAccess Boolean @default(false)
+
+  
+  createrId String    //jisne invite kiya ye wo hai
+  creater   User  @relation(name: "CreatorRelation", fields: [createrId], references: [id])
+ 
+  userId    String   //jo invite accept kiya hai
+  user      User   @relation(name: "MemberRelation", fields: [userId], references: [id])
+  
+  vaultId   String
+  vault     Vault  @relation( fields: [vaultId], references: [id])
+
+  @@unique([userId, vaultId])  //automatically becomes userId_vaultId as primary key
+}
+
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String    
+  createdAt DateTime @default(now())
+
+  userId   String
+  secretId String
+
+  user   User   @relation(fields: [userId], references: [id])
+  secret Secret @relation(fields: [secretId], references: [id])
+}
+
+
+model VaultInvite {
+  id         String   @id @default(uuid())
+  email      String   //jisko invite kiya hai  
+  vaultId    String
+  role       Role     @default(MEMBER)
+  status     String   @default("PENDING")
+  invitedAt  DateTime @default(now())
+  canView       Boolean  @default(true)
+  canEdit       Boolean  @default(false)
+  canDelete     Boolean  @default(false)
+
+  invitedBy   String
+  receiverId  String? 
+
+  invitee   User?    @relation("UserReceivedInvites", fields: [receiverId], references: [id])
+  inviter   User     @relation("UserSentInvites", fields: [invitedBy], references: [id])
+
+  vault     Vault    @relation(fields: [vaultId], references: [id])
+  
+}
+
+
+enum Role {
+  OWNER
+  MEMBER
+}
+
+enum Environment {
+  DEVELOPMENT
+  STAGING
+  PRODUCTION
+}
+
+enum SecretType {
+  GENERIC
+  PASSWORD
+  API_KEY
+  ENV_VARIABLE
+  SSH_KEY
+  DATABASE_CREDENTIAL
+  TOKEN
+}
+
+enum VaultInviteStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}

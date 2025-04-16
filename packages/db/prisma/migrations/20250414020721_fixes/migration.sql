@@ -1,0 +1,5 @@
+-- CreateEnum
+CREATE TYPE "SecretType" AS ENUM ('GENERIC', 'PASSWORD', 'API_KEY', 'ENV_VARIABLE', 'SSH_KEY', 'DATABASE_CREDENTIAL', 'TOKEN');
+
+-- AlterTable
+ALTER TABLE "Secret" ADD COLUMN     "type" "SecretType" NOT NULL DEFAULT 'GENERIC';

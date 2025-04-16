@@ -1,0 +1,19 @@
+{
+  "name": "@secret-vault/backend-common",
+  "version": "1.0.0",
+  "main": "index.js",
+  "exports":{
+    "./config": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@secret-vault/db": "*",
+    "dotenv": "^16.5.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
