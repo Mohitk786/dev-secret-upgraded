@@ -1,14 +1,15 @@
 import { login, signup } from "@/services/authServices";
 import { useMutation } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import useToast from "../utils/useToast";
 
 
 export const useLoginMutation = () => {
     const router = useRouter();
-    const {showToast} = useToast();
-    const params = new URLSearchParams(location.search);
-    const redirectTo = params.get('redirectTo') || '/u/dashboard';
+    const searchParams = useSearchParams(); 
+    const { showToast } = useToast();
+
+    const redirectTo = searchParams.get("redirectTo") || "/u/dashboard";
 
     return useMutation({
         mutationFn: login,

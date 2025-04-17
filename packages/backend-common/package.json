@@ -2,15 +2,18 @@
   "name": "@secret-vault/backend-common",
   "version": "1.0.0",
   "main": "index.js",
-  "exports":{
-    "./config": "./src/index.ts"
+  "exports": {
+    "./config": "./src/index.ts",
+    "./nodemailer": "./src/nodemailer.ts",
+    "./emailTemplates": "./src/emailTemplates.ts"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "@secret-vault/db": "*",
-    "dotenv": "^16.5.0"
+    "dotenv": "^16.5.0",
+    "nodemailer": "^6.10.1"
   },
   "keywords": [],
   "author": "",

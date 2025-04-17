@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import { config } from '@secret-vault/backend-common/config';
+import initializeRoutes from './AllRoutes';
 
 dotenv.config();
 
@@ -17,16 +18,7 @@ app.use(cors({
     credentials: true,
 }));
 
-app.use(session({
-    secret: config.SESSION_KEY || 'your-secret-key',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-    secure: config.NODE_ENV === 'production',
-      httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 24, 
-    },
-  }));
+initializeRoutes(app)
 
 
 app.listen(config.PORT, () => {

@@ -61,7 +61,7 @@ const Index = () => {
             </div>
             <div className="flex space-x-4">
               <Button variant="ghost" onClick={() => router.push("/login")}>Sign In</Button>
-              <Button onClick={() => router.push("/register")}>Get Started</Button>
+              <Button onClick={() => router.push("/signup")}>Get Started</Button>
             </div>
           </div>
         </div>

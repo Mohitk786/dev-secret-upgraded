@@ -4,6 +4,7 @@ export interface SignupData {
   email: string;
   password: string;
   publicKey: string;
+  name: string;
 }
 
 export interface LoginData {

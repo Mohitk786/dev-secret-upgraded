@@ -6,8 +6,9 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@secret-vault/backend-common": "*",
     "@secret-vault/db": "*",
-    "@secret-vault/backend-common": "*"
+    "socket.io": "^4.8.1"
   },
   "keywords": [],
   "author": "",

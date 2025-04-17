@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,152 +8,135 @@ datasource db {
 }
 
 model User {
-  id          String       @id @default(uuid())
-  email       String       @unique
-  name        String?
-  password    String
-  avatarUrl   String?
-  publicKey   String
- 
-  vaults      Vault[]
-  secrets     Secret[]     @relation("CreatedSecrets")
-  
-  memberships Membership[]  @relation("MemberRelation")
-  creater     Membership[]    @relation("CreatorRelation")
+  id            String   @id @default(uuid())         // Unique ID for each user
+  email         String   @unique                     // User email (must be unique)
+  name          String?                              // Optional display name
+  publicKey     String                               // Public key used for E2E encryption
+  vaults        Vault[]  @relation("OwnerVaults")     // Vaults owned by this user
+  collaborations Collaborator[]                      // Vaults the user is collaborating on
+  invitesSent   Invite[] @relation("Inviter")         // Invites sent by the user
+  invitesReceived Invite[] @relation("Invitee")       // Invites received by the user
+  createdAt     DateTime @default(now())              // Account creation timestamp
 
-  sentInvites VaultInvite[] @relation("UserSentInvites")
-  receivedInvites VaultInvite[] @relation("UserReceivedInvites")
+  AuditLog AuditLog[]
 
-  encryptedSecrets EncryptedSecret[]
+  SecretEncryption SecretEncryption[]
 
-
-  auditLogs   AuditLog[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  Secret Secret[]
 }
 
+
+
 model Vault {
-  id          String       @id @default(uuid())
-  name        String
-  description String?
-  icon        String
+  id            String   @id @default(uuid())        
+  name          String                               
+  description String?                          
+  icon          String?                            
+  ownerId       String               
+  owner         User     @relation("OwnerVaults", fields: [ownerId], references: [id]) 
+  secrets       Secret[]                             // Secrets stored in the vault
+  collaborators Collaborator[]                       // Collaborators on the vault
+  invites       Invite[]                             // Invites related to this vault
+  auditLogs     AuditLog[]                           
+  createdAt     DateTime @default(now())             
+  updatedAt     DateTime @updatedAt                  
+}
 
-  ownerId     String
-  owner       User         @relation(fields: [ownerId], references: [id])
-  
-  secrets     Secret[]
-  memberships Membership[]
-  
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
 
-  VaultInvite VaultInvite[]
+model Collaborator {
+  id           String   @id @default(uuid())           
+  userId       String                                 // The user who is a collaborator
+  user         User     @relation(fields: [userId], references: [id])
+  vaultId      String                                 // The vault being collaborated on
+  vault        Vault    @relation(fields: [vaultId], references: [id])
+  canEdit      Boolean  @default(false)                
+  canDelete    Boolean  @default(false)   
+  canAdd       Boolean  @default(false)             
+  canView      Boolean  @default(true)
+  status       CollaboratorStatus @default(ACCEPTED)  
+  invitedAt    DateTime @default(now())                
+  acceptedAt   DateTime?                              
+  revokedAt    DateTime?                               
+  updatedAt    DateTime @updatedAt                     
+
+  @@unique([userId, vaultId])                          
+}
+
+
+// Junction table to track which user a secret is encrypted for
+model SecretEncryption {
+  id         String   @id @default(cuid())
+  secret     Secret   @relation(fields: [secretId], references: [id])
+  secretId   String
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  createdAt  DateTime @default(now())
+
+  @@unique([secretId, userId]) 
 }
 
 model Secret {
-  id          String      @id @default(uuid())
-  key         String
-  value       String     
-  type        SecretType  @default(GENERIC)
-  environment Environment @default(DEVELOPMENT)
-  deleted     Boolean     @default(false) 
+  id            String            @id @default(cuid())
+  vault         Vault             @relation(fields: [vaultId], references: [id])
+  vaultId       String
+  key           String            
+  value         String            
+  environment   Environment       
+  type          SecretType        
+  icon          String?           
+  createdBy     User              @relation(fields: [createdById], references: [id])
+  createdById   String
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
 
-  vaultId     String
-  vault       Vault    @relation(fields: [vaultId], references: [id])
-
-  creatorId   String
-  creator     User     @relation("CreatedSecrets", fields: [creatorId], references: [id])
-
-  auditLogs   AuditLog[]
-  encryptedSecrets EncryptedSecret[]
-
-
-  deletedAt   DateTime?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  encryptedFor  SecretEncryption[]
 }
-
-model EncryptedSecret {
-  id         String   @id @default(uuid())
-
-  
-  userId     String     // Who this encrypted version is for
-  user       User       @relation(fields: [userId], references: [id])
-
-  secretId   String
-  secret     Secret     @relation(fields: [secretId], references: [id])
-
-  key   String
-  value String
-
-  createdAt  DateTime @default(now())
-
-  @@unique([userId, secretId]) // one encrypted version per user per secret
+enum CollaboratorStatus {
+  ACCEPTED      // Collaborator is active
+  REVOKED       // Access was removed by the owner
 }
 
 
-model Membership {
-  id        String @id @default(uuid())
-  role      Role   @default(MEMBER)
-  canView   Boolean @default(true)
-  canEdit   Boolean @default(false)
-  canDelete Boolean @default(false)
 
-  hasSecretAccess Boolean @default(false)
+model Invite {
+  id            String   @id @default(uuid())        
+  vaultId       String                                // Vault this invite is for
+  vault         Vault    @relation(fields: [vaultId], references: [id])
 
-  
-  createrId String    //jisne invite kiya ye wo hai
-  creater   User  @relation(name: "CreatorRelation", fields: [createrId], references: [id])
- 
-  userId    String   //jo invite accept kiya hai
-  user      User   @relation(name: "MemberRelation", fields: [userId], references: [id])
-  
-  vaultId   String
-  vault     Vault  @relation( fields: [vaultId], references: [id])
+  inviterId     String                                
+  inviter       User     @relation("Inviter", fields: [inviterId], references: [id])
 
-  @@unique([userId, vaultId])  //automatically becomes userId_vaultId as primary key
-}
-
-
-model AuditLog {
-  id        String   @id @default(uuid())
-  action    String    
-  createdAt DateTime @default(now())
-
-  userId   String
-  secretId String
-
-  user   User   @relation(fields: [userId], references: [id])
-  secret Secret @relation(fields: [secretId], references: [id])
-}
-
-
-model VaultInvite {
-  id         String   @id @default(uuid())
-  email      String   //jisko invite kiya hai  
-  vaultId    String
-  role       Role     @default(MEMBER)
-  status     String   @default("PENDING")
-  invitedAt  DateTime @default(now())
-  canView       Boolean  @default(true)
+  inviteeEmail  String                                // Email of invited person
+  inviteeId     String?                               // Optional: linked to a user account if registered
+  invitee       User?    @relation("Invitee", fields: [inviteeId], references: [id])
   canEdit       Boolean  @default(false)
   canDelete     Boolean  @default(false)
-
-  invitedBy   String
-  receiverId  String? 
-
-  invitee   User?    @relation("UserReceivedInvites", fields: [receiverId], references: [id])
-  inviter   User     @relation("UserSentInvites", fields: [invitedBy], references: [id])
-
-  vault     Vault    @relation(fields: [vaultId], references: [id])
-  
+  canView       Boolean  @default(false)
+  canAdd        Boolean  @default(false)
+  status        InviteStatus @default(PENDING)         // Current status (pending/accepted/etc.)
+  expiresAt     DateTime                              
+  respondedAt   DateTime?                             // When the invite was accepted/rejected
+  createdAt     DateTime @default(now())             
 }
 
-
-enum Role {
-  OWNER
-  MEMBER
+enum InviteStatus {
+  PENDING        
+  ACCEPTED       
+  REJECTED       
+  EXPIRED       
 }
+
+model AuditLog {
+  id          String   @id @default(uuid())           
+  vaultId     String                                
+  vault       Vault    @relation(fields: [vaultId], references: [id])
+  actorId     String?                                // Who performed the action (nullable if system)
+  actor       User?    @relation(fields: [actorId], references: [id])
+  action      String                                 // What happened (e.g. "invite_sent", "secret_edited")
+  description String                                 // Human-readable or encrypted summary
+  createdAt   DateTime @default(now())                // When the action occurred
+}
+
 
 enum Environment {
   DEVELOPMENT
@@ -170,10 +152,4 @@ enum SecretType {
   SSH_KEY
   DATABASE_CREDENTIAL
   TOKEN
-}
-
-enum VaultInviteStatus {
-  PENDING
-  ACCEPTED
-  REJECTED
 }
