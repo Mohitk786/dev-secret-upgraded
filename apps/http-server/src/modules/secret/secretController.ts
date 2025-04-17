@@ -36,3 +36,18 @@ export async function getSecrets(req: CustomRequest, res: Response):Promise<any>
     res.status(403).json({ message: "Access denied", error: err.message });
   }
 }
+
+
+export const getUser = async (req: CustomRequest, res: Response): Promise<void> => {
+  const user_id = req.user?.id;
+  console.log("user_id", user_id);
+
+  const user = await prisma.user.findUnique({
+      where: {
+          id: user_id
+      }
+  })
+
+  if (!user) res.status(401).json({ message: "Not logged in" });
+  res.status(200).json(user);
+};
