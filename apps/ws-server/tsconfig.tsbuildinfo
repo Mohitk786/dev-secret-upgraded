@@ -1,0 +1,1 @@
+{"root":["./src/index.ts","./src/controllers/secretController.ts","./src/controllers/vaultControllert.ts","./src/types/types.d.ts","./src/utils/autenticate.ts","./src/utils/getSocketI.ts"],"version":"5.7.3"}

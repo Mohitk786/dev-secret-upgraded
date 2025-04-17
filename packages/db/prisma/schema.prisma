@@ -11,6 +11,7 @@ model User {
   id            String   @id @default(uuid())         // Unique ID for each user
   email         String   @unique                     // User email (must be unique)
   name          String?                              // Optional display name
+  password     String
   publicKey     String                               // Public key used for E2E encryption
   vaults        Vault[]  @relation("OwnerVaults")     // Vaults owned by this user
   collaborations Collaborator[]                      // Vaults the user is collaborating on
