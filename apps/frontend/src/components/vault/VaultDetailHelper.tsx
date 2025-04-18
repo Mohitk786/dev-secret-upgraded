@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import AddSecretPopup from "@/components/vault/AddSecretPopup";
 import EditSecretPopup from "@/components/vault/EditSecretPopup";
@@ -21,6 +21,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { decryptSecret, decryptVaultKeyWithPrivateKey } from "@/E2E/decryption";
 import { z } from "zod";
+import { Socket } from "socket.io-client";
+import useSocket from "@/hooks/utils/useSocket";
 
 export const formSchema = z.object({
   key: z.string().min(1, { message: "Secret name is required" }),
@@ -58,7 +60,7 @@ const VaultDetail = ({isSharedVault}:{isSharedVault:boolean}) => {
     },
   });
 
- 
+  const socket = useSocket();  
  
   const {data: vaultKey} = useGetVaultKeyQuery(vaultId || "");
   const { data: vault, isLoading, error } = isSharedVault ? useGetSharedVaultQuery(vaultId || "") : useGetVaultQuery(vaultId || "");
@@ -68,29 +70,29 @@ const VaultDetail = ({isSharedVault}:{isSharedVault:boolean}) => {
   useEffect(() => {
     if (!vaultKey) return;
     const decryptVaultKey = async () => {
-      const decryptedVaultKey = await decryptVaultKeyWithPrivateKey(vaultKey);
-      setDecryptedVaultKey(decryptedVaultKey);
-      const decryptedSecrets = await Promise.all(vault?.secrets.map((secret: Secret) => decryptEachSecret(secret, decryptedVaultKey)) || []);
-      setDecryptedSecrets(decryptedSecrets);
+      try {
+        const decryptedVaultKey = await decryptVaultKeyWithPrivateKey(vaultKey);
+        setDecryptedVaultKey(decryptedVaultKey);
+        const decryptedSecrets = await Promise.all(vault?.secrets.map((secret: Secret) => decryptEachSecret(secret, decryptedVaultKey)) || []);
+        setDecryptedSecrets(decryptedSecrets);
+      } catch (error:any) {
+        showToast({
+          type: "error",
+          message: `Error decrypting vault key: ${error?.message}`,
+        });
+      }
     }
 
     decryptVaultKey();
   }, [vaultKey]);
 
   useEffect(() => {
-    if (!socketInstance || !vaultId) return;
   
-    socketInstance.connect();
-  
-    socketInstance.emit("join-vault", vaultId);
-  
-  
-      const onSecretCreated = async (data: Secret) => {
-        console.log("data", data)
-        console.log("decryptedVaultKey", decryptedVaultKey)
+    socket.emit("join-vault", vaultId);
+      
+    const onSecretCreated = async (data: Secret) => {
         if(!decryptedVaultKey) return;
         const decryptedSecret = await decryptEachSecret(data, decryptedVaultKey);
-        console.log("newly added secret", decryptedSecret)
         
         showToast({
           type: "info",
@@ -98,16 +100,17 @@ const VaultDetail = ({isSharedVault}:{isSharedVault:boolean}) => {
         });
 
         // Add logic to update UI state if needed
-        setDecryptedSecrets([...decryptedSecrets, decryptedSecret]);
+        setDecryptedSecrets(prev => [...prev, decryptedSecret]);
+
     };
-  
-    socketInstance.on("secret-created", onSecretCreated);
+    
+    socket.on("secret-created", onSecretCreated);
   
     return () => {
-      socketInstance.off("secret-created", onSecretCreated);
-      socketInstance.disconnect();
+      socket.off("secret-created", onSecretCreated);
+      socket.disconnect();
     };
-  }, [vaultId]);
+  }, [vaultId,decryptedVaultKey]);
 
   
 

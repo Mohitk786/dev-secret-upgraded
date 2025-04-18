@@ -6,7 +6,7 @@ type ToastType = 'success' | 'error' | 'info';
 const useToast = () => {
   const showToast = ({ type, message }: { type: ToastType, message: string }) => {
     let toastOptions: ToastOptions = {
-      position: "top-center",
+      position: "bottom-right",
       autoClose: 5000,
       hideProgressBar: true,
       closeOnClick: true,
