@@ -1,5 +1,4 @@
 
-import {  UseFormReturn } from "react-hook-form";
 import {
   Dialog,
   DialogContent,
@@ -29,15 +28,20 @@ import { Textarea } from "@/components/ui/textarea";
 import { useCreateSecretMutation } from "@/hooks/mutations/useSecretMutations";
 import { Loader2 } from "lucide-react";
 
-import { Secret, AddSecretFormValues } from "@/types/types";
+import { AddSecretFormValues } from "@/types/types";
+import useSocket from "@/hooks/utils/useSocket";
+import useToast from "@/hooks/utils/useToast";
+import { useParams } from "next/navigation";
+import { encryptSecret } from "@/E2E/encryption";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { formSchema } from "./VaultDetailHelper";
 
 
 
 interface AddSecretPopupProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  form: UseFormReturn<AddSecretFormValues>;
-  onSubmit: (data: AddSecretFormValues) => void;
 }
 
 const environmentOptions = [
@@ -56,8 +60,45 @@ const secretTypeOptions = [
   { label: "🎟️ Token", value: "TOKEN" },
 ];
 
-const AddSecretPopup = ({ open, onOpenChange, form, onSubmit }: AddSecretPopupProps) => {
+const AddSecretPopup = ({ open, onOpenChange }: AddSecretPopupProps) => {
+  
   const createSecretMutation = useCreateSecretMutation();
+  const socket = useSocket();
+  const {showToast} = useToast();
+  const {vaultId}:{vaultId:string} = useParams();
+
+  const form = useForm<AddSecretFormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      key: "",
+      value: "",
+      environment: "DEVELOPMENT",
+      type: "GENERIC",
+    },
+  });
+  
+  const onSubmit = async (data: AddSecretFormValues) => {
+    try {
+
+      const encryptedSecret = await encryptSecret(data, vaultId);
+
+      socket.emit('create-secret', {
+        vaultId: vaultId,
+        encryptedSecret: encryptedSecret,
+      });
+     
+      form.reset();
+      onOpenChange(false);
+
+    } catch (error:any) {
+      console.log("error", error);
+      showToast({
+        type: "error",
+        message: error.message,
+      });
+    }
+  };
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

@@ -62,7 +62,6 @@ const SecretList: React.FC<SecretListProps> = ({
           {filteredSecrets.length > 0 ? (
             filteredSecrets.map((secret: any, index: number) => (
               <SecretItem
-                // vault={vault}
                 isSharedVault={isSharedVault || false}
                 key={index}
                 secret={secret}

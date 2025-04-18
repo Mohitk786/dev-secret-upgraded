@@ -84,12 +84,24 @@ io.on("connection", async (socket) => {
 
   socket.on("delete-secret", async (data: DeleteSecretData) => {
     const deleted = await deleteSecret(data, userId);
-    io.to(`vault-${data.vaultId}`).emit("secret-deleted", deleted);
+    console.log("🔑 deleted", deleted);
+    socket.emit("secret-deleted", {
+      message: "Your secret has been deleted",
+      secretId: deleted.secretId
+    });
+    //send to all except the socket that made the request
+    socket.to(`vault-${data.vaultId}`).emit("secret-deleted", deleted);
   });
 
   socket.on("update-secret", async (data: UpdateSecretData) => {
     const updated = await updateSecret(data, userId);
-    io.to(`vault-${data.vaultId}`).emit("secret-updated", updated);
+    socket.emit("secret-updated", {
+      message: "Your secret has been updated",
+      secretId: updated.secretId
+    });
+    
+    //send to all except the socket that made the request
+    socket.to(`vault-${data.vaultId}`).emit("secret-updated", updated);
   });
 
   socket.on("vault-updated", async (data: VaultUpdatedData) => {

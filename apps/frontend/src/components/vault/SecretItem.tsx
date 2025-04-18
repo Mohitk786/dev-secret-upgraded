@@ -1,23 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff, Copy, Edit, Trash, Loader2 } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import useToast from "@/hooks/utils/useToast";
-import { useDeleteSecretMutation } from "@/hooks/mutations/useSecretMutations";
 import { SecretItemProps } from "@/types/types";
-import { decryptSecret } from "@/hooks/utils/useDecryptSecret";
+import { useGetVaultQuery } from "@/hooks/queries/useVaultQuery";
+import { useParams } from "next/navigation";
 import { useAuth } from "@/hooks/queries/authQueries";
+import useSocket from "@/hooks/utils/useSocket";
 
 const SecretItem: React.FC<SecretItemProps> = ({
   secret,
   visibleSecrets,
   toggleSecretVisibility,
   onEditSecret,
-  isSharedVault
 }) => {
 
-  // const { user } = useAuth();
+  const { vaultId } = useParams();
   const { showToast } = useToast();
+  const { data: vault } = useGetVaultQuery(vaultId as string);
+  const { user } = useAuth();
+  const socket = useSocket();
+  const [isPending, setIsPending] = useState(false);
 
 
   const copyToClipboard = (value: string, name: string) => {
@@ -51,6 +55,27 @@ const SecretItem: React.FC<SecretItemProps> = ({
 
     return emojiMap[type] || "🔑";
   };
+
+  const deleteSecret = async (secretId: string) => {
+    console.log("🔑 secretId", secretId);
+    try {
+      setIsPending(true);
+      socket.emit("delete-secret", {
+        vaultId: vaultId as string,
+        secretId: secretId,
+      });
+    } catch (error) {
+      showToast({
+        type: "error",
+        message: "Failed to delete secret",
+      });
+
+    } finally {
+      setIsPending(false);
+    }
+  };
+
+
 
   return (
     <div className="secret-item flex flex-col sm:flex-row  to-secondary/10 p-4 rounded-lg">
@@ -89,7 +114,7 @@ const SecretItem: React.FC<SecretItemProps> = ({
         >
           <Copy className="h-4 w-4" />
         </Button>
-        {/* {(vault.canEdit || vault?.vault?.ownerId === user?.id) && <Button
+        {(vault.canEdit || vault?.ownerId === user?.id) && <Button
           variant="ghost"
           size="icon"
           onClick={() => onEditSecret(secret)}
@@ -97,7 +122,7 @@ const SecretItem: React.FC<SecretItemProps> = ({
           <Edit className="h-4 w-4" />
         </Button>}
 
-        {(vault.canDelete || vault?.vault?.ownerId === user?.id) && <AlertDialog>
+        {(vault.canDelete || vault?.ownerId === user?.id) && <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button variant="ghost" size="icon" className="text-destructive">
               <Trash className="h-4 w-4" />
@@ -113,7 +138,7 @@ const SecretItem: React.FC<SecretItemProps> = ({
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction
-                onClick={() => deleteSecret(secret.id)}
+                onClick={() => deleteSecret(secret?.id || "")}
                 className="bg-destructive text-destructive-foreground"
               >
                 {isPending ? (
@@ -127,7 +152,7 @@ const SecretItem: React.FC<SecretItemProps> = ({
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
-        </AlertDialog>} */}
+        </AlertDialog>}
       </div>
     </div>
   );

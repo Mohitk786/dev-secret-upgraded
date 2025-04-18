@@ -13,40 +13,6 @@ export
   return { isOwner: false, collaborator };
 }
 
-export async function getSecrets(req: CustomRequest, res: Response): Promise<any> {
-  try {
-    const vaultId = req.params.vaultId;
-    const userId = req.user?.id;
-
-    if (!vaultId) {
-      return res.status(400).json({ message: "Vault ID is required" });
-    }
-
-    const { isOwner, collaborator } = await checkVaultAccess(userId!, vaultId);
-    if (!isOwner && !collaborator)
-      return res.status(403).json({ message: "You can't view this vault" });
-
-    const collaborators = await prisma.collaborator.findMany({
-      where: { vaultId },
-      include: {
-        user: {
-          select: {
-            id: true,
-            publicKey: true,
-
-          }
-        }
-      }
-    });
-
-    res.status(200).json({
-      data: collaborators,
-    });
-
-  } catch (err: any) {
-    res.status(403).json({ message: "Access denied", error: err.message });
-  }
-}
 
 
 export const getUser = async (req: CustomRequest, res: Response): Promise<void> => {

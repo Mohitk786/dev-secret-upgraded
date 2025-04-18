@@ -26,6 +26,8 @@ interface VaultHeaderProps {
 
 const VaultHeader = ({ vault, setIsAddSecretOpen, isSharedVault }: VaultHeaderProps) => {
 
+  console.log("🔑 vault", vault);
+  
   return (
     <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:justify-between sm:items-center">
       <div>

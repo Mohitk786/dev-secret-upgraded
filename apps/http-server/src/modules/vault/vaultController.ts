@@ -83,13 +83,47 @@ export async function getVault(req: CustomRequest, res: Response): Promise<any> 
         },
       },
       include: {
-        secrets: true,
+        secrets: {
+          where: {
+            isDeleted: false,
+          },
+        },
+        collaborators: {
+          where: {
+            userId
+          },
+          select: {
+            canAdd: true,
+            canDelete: true,
+            canEdit: true,
+            canView: true,
+          }
+        }
       },
     });
 
+    let updatedVault;
+    if (vault?.ownerId !== userId) {
+      updatedVault = {
+        ...vault,
+        permissions: {
+          canAdd: vault?.collaborators[0]?.canAdd,
+          canDelete: vault?.collaborators[0]?.canDelete,
+          canEdit: vault?.collaborators[0]?.canEdit,
+          canView: vault?.collaborators[0]?.canView,
+        }
+      }
+      delete updatedVault?.collaborators;
+
+      return res.status(200).json({
+        vault: updatedVault,
+        message: "Vault fetched successfully",
+      });
+    }
+
 
     res.status(200).json({
-      vault,
+      vault: vault,
       message: "Vault fetched successfully",
     });
 
@@ -410,11 +444,11 @@ export async function confirmAccess(req: CustomRequest, res: Response): Promise<
       return;
     }
 
-    console.log("encryptedVaultKeys", encryptedVaultKeys)
-
     await prisma.vaultKey.createMany({
       data: encryptedVaultKeys,
     })
+
+
 
     return res.status(200).json({
       message: 'All the Users have access to secrets of this vault',
