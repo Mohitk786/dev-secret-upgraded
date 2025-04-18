@@ -142,7 +142,7 @@ export const updateSecret = async (data: UpdateSecretData, userId: string) => {
             },
         });
 
-        return { message: `${owner?.name || collaborator?.user?.name} updated a secret`, secretId };
+        return { message: `${owner?.name || collaborator?.user?.name} updated a Secret`, encryptedSecret: updated };
 
     } catch (error) {
         console.error(error)

@@ -3,26 +3,29 @@ import { Button } from "@/components/ui/button";
 import { Eye, EyeOff, Copy, Edit, Trash, Loader2 } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import useToast from "@/hooks/utils/useToast";
-import { SecretItemProps } from "@/types/types";
+import { Secret, SecretItemProps } from "@/types/types";
 import { useGetVaultQuery } from "@/hooks/queries/useVaultQuery";
 import { useParams } from "next/navigation";
 import { useAuth } from "@/hooks/queries/authQueries";
 import useSocket from "@/hooks/utils/useSocket";
+import EditSecretPopup from "@/components/vault/EditSecretPopup";
 
 const SecretItem: React.FC<SecretItemProps> = ({
   secret,
   visibleSecrets,
   toggleSecretVisibility,
-  onEditSecret,
 }) => {
 
   const { vaultId } = useParams();
   const { showToast } = useToast();
-  const { data: vault } = useGetVaultQuery(vaultId as string);
   const { user } = useAuth();
   const socket = useSocket();
   const [isPending, setIsPending] = useState(false);
-
+  const [isEditSecretOpen, setIsEditSecretOpen] = useState(false);
+  const [editingSecret, setEditingSecret] = useState<Secret | null>(null);
+  
+  const { data: vault } = useGetVaultQuery(vaultId as string);
+  const isOwner = vault?.ownerId === user?.id;
 
   const copyToClipboard = (value: string, name: string) => {
     navigator.clipboard.writeText(value);
@@ -57,7 +60,6 @@ const SecretItem: React.FC<SecretItemProps> = ({
   };
 
   const deleteSecret = async (secretId: string) => {
-    console.log("🔑 secretId", secretId);
     try {
       setIsPending(true);
       socket.emit("delete-secret", {
@@ -75,6 +77,11 @@ const SecretItem: React.FC<SecretItemProps> = ({
     }
   };
 
+  const onEditSecret = (secret: Secret) => {
+    console.log("🔑 secret", secret);
+    setEditingSecret(secret);
+    setIsEditSecretOpen(true);
+  };
 
 
   return (
@@ -114,7 +121,7 @@ const SecretItem: React.FC<SecretItemProps> = ({
         >
           <Copy className="h-4 w-4" />
         </Button>
-        {(vault.canEdit || vault?.ownerId === user?.id) && <Button
+        {(isOwner || vault?.permissions?.canEdit) && <Button
           variant="ghost"
           size="icon"
           onClick={() => onEditSecret(secret)}
@@ -122,7 +129,7 @@ const SecretItem: React.FC<SecretItemProps> = ({
           <Edit className="h-4 w-4" />
         </Button>}
 
-        {(vault.canDelete || vault?.ownerId === user?.id) && <AlertDialog>
+        {(isOwner || vault?.permissions?.canDelete) && <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button variant="ghost" size="icon" className="text-destructive">
               <Trash className="h-4 w-4" />
@@ -154,6 +161,15 @@ const SecretItem: React.FC<SecretItemProps> = ({
           </AlertDialogContent>
         </AlertDialog>}
       </div>
+
+
+      {editingSecret && (
+        <EditSecretPopup 
+          open={isEditSecretOpen}
+          onOpenChange={setIsEditSecretOpen}
+          secret={editingSecret}
+        />
+      )}  
     </div>
   );
 };

@@ -79,9 +79,7 @@ const AddSecretPopup = ({ open, onOpenChange }: AddSecretPopupProps) => {
   
   const onSubmit = async (data: AddSecretFormValues) => {
     try {
-
       const encryptedSecret = await encryptSecret(data, vaultId);
-
       socket.emit('create-secret', {
         vaultId: vaultId,
         encryptedSecret: encryptedSecret,

@@ -31,10 +31,12 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useUpdateSecretMutation } from "@/hooks/mutations/useSecretMutations";
 import { Loader2 } from "lucide-react";
-import { useEffect } from "react";
-import { encryptData, getPublicKey } from "@/E2E/rsaKeyGen";
+import { useEffect, useState } from "react";
 import useToast from "@/hooks/utils/useToast";
-import { useRouter } from "next/navigation";
+import useSocket from "@/hooks/utils/useSocket";
+import { getPublicKey, encryptData } from "@/E2E/rsaKeyGen";
+import { encryptSecret } from "@/E2E/encryption";
+import { useParams } from "next/navigation";
 
 const formSchema = z.object({
   key: z.string().min(1, { message: "Secret name is required" }),
@@ -68,9 +70,10 @@ const secretTypeOptions = [
 ];
 
 const EditSecretPopup = ({ open, onOpenChange, secret }: EditSecretPopupProps) => {
-  const updateSecretMutation = useUpdateSecretMutation();
-  const {showToast} = useToast();
-  const router = useRouter();
+  const { showToast } = useToast();
+  const socket = useSocket();
+  const [isPending, setIsPending] = useState(false);
+  const { vaultId }: { vaultId: string } = useParams();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -95,39 +98,34 @@ const EditSecretPopup = ({ open, onOpenChange, secret }: EditSecretPopupProps) =
   }, [secret, form]);
 
   const onSubmit = async (data: FormValues) => {
-
-    const publicKey = getPublicKey();
-
-    if(!publicKey) {
-      showToast({
-        type: "error",
-        message: "No public key found",
-      })
-      router.push("/login");
-      return;
-    }
-
-    const encryptedKey = await encryptData(data.key, publicKey);
-    const encryptedValue = await encryptData(data.value, publicKey);
-
     try {
-      await updateSecretMutation.mutateAsync({
+      setIsPending(true);
+      const publicKey = getPublicKey();
+
+      if (!publicKey) {
+        showToast({
+          type: "error",
+          message: "No public key found",
+        })
+      }
+      const encryptedSecret = await encryptSecret(data, vaultId);
+
+      socket.emit("update-secret", {
         secretId: secret.id,
-        data: {
-          ...data,
-          vaultId: secret.vaultId,
-          key: encryptedKey,
-          value: encryptedValue,
-        },
+        encryptedSecret: encryptedSecret,
+        vaultId: secret.vaultId,
       });
-      
+
       onOpenChange(false);
+
     } catch (error) {
       console.error(error);
       showToast({
         type: "error",
         message: "Failed to update secret",
       })
+    } finally {
+      setIsPending(false);
     }
   };
 
@@ -222,10 +220,10 @@ const EditSecretPopup = ({ open, onOpenChange, secret }: EditSecretPopupProps) =
                 <FormItem>
                   <FormLabel>Secret Value</FormLabel>
                   <FormControl>
-                    <Textarea 
+                    <Textarea
                       placeholder="Your secret value"
-                      className="font-mono min-h-[100px]" 
-                      {...field} 
+                      className="font-mono min-h-[100px]"
+                      {...field}
                     />
                   </FormControl>
                   <FormMessage />
@@ -233,18 +231,18 @@ const EditSecretPopup = ({ open, onOpenChange, secret }: EditSecretPopupProps) =
               )}
             />
             <DialogFooter>
-              <Button 
-                type="button" 
-                variant="outline" 
+              <Button
+                type="button"
+                variant="outline"
                 onClick={() => onOpenChange(false)}
               >
                 Cancel
               </Button>
-              <Button 
+              <Button
                 type="submit"
-                disabled={updateSecretMutation.isPending}
+                disabled={isPending}
               >
-                {updateSecretMutation.isPending ? (
+                {isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Updating...

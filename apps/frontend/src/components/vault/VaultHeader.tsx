@@ -17,16 +17,17 @@ import {
   Users,
   FileText
 } from "lucide-react";
+import { useAuth } from "@/hooks/queries/authQueries";
 
 interface VaultHeaderProps {
   vault: any;
   setIsAddSecretOpen: (value: boolean) => void;
-  isSharedVault: boolean;
 }
 
-const VaultHeader = ({ vault, setIsAddSecretOpen, isSharedVault }: VaultHeaderProps) => {
+const VaultHeader = ({ vault, setIsAddSecretOpen }: VaultHeaderProps) => {
 
-  console.log("🔑 vault", vault);
+  const { user } = useAuth();
+  const isOwner = vault?.ownerId === user?.id;
   
   return (
     <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:justify-between sm:items-center">
@@ -52,7 +53,7 @@ const VaultHeader = ({ vault, setIsAddSecretOpen, isSharedVault }: VaultHeaderPr
           </Link>
         </Button>
 
-       { !isSharedVault && (
+    
         <>
         <Button
           variant="outline"
@@ -66,16 +67,18 @@ const VaultHeader = ({ vault, setIsAddSecretOpen, isSharedVault }: VaultHeaderPr
           </Link>
         </Button>
 
-        <Button 
+
+        {/* owner ho ya add permission ho */}
+        {isOwner || vault?.permissions?.canAdd ? <Button 
           className="gap-1" 
           onClick={() => setIsAddSecretOpen(true)}
         >
           <Plus className="h-4 w-4" /> Add Secret
-        </Button>
+        </Button> : null}
         </>
-        )}
         
-        <DropdownMenu>
+        
+        {isOwner ? <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon">
               <MoreVertical className="h-5 w-5" />
@@ -100,7 +103,7 @@ const VaultHeader = ({ vault, setIsAddSecretOpen, isSharedVault }: VaultHeaderPr
               <Trash className="h-4 w-4 mr-2" /> Delete Vault
             </DropdownMenuItem>
           </DropdownMenuContent>
-        </DropdownMenu>
+        </DropdownMenu> : null}
       </div>
     </div>
   );

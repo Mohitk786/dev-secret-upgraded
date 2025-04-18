@@ -1,3 +1,4 @@
+import { Secret } from "@/types/types";
 import { getPrivateKey, getPublicKey } from "./rsaKeyGen";
 
 export const decryptVaultKeyWithPrivateKey = async (encryptedBase64: string) => {
@@ -32,7 +33,10 @@ export const decryptVaultKeyWithPrivateKey = async (encryptedBase64: string) => 
   };
 
 
-export const decryptSecret = async (encryptedBase64: string, vaultKey: CryptoKey) => {
+export const decryptSecret = async (secret: Secret , vaultKey: CryptoKey) => {
+ 
+  const encryptedBase64 = secret.encryptedSecret;
+
   const data = Uint8Array.from(atob(encryptedBase64), c => c.charCodeAt(0));
   const iv = data.slice(0, 12);
   const encrypted = data.slice(12);
@@ -43,7 +47,12 @@ export const decryptSecret = async (encryptedBase64: string, vaultKey: CryptoKey
     encrypted
   );
 
-  return JSON.parse(new TextDecoder().decode(decrypted));
+   const decryptedSecret = JSON.parse(new TextDecoder().decode(decrypted));
+   return {
+    ...decryptedSecret,
+    id: secret.id,
+    vaultId: secret.vaultId,
+   }
 };
   
   

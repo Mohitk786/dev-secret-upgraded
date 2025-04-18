@@ -3,11 +3,11 @@ import { z } from "zod";
 export interface Secret {
     id?: string;
     encryptedSecret: string;
-    vaultId: string;
-    key: string;
-    value: string;
-    type: string;
-    environment: string;
+    vaultId?: string;
+    key?: string;
+    value?: string;
+    type?: string;
+    environment?: string;
     createdAt?: string
     updatedAt?: string
 }
@@ -16,7 +16,6 @@ export interface SecretItemProps {
     secret: Secret;
     visibleSecrets: string[];
     toggleSecretVisibility: (secretId: string) => void;
-    onEditSecret: (secret: any) => void;
     isSharedVault: boolean;
     vault?: any;
   }

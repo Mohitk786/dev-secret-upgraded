@@ -13,7 +13,6 @@ interface SecretListProps {
   setSearchQuery: (query: string) => void;
   visibleSecrets: string[];
   toggleSecretVisibility: (secretId: string) => void;
-  onEditSecret: (secret: any) => void;
   setIsAddSecretOpen: (value: boolean) => void;
   isLoading?: boolean;
   isSharedVault?: boolean;
@@ -25,7 +24,6 @@ const SecretList: React.FC<SecretListProps> = ({
   setSearchQuery,
   visibleSecrets,
   toggleSecretVisibility,
-  onEditSecret,
   setIsAddSecretOpen,
   isLoading,
   isSharedVault,
@@ -43,7 +41,7 @@ const SecretList: React.FC<SecretListProps> = ({
     secret.environment?.toLowerCase().includes(searchQuery.toLowerCase())
   ) || [];
 
- 
+//  console.log("🔑 filteredSecrets", filteredSecrets);
   
   return (
     <Card>
@@ -67,7 +65,6 @@ const SecretList: React.FC<SecretListProps> = ({
                 secret={secret}
                 visibleSecrets={visibleSecrets}
                 toggleSecretVisibility={toggleSecretVisibility}
-                onEditSecret={onEditSecret}
               />
             ))
           ) : (
