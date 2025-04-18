@@ -62,24 +62,37 @@ export async function getVault(req: CustomRequest, res: Response): Promise<any> 
       return;
     }
 
-    await checkVaultOwnership(userId!, vaultId);
+    if (!userId) {
+      res.status(401).json({ message: 'Unauthorized' });
+      return;
+    }
 
-    const vault = await prisma.vault.findUnique({
-      where: { id: vaultId },
-      include: {
-        secrets: true,
-        collaborators: {
-          include: {
-            user: true,
+    const { isOwner, collaborator } = await checkVaultAccess(userId!, vaultId);
+
+    if (!isOwner && !collaborator) {
+      res.status(403).json({ message: 'You are not authorized to access this vault' });
+      return;
+    }
+
+    const vault = await prisma.vault.findFirst({
+      where: {
+        id: vaultId, vaultKeys: {
+          some: {
+            userId,
           },
         },
       },
+      include: {
+        secrets: true,
+      },
     });
+
 
     res.status(200).json({
       vault,
       message: "Vault fetched successfully",
     });
+
   } catch (err: any) {
     res.status(403).json({ message: 'Access denied', error: err.message });
   }
@@ -131,13 +144,13 @@ export async function sentInvite(req: CustomRequest, res: Response): Promise<any
       where: {
         email,
       },
-    }); 
+    });
 
     if (!user) {
       res.status(404).json({ message: `User with email ${email} not found` });
       return;
     }
-    
+
 
     const existingInvite = await prisma.invite.findFirst({
       where: {
@@ -264,15 +277,26 @@ export async function getAllCollaborators(req: CustomRequest, res: Response): Pr
     const vaultId = req.params.vaultId as string;
     const userId = req.user?.id;
 
-    const {isOwner, collaborator} = await checkVaultAccess(userId!, vaultId);
+    const { isOwner, collaborator } = await checkVaultAccess(userId!, vaultId);
 
     if (!isOwner && !collaborator) {
       res.status(403).json({ message: 'You are not authorized to access this vault' });
       return;
     }
-    
+
     const collaborators = await prisma.collaborator.findMany({
       where: { vaultId },
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            avatarUrl: true,
+            publicKey: true,
+          }
+        },
+      },
     });
 
     res.status(200).json({
@@ -282,7 +306,7 @@ export async function getAllCollaborators(req: CustomRequest, res: Response): Pr
   } catch (err: any) {
     res.status(500).json({ message: 'Failed to get collaborators', error: err.message });
   }
-} 
+}
 
 
 export async function getSharedWithMeVaults(req: CustomRequest, res: Response): Promise<any> {
@@ -296,15 +320,15 @@ export async function getSharedWithMeVaults(req: CustomRequest, res: Response): 
       include: {
         vault: true,
       },
-    }); 
+    });
 
-    if(collaborators.length === 0) {
+    if (collaborators.length === 0) {
       res.status(200).json({
         vaults: [],
       });
       return;
     }
-    
+
     res.status(200).json({
       vaults: collaborators.map((collaborator) => collaborator.vault),
     });
@@ -322,31 +346,31 @@ export async function getVaultKey(req: CustomRequest, res: Response): Promise<an
 
 
 
-    if(!vaultId) {
+    if (!vaultId) {
       res.status(400).json({ message: 'Vault ID is required' });
       return;
     }
 
-    if(!userId) {
+    if (!userId) {
       res.status(401).json({ message: 'Unauthorized' });
       return;
     }
 
-    const {isOwner, collaborator} = await checkVaultAccess(userId!, vaultId);
+    const { isOwner, collaborator } = await checkVaultAccess(userId!, vaultId);
 
-    if(!isOwner && !collaborator) {
+    if (!isOwner && !collaborator) {
       res.status(403).json({ message: 'You are not authorized to access this vault' });
       return;
-    } 
-    
+    }
+
     const vaultKey = await prisma.vaultKey.findFirst({
       where: {
         vaultId,
         userId,
       },
     });
-    
-    if(!vaultKey) {
+
+    if (!vaultKey) {
       res.status(404).json({ message: 'Vault key not found' });
       return;
     }
@@ -359,5 +383,50 @@ export async function getVaultKey(req: CustomRequest, res: Response): Promise<an
     res.status(500).json({ message: 'Failed to get vault key', error: err.message });
   }
 }
+
+
+export async function confirmAccess(req: CustomRequest, res: Response): Promise<any> {
+  try {
+
+    const userId = req.user?.id;
+
+    if (!userId) {
+      res.status(401).json({ message: 'Unauthorized' });
+      return;
+    }
+
+    const vaultId = req.params.vaultId;
+    const { encryptedVaultKeys } = req.body;
+
+    if (!vaultId) {
+      res.status(400).json({ message: 'Vault ID is required' });
+      return;
+    }
+
+    const vault = await checkVaultOwnership(userId!, vaultId);
+
+    if (!vault) {
+      res.status(404).json({ message: 'You are not authorized to allow access to this vault' });
+      return;
+    }
+
+    console.log("encryptedVaultKeys", encryptedVaultKeys)
+
+    await prisma.vaultKey.createMany({
+      data: encryptedVaultKeys,
+    })
+
+    return res.status(200).json({
+      message: 'All the Users have access to secrets of this vault',
+    });
+
+
+
+
+  } catch (err: any) {
+    res.status(500).json({ message: 'Failed to confirm access', error: err.message });
+  }
+}
+
 
 

@@ -11,14 +11,12 @@ export const generateVaultKey = async () => {
   );
 };
 
-export const encryptSecret = async (secret: Secret, vaultId: string) => {
+export const encryptSecret = async (secret: any, vaultId: string) => {
 
 
   const vaultKey = await getVaultKey(vaultId);
-  console.log("vaultKey", vaultKey);
   const decryptedVaultKey = await decryptVaultKeyWithPrivateKey(vaultKey);
 
-  console.log("decryptedVaultKey", decryptedVaultKey);
 
   if(!decryptedVaultKey) {
     throw new Error("Vault key not found");
@@ -43,16 +41,8 @@ export const encryptSecret = async (secret: Secret, vaultId: string) => {
   return encryptedSecretBase64;
 };
 
-export const encryptVaultKeyWithRSA = async () => {
+export const encryptVaultKeyWithRSA = async (publicKeyBase64: string, vaultKey: CryptoKey) => {
 
-  const publicKeyBase64 =await getPublicKey();
-
-
-  if(!publicKeyBase64) {
-    throw new Error("Public key not found");
-  }
-
-  const vaultKey = await generateVaultKey();
 
   const rawKey = await crypto.subtle.exportKey("raw", vaultKey);
   const rsaKeyBuffer = Uint8Array.from(atob(publicKeyBase64), c => c.charCodeAt(0)).buffer;

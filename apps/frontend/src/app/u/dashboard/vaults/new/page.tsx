@@ -10,8 +10,9 @@ import { Label } from "@/components/ui/label";
 import { Save, Sparkles } from "lucide-react";
 import { useCreateVaultMutation } from "@/hooks/mutations/useVaultMutations";
 import { cn } from "@/lib/utils"; // helper for classnames
-import {encryptVaultKeyWithRSA } from "@/E2E/encryption";
+import {encryptVaultKeyWithRSA, generateVaultKey } from "@/E2E/encryption";
 import useToast from "@/hooks/utils/useToast";
+import { getPublicKey } from "@/E2E/rsaKeyGen";
 
 
 const vaultFormSchema = z.object({
@@ -53,7 +54,15 @@ const CreateVault = () => {
             return;
         }
        
-        const encryptedVaultKeyBase64 = await encryptVaultKeyWithRSA();
+        const publicKeyBase64 = await getPublicKey();
+
+        if(!publicKeyBase64) {
+            throw new Error("Public key not found");
+        }
+
+
+        const vaultKey = await generateVaultKey();
+        const encryptedVaultKeyBase64 = await encryptVaultKeyWithRSA(publicKeyBase64, vaultKey);
 
         const payload = {
             ...result.data,

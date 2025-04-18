@@ -49,7 +49,7 @@ export const getSharedVault = async (vaultId: string) => {
 }
 
 export const confirmAccess = async (data: any) => {
-    const response = await axiosInstance.post(`/collab/confirm-access/${data.vaultId}`,{encryptedSecrets: data.finalData});
+    const response = await axiosInstance.post(`/collab/confirm-access/${data.vaultId}`,{encryptedVaultKeys: data.finalData});
     return response.data;
 }
 

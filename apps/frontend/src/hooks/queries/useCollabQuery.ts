@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { acceptInvite, getInvites, getSharedWithMeVaults, getSharedVault, getVaultCollaborators } from "@/services/collabServices";
+import { getVaultKey } from "@/services/vaultServices";
 
 export const useCollabQuery = (inviteId: string) => {
     const { data, isLoading, error } = useQuery({
@@ -46,3 +47,12 @@ export const useGetVaultCollaboratorsQuery = (vaultId: string) => {
       enabled: !!vaultId,
     });
   };
+
+
+  export const useGetVaultKeyQuery = (vaultId: string) => {
+    return useQuery({
+      queryKey: ["vault-key", vaultId],
+      queryFn: () => getVaultKey(vaultId),
+      enabled: !!vaultId,
+    });
+  };    

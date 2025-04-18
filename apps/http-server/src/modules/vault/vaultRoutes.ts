@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createVault, getVault, getVaults, getAllCollaborators, sentInvite, acceptInvite, getSharedWithMeVaults, getVaultKey } from "./vaultController";
+import { createVault, getVault, getVaults, getAllCollaborators, sentInvite, acceptInvite, getSharedWithMeVaults, getVaultKey, confirmAccess } from "./vaultController";
 import { isAuthenticated } from "../../middleware/auth";
 
 
@@ -13,5 +13,7 @@ router.post("/collab/invite", isAuthenticated, sentInvite);
 router.get("/collab/accept-invite/:inviteId", isAuthenticated, acceptInvite);
 router.get("/collab/shared-with-me", isAuthenticated, getSharedWithMeVaults);
 router.get("/vaults/:vaultId/vault-key", isAuthenticated, getVaultKey);
+router.post("/collab/confirm-access/:vaultId", isAuthenticated, confirmAccess);
+
 
 export default router;  

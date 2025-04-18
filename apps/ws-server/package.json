@@ -2,12 +2,18 @@
   "name": "ws-server",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+ "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "start": "nodemon src/index.ts",
+    "dev": "nodemon src/index.ts",
+    "deploy": "npm run build && serverless deploy",
+    "offline": "serverless offline"
   },
   "dependencies": {
     "@secret-vault/backend-common": "*",
     "@secret-vault/db": "*",
+    "nodemon": "^3.1.9",
     "socket.io": "^4.8.1"
   },
   "keywords": [],

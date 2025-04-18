@@ -1,11 +1,13 @@
+import { z } from "zod";
 
 export interface Secret {
     id?: string;
-    key: string
-    value: string
-    type: "GENERIC" | "PASSWORD" | "API_KEY" | "ENV_VARIABLE" | "SSH_KEY" | "DATABASE_CREDENTIAL" | "TOKEN"
-    vaultId?: string
-    environment?: "DEVELOPMENT" | "STAGING" | "PRODUCTION"
+    encryptedSecret: string;
+    vaultId: string;
+    key: string;
+    value: string;
+    type: string;
+    environment: string;
     createdAt?: string
     updatedAt?: string
 }
@@ -16,7 +18,7 @@ export interface SecretItemProps {
     toggleSecretVisibility: (secretId: string) => void;
     onEditSecret: (secret: any) => void;
     isSharedVault: boolean;
-    vault: any;
+    vault?: any;
   }
 
 export interface NavItem {
@@ -41,11 +43,12 @@ export interface Collaborator {
     canView: boolean;
     canEdit: boolean;
     canDelete: boolean;
-    user?: {
+    user: {
         id: string;
         email: string;
         name?: string;
         avatarUrl?: string;
+        publicKey: string;
     }
 }
 
@@ -66,3 +69,14 @@ export interface AuditLog {
         type: string;
     };
 }
+
+
+export const formSchema = z.object({
+    key: z.string().min(1, { message: "Secret name is required" }),
+    value: z.string().min(1, { message: "Secret value is required" }),
+    environment: z.enum(["DEVELOPMENT", "STAGING", "PRODUCTION"]),
+    type: z.enum(["GENERIC", "PASSWORD", "API_KEY", "ENV_VARIABLE", "SSH_KEY", "DATABASE_CREDENTIAL", "TOKEN"]),
+  });
+  
+export type AddSecretFormValues = z.infer<typeof formSchema>;
+  

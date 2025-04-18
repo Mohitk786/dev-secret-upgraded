@@ -8,7 +8,7 @@ import SecretItem from "./SecretItem";
 import { Secret } from "@/types/types";
 
 interface SecretListProps {
-  vault: any;
+  secrets: Secret[];
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   visibleSecrets: string[];
@@ -20,7 +20,7 @@ interface SecretListProps {
 }
 
 const SecretList: React.FC<SecretListProps> = ({
-  vault,
+  secrets,
   searchQuery,
   setSearchQuery,
   visibleSecrets,
@@ -38,7 +38,7 @@ const SecretList: React.FC<SecretListProps> = ({
     );
   }
   
-  const filteredSecrets = vault?.vault?.secrets?.filter((secret: any) => 
+  const filteredSecrets = secrets.filter((secret: any) => 
     secret.key?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     secret.environment?.toLowerCase().includes(searchQuery.toLowerCase())
   ) || [];
@@ -60,11 +60,11 @@ const SecretList: React.FC<SecretListProps> = ({
         
         <div className="space-y-4">
           {filteredSecrets.length > 0 ? (
-            filteredSecrets.map((secret: any) => (
+            filteredSecrets.map((secret: any, index: number) => (
               <SecretItem
-                vault={vault}
+                // vault={vault}
                 isSharedVault={isSharedVault || false}
-                key={secret.id}
+                key={index}
                 secret={secret}
                 visibleSecrets={visibleSecrets}
                 toggleSecretVisibility={toggleSecretVisibility}

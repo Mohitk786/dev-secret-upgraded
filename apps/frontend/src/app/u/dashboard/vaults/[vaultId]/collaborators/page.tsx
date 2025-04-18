@@ -47,10 +47,14 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useGetVaultCollaboratorsQuery } from "@/hooks/queries/useCollabQuery";
 // import { useDecryptAllSecrets } from "@/hooks/utils/useDecryptAllSecrets";
-// import { useConfirmAccess, useToggleAccess } from "@/hooks/mutations/useCollab";
+import { useConfirmAccess, useToggleAccess } from "@/hooks/mutations/useCollab";
 // import { reEncryptData } from "@/lib/reEncryption";
 // import ConfirmAccess from "@/components/Helper/ConfirmAccess";
 import { ConfirmModalData } from "@/constants/data";
+import { accessToAll } from "@/E2E/operations/accessToAll";
+import ConfirmAccess from "@/components/utils/ConfirmAccess";
+// import { confirmAccess } from "@/services/collabServices";
+
 interface Collaborator {
   id: string;
   userId: string;
@@ -81,14 +85,14 @@ const VaultCollaborators = () => {
     buttonText: "",
     onConfirm: () => {},
     collaborator: null,
-    setIsAccessConfirmModalOpen: () => {} 
   });
   const [collaboratorToRemove, setCollaboratorToRemove] = useState<Collaborator | null>(null);
 
   const { data: vault } = useGetVaultQuery(vaultId as string);
   const { data:collaborators, isLoading } = useGetVaultCollaboratorsQuery(vaultId as string)
 
-  console.log("collaborators 4", collaborators)
+  const { mutate: confirmAccess, isPending: isConfirmingAccess } = useConfirmAccess();
+
 
   // const { mutate: toggleAccess, isPending: isTogglingAccess } = useToggleAccess();
 
@@ -158,11 +162,11 @@ const VaultCollaborators = () => {
     // });
   };
 
-  // const handleConfirmAccess = async () => {
-  //   // console.log("saare collaborators", data?.data)
-  //   const finalData = await reEncryptData(decyptedSecrets, data?.data)
-  //   await confirmAccess({ finalData, vaultId: vaultId as string })
-  // }
+  const handleConfirmAccess = async () => {
+    // console.log("saare collaborators", data?.data)
+    const finalData = await accessToAll(vault?.id, collaborators)
+    await confirmAccess({ finalData, vaultId: vaultId as string })
+  }
 
   // const handleToggleAccess = async (collaborator: Collaborator) => {
   //   console.log("toggle access collaborator", collaborator)
@@ -172,15 +176,17 @@ const VaultCollaborators = () => {
  const handleActionClick = async (flag:string, collaborator?: Collaborator) => {
   setIsAccessConfirmModalOpen(true)
 
-  // if(flag === "access_to_all"){
-  //   setModalData({...ConfirmModalData.access_to_all, onConfirm: handleConfirmAccess, setIsAccessConfirmModalOpen: setIsAccessConfirmModalOpen})
-  // }
+  if(flag === "access_to_all"){
+    setModalData({...ConfirmModalData.access_to_all, onConfirm: handleConfirmAccess})
+  }
   // if(flag === "toggle_access"){
-  //   setModalData({...ConfirmModalData.toggle_access, onConfirm: handleToggleAccess, collaborator: collaborator, setIsAccessConfirmModalOpen: setIsAccessConfirmModalOpen})
+  //   setModalData({...ConfirmModalData.toggle_access, onConfirm: handleToggleAccess, collaborator: collaborator})
   // }
   // if(flag === "remove_collaborator"){
-  //   setModalData({...ConfirmModalData.remove_collaborator, onConfirm: handleRemoveCollaborator, setIsAccessConfirmModalOpen: setIsAccessConfirmModalOpen})
+  //   setModalData({...ConfirmModalData.remove_collaborator, onConfirm: handleRemoveCollaborator})
   // }
+
+  setIsAccessConfirmModalOpen(true)
  }
  
 
@@ -204,7 +210,7 @@ const VaultCollaborators = () => {
                 Invite Member
               </Button>
             </Link>
-            <Button className="flex items-center gap-2 bg-green-400 hover:bg-green-600 text-black" onClick={()=>handleActionClick("access_to_all")}>
+            <Button className="flex items-center gap-2 bg-green-400 hover:bg-green-600 text-black" onClick={()=>handleActionClick("access_to_all")} disabled={isConfirmingAccess}>
               <ShieldCheck className="h-4 w-4" />
               Confirm Access
             </Button>
@@ -349,12 +355,11 @@ const VaultCollaborators = () => {
           </AlertDialogContent>
         </AlertDialog>
 
-      {/*   <ConfirmAccess 
-          onConfirm={modalData.onConfirm}
+        <ConfirmAccess 
           open={isAccessConfirmModalOpen} 
           onOpenChange={setIsAccessConfirmModalOpen} 
           modalData={modalData}
-        /> */}
+        />
       </div>
     </>
   );

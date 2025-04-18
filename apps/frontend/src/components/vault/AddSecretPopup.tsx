@@ -1,7 +1,5 @@
 
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import {  UseFormReturn } from "react-hook-form";
 import {
   Dialog,
   DialogContent,
@@ -30,24 +28,16 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useCreateSecretMutation } from "@/hooks/mutations/useSecretMutations";
 import { Loader2 } from "lucide-react";
-import { encryptData, getPublicKey } from "@/E2E/rsaKeyGen";
-import useToast from "@/hooks/utils/useToast";
-import { useRouter } from "next/navigation";
-import { encryptSecret} from "@/E2E/encryption";
-import { socketInstance } from "@/lib/scoketInstance";
-const formSchema = z.object({
-  key: z.string().min(1, { message: "Secret name is required" }),
-  value: z.string().min(1, { message: "Secret value is required" }),
-  environment: z.enum(["DEVELOPMENT", "STAGING", "PRODUCTION"]),
-  type: z.enum(["GENERIC", "PASSWORD", "API_KEY", "ENV_VARIABLE", "SSH_KEY", "DATABASE_CREDENTIAL", "TOKEN"]),
-});
 
-type FormValues = z.infer<typeof formSchema>;
+import { Secret, AddSecretFormValues } from "@/types/types";
+
+
 
 interface AddSecretPopupProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  vaultId: string;
+  form: UseFormReturn<AddSecretFormValues>;
+  onSubmit: (data: AddSecretFormValues) => void;
 }
 
 const environmentOptions = [
@@ -66,49 +56,8 @@ const secretTypeOptions = [
   { label: "🎟️ Token", value: "TOKEN" },
 ];
 
-const AddSecretPopup = ({ open, onOpenChange, vaultId }: AddSecretPopupProps) => {
+const AddSecretPopup = ({ open, onOpenChange, form, onSubmit }: AddSecretPopupProps) => {
   const createSecretMutation = useCreateSecretMutation();
-  const {showToast} = useToast();
-  const router = useRouter();
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      key: "",
-      value: "",
-      environment: "DEVELOPMENT",
-      type: "GENERIC",
-    },
-  });
-
-  const onSubmit = async (data: FormValues) => {
-    try {
-
-      const encryptedSecret = await encryptSecret(data, vaultId);
-      console.log("encryptedSecret", encryptedSecret);
-
-      // socketInstance.emit('new-secret', {
-      //   vaultId: vaultId,       
-      // socketInstance.emit('new-secret', {
-      //   vaultId: vaultId,       
-      //   encryptedSecret: encryptedSecret, 
-      // });
-      
-
-      showToast({
-        type: "success",
-        message: "Secret added successfully!",
-      });
-      form.reset();
-      onOpenChange(false);
-
-    } catch (error:any) {
-      console.log("error", error);
-      showToast({
-        type: "error",
-        message: error.message,
-      });
-    }
-  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

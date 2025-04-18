@@ -2,12 +2,9 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import AddSecretPopup from "@/components/vault/AddSecretPopup";
 import EditSecretPopup from "@/components/vault/EditSecretPopup";
-import { useGetSharedVaultQuery } from "@/hooks/queries/useCollabQuery";
+import { useGetSharedVaultQuery, useGetVaultKeyQuery } from "@/hooks/queries/useCollabQuery";
 import { useGetVaultQuery } from "@/hooks/queries/useVaultQuery";
 
 import VaultHeader from "@/components/vault/VaultHeader";
@@ -17,6 +14,29 @@ import { decryptData, getPrivateKey } from "@/E2E/rsaKeyGen";
 import  useToast  from "@/hooks/utils/useToast";
 import { socketInstance } from "@/lib/scoketInstance";
 import { Secret } from "@/types/types";
+import VaultDetailError from "./VaultDetailError";
+import VaultDetailSkeleton from "./VaultDetailSkeleton";
+import { encryptSecret } from "@/E2E/encryption";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { decryptSecret, decryptVaultKeyWithPrivateKey } from "@/E2E/decryption";
+import { z } from "zod";
+
+export const formSchema = z.object({
+  key: z.string().min(1, { message: "Secret name is required" }),
+  value: z.string().min(1, { message: "Secret value is required" }),
+  environment: z.enum(["DEVELOPMENT", "STAGING", "PRODUCTION"]),
+  type: z.enum(["GENERIC", "PASSWORD", "API_KEY", "ENV_VARIABLE", "SSH_KEY", "DATABASE_CREDENTIAL", "TOKEN"]),
+});
+
+export type AddSecretFormValues = z.infer<typeof formSchema>;
+
+
+
+const decryptEachSecret = async (secret: Secret, decryptedVaultKey: CryptoKey):Promise<Secret> => {
+  const decryptedSecret = await decryptSecret(secret.encryptedSecret, decryptedVaultKey);
+  return decryptedSecret;
+}
 
 const VaultDetail = ({isSharedVault}:{isSharedVault:boolean}) => {
   const { vaultId } = useParams<{ vaultId: string }>();
@@ -26,7 +46,70 @@ const VaultDetail = ({isSharedVault}:{isSharedVault:boolean}) => {
   const [editingSecret, setEditingSecret] = useState<any>(null);
   const [isEditSecretOpen, setIsEditSecretOpen] = useState(false);
   const  {showToast}  = useToast();
+  const [decryptedSecrets, setDecryptedSecrets] = useState<Secret[]>([]);
+  const [decryptedVaultKey, setDecryptedVaultKey] = useState<CryptoKey | null>(null);
+  const form = useForm<AddSecretFormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      key: "",
+      value: "",
+      environment: "DEVELOPMENT",
+      type: "GENERIC",
+    },
+  });
+
+ 
+ 
+  const {data: vaultKey} = useGetVaultKeyQuery(vaultId || "");
   const { data: vault, isLoading, error } = isSharedVault ? useGetSharedVaultQuery(vaultId || "") : useGetVaultQuery(vaultId || "");
+  
+
+
+  useEffect(() => {
+    if (!vaultKey) return;
+    const decryptVaultKey = async () => {
+      const decryptedVaultKey = await decryptVaultKeyWithPrivateKey(vaultKey);
+      setDecryptedVaultKey(decryptedVaultKey);
+      const decryptedSecrets = await Promise.all(vault?.secrets.map((secret: Secret) => decryptEachSecret(secret, decryptedVaultKey)) || []);
+      setDecryptedSecrets(decryptedSecrets);
+    }
+
+    decryptVaultKey();
+  }, [vaultKey]);
+
+  useEffect(() => {
+    if (!socketInstance || !vaultId) return;
+  
+    socketInstance.connect();
+  
+    socketInstance.emit("join-vault", vaultId);
+  
+  
+      const onSecretCreated = async (data: Secret) => {
+        console.log("data", data)
+        console.log("decryptedVaultKey", decryptedVaultKey)
+        if(!decryptedVaultKey) return;
+        const decryptedSecret = await decryptEachSecret(data, decryptedVaultKey);
+        console.log("newly added secret", decryptedSecret)
+        
+        showToast({
+          type: "info",
+          message: `New secret created! 🔐`,
+        });
+
+        // Add logic to update UI state if needed
+        setDecryptedSecrets([...decryptedSecrets, decryptedSecret]);
+    };
+  
+    socketInstance.on("secret-created", onSecretCreated);
+  
+    return () => {
+      socketInstance.off("secret-created", onSecretCreated);
+      socketInstance.disconnect();
+    };
+  }, [vaultId]);
+
+  
 
   const toggleSecretVisibility = (secretId: string) => {
     setVisibleSecrets(prevVisible => 
@@ -58,7 +141,6 @@ const VaultDetail = ({isSharedVault}:{isSharedVault:boolean}) => {
    }
 
 
-    console.log(decryptedKey, decryptedValue);
 
     setEditingSecret(()=>{
       return {
@@ -70,26 +152,38 @@ const VaultDetail = ({isSharedVault}:{isSharedVault:boolean}) => {
     setIsEditSecretOpen(true);
   };
 
-  // if (isLoading) {
-  //   return <VaultDetailSkeleton />;
-  // }
+  const onSubmit = async (data: AddSecretFormValues) => {
+    try {
 
-  // if (error || !vault) {
-  //   return <VaultDetailError error={error} />;
-  // }
+      const encryptedSecret = await encryptSecret(data, vaultId);
+
+      socketInstance.emit('create-secret', {
+        vaultId: vaultId,
+        encryptedSecret: encryptedSecret,
+      });
+     
+      form.reset();
+      setIsAddSecretOpen(false);
+
+    } catch (error:any) {
+      console.log("error", error);
+      showToast({
+        type: "error",
+        message: error.message,
+      });
+    }
+  };
+
+  if (isLoading) {
+    return <VaultDetailSkeleton />;
+  }
+
+  if (error || !vault) {
+    return <VaultDetailError error={error} />;
+  } 
 
 
-//  useEffect(()=>{
-//   socketInstance.connect();
-//   socketInstance.on("secret-created", (data: Secret) => {
-//     console.log("secret-created", data);
-//   }); 
-
-//   return ()=>{
-//     socketInstance.disconnect();
-//   } 
-//  },[])
-
+ 
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -101,16 +195,16 @@ const VaultDetail = ({isSharedVault}:{isSharedVault:boolean}) => {
         isSharedVault={isSharedVault}
       />
       
-      <SecretList
+     { decryptedSecrets.length > 0 && <SecretList
         isSharedVault={isSharedVault}
-        vault={ []}
+        secrets={decryptedSecrets}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         visibleSecrets={visibleSecrets}
         toggleSecretVisibility={toggleSecretVisibility}
         onEditSecret={handleEditSecret}
         setIsAddSecretOpen={setIsAddSecretOpen}
-      /> 
+      /> }
       {/* : <div className="text-center py-8">
         <p className="text-muted-foreground">
           You no longer have access to the Secrets in this Vault
@@ -118,9 +212,10 @@ const VaultDetail = ({isSharedVault}:{isSharedVault:boolean}) => {
       </div>} */}
 
       {!isSharedVault && <AddSecretPopup 
+        form={form}
+        onSubmit={onSubmit}
         open={isAddSecretOpen}
         onOpenChange={setIsAddSecretOpen}
-        vaultId={vaultId || ""}
       />}
       
       {editingSecret && (

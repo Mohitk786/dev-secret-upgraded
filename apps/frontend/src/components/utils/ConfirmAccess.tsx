@@ -49,7 +49,10 @@ const ConfirmAccess = ({open, onOpenChange, modalData}: AddSecretPopupProps) => 
         </div>
         <DialogFooter>
           <Button onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button onClick={() => modalData?.onConfirm(modalData?.collaborator)}>{modalData.buttonText}</Button>
+          <Button onClick={() => (
+            modalData?.onConfirm(modalData?.collaborator),
+            onOpenChange(false)
+          )}>{modalData.buttonText}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

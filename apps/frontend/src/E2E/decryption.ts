@@ -32,18 +32,18 @@ export const decryptVaultKeyWithPrivateKey = async (encryptedBase64: string) => 
   };
 
 
-  export const decryptSecret = async (encryptedBase64: string, vaultKey: CryptoKey) => {
-    const data = Uint8Array.from(atob(encryptedBase64), c => c.charCodeAt(0));
-    const iv = data.slice(0, 12);
-    const encrypted = data.slice(12);
-  
-    const decrypted = await crypto.subtle.decrypt(
-      { name: "AES-GCM", iv },
-      vaultKey,
-      encrypted
-    );
-  
-    return new TextDecoder().decode(decrypted);
-  };
+export const decryptSecret = async (encryptedBase64: string, vaultKey: CryptoKey) => {
+  const data = Uint8Array.from(atob(encryptedBase64), c => c.charCodeAt(0));
+  const iv = data.slice(0, 12);
+  const encrypted = data.slice(12);
+
+  const decrypted = await crypto.subtle.decrypt(
+    { name: "AES-GCM", iv },
+    vaultKey,
+    encrypted
+  );
+
+  return JSON.parse(new TextDecoder().decode(decrypted));
+};
   
   
