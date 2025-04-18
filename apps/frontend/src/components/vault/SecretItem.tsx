@@ -1,33 +1,39 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff, Copy, Edit, Trash, Loader2 } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { toast } from "sonner";
+import useToast from "@/hooks/utils/useToast";
 import { useDeleteSecretMutation } from "@/hooks/mutations/useSecretMutations";
 import { SecretItemProps } from "@/types/types";
-
 import { decryptSecret } from "@/hooks/utils/useDecryptSecret";
-import { useAuth } from "@/hooks/queries/useAuthQuery";
+import { useAuth } from "@/hooks/queries/authQueries";
 
-const SecretItem: React.FC<SecretItemProps> = ({ 
+const SecretItem: React.FC<SecretItemProps> = ({
   vault,
-  secret, 
-  visibleSecrets, 
-  toggleSecretVisibility, 
+  secret,
+  visibleSecrets,
+  toggleSecretVisibility,
   onEditSecret,
   isSharedVault
-  }) => {
+}) => {
 
-  const {user} = useAuth();
+  const { user } = useAuth();
+  const { showToast } = useToast();
 
-  const {mutateAsync: deleteSecret, isPending} = useDeleteSecretMutation(secret.id);
+  const { mutateAsync: deleteSecret, isPending } = useDeleteSecretMutation(vault.id);
 
-  const { decryptedKey, decryptedValue, loading, error } = isSharedVault ? decryptSecret({key: secret?.encryptedSecrets[0]?.key, value: secret?.encryptedSecrets[0]?.value}) : decryptSecret({key: secret?.key, value: secret?.value});
+  if (!secret?.encryptedSecrets) {
+    return null;
+  }
+
+  const { decryptedKey, decryptedValue, loading, error } = isSharedVault ? decryptSecret({ key: secret?.encryptedSecrets[0]?.key, value: secret?.encryptedSecrets[0]?.value }) : decryptSecret({ key: secret?.key, value: secret?.value });
 
   const copyToClipboard = (value: string, name: string) => {
     navigator.clipboard.writeText(value);
-    toast.success(`Copied ${name} to clipboard`);
+    showToast({
+      type: "success",
+      message: `Copied ${name} to clipboard`
+    });
   };
 
   const getEnvironmentEmoji = (environment: string) => {
@@ -36,7 +42,7 @@ const SecretItem: React.FC<SecretItemProps> = ({
       "STAGING": "🔍",
       "PRODUCTION": "🚀",
     };
-    
+
     return emojiMap[environment] || "✨";
   };
 
@@ -50,7 +56,7 @@ const SecretItem: React.FC<SecretItemProps> = ({
       "DATABASE_CREDENTIAL": "💾",
       "TOKEN": "🎟️",
     };
-    
+
     return emojiMap[type] || "🔑";
   };
 
@@ -72,31 +78,31 @@ const SecretItem: React.FC<SecretItemProps> = ({
           </div>
         </div>
       </div>
-      
+
       <div className="mt-3 sm:mt-0 flex items-center gap-2">
         <div className="relative bg-secondary px-3 py-1.5 rounded text-sm font-mono overflow-hidden max-w-xs">
-          {visibleSecrets.includes(secret.id) 
-            ? decryptedValue 
+          {visibleSecrets.includes(secret.id)
+            ? decryptedValue
             : "••••••••••••••••••••••••"}
         </div>
         <Button
           variant="ghost"
-          size="icon" 
+          size="icon"
           onClick={() => toggleSecretVisibility(secret.id)}
         >
-          {visibleSecrets.includes(secret.id) 
-            ? <EyeOff className="h-4 w-4" /> 
+          {visibleSecrets.includes(secret.id)
+            ? <EyeOff className="h-4 w-4" />
             : <Eye className="h-4 w-4" />}
         </Button>
         <Button
-          variant="ghost" 
+          variant="ghost"
           size="icon"
           onClick={() => copyToClipboard(secret.value, secret.key)}
         >
           <Copy className="h-4 w-4" />
         </Button>
-        {(vault.canEdit || vault?.vault?.ownerId === user?.id) && <Button 
-          variant="ghost" 
+        {(vault.canEdit || vault?.vault?.ownerId === user?.id) && <Button
+          variant="ghost"
           size="icon"
           onClick={() => onEditSecret(secret)}
         >
@@ -118,7 +124,7 @@ const SecretItem: React.FC<SecretItemProps> = ({
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction 
+              <AlertDialogAction
                 onClick={() => deleteSecret(secret.id)}
                 className="bg-destructive text-destructive-foreground"
               >

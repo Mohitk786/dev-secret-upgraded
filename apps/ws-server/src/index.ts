@@ -1,8 +1,8 @@
 import { Server } from "socket.io";
 import { authenticated } from "./utils/autenticate";
 import { createSecret, getSecrets, deleteSecret, updateSecret } from "./controllers/secretController";
-import { CreateSecretData, DeleteSecretData, GetSecretsData, InviteCollaboratorData, UpdateSecretData, VaultDeletedData, VaultUpdatedData, AcceptInviteData, RevokeCollaboratorData } from "./types/types";
-import { deleteVault, inviteCollaborator, updateVault, acceptInvite, revokeCollaboratorAccess } from "./controllers/vaultControllert";
+import { CreateSecretData, DeleteSecretData, GetSecretsData, UpdateSecretData, VaultDeletedData, VaultUpdatedData, AllowCollaboratorData, RevokeCollaboratorData } from "./types/types";
+import { deleteVault,  updateVault,  revokeCollaboratorAccess, allowAllCollaborators } from "./controllers/vaultControllert";
 import { getSocketByUserId } from "./utils/getSocketI";
 
 
@@ -74,28 +74,10 @@ io.on("connection", async (socket) => {
         io.to(`vault-${data.vaultId}`).emit("vault-deleted", deleted);
     });
 
-    socket.on("invite-collaborator", async (data: InviteCollaboratorData) => {
-        const {invite, receiver} = await inviteCollaborator(data, userId);
-
-        socket.emit("collaborator-invited", invite);
-
-    
-        const inviteeSocket = getSocketByUserId(receiver.id);  
-        if (inviteeSocket) {
-            io.to(inviteeSocket.id).emit("collaborator-invited", invite);  
-        } 
-    });
-
-    socket.on("accept-invite", async (data: AcceptInviteData) => {
-        const {updatedInvite} = await acceptInvite(data, userId);
-        socket.emit("invite-accepted", updatedInvite);
-
-        const inviterSocket = getSocketByUserId(updatedInvite.inviterId);
-        if (inviterSocket) {
-            io.to(inviterSocket.id).emit("invite-accepted", updatedInvite);
-        }
-
-        socket.emit("invite-accepted", updatedInvite);
+    socket.on("allow-all-collaborators", async (data: AllowCollaboratorData) => {
+        const {vaultId, collaborators} = data;
+        const allowed = await allowAllCollaborators(userId, vaultId, collaborators);
+        io.to(`vault-${vaultId}`).emit("collaborator-allowed", allowed);
     });
 
     socket.on("revoke-collaborator", async (data: RevokeCollaboratorData) => {

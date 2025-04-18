@@ -13,9 +13,9 @@ export const BASE_URL ='http://localhost:5000/api';
 
 
 export const mainNavItems = [
-    { title: "Dashboard", icon: Home, href: "/" },
+    { title: "Dashboard", icon: Home, href: "/u/dashboard" },
     { title: "Vaults", icon: ShieldCheck, href: "/u/dashboard/vaults" },
-    { title: "Shared with me", icon: Share, href: "/vaults/shared-with-me" },
+    { title: "Shared with me", icon: Share, href: "/u/dashboard/vaults/shared-with-me" },
     { title: "Invites", icon: Mail, href: "/invites" },
     { title: "Audit Logs", icon: History, href: "/audit-logs" },
     { title: "Settings", icon: Settings, href: "/settings" },

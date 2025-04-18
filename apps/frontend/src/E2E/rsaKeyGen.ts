@@ -108,5 +108,9 @@ export const isValidPrivateKey =  async (keyText: string) => {
   
 
 export const getPublicKey = () => {
-    return localStorage.getItem("PUBLIC_KEY");
+    const publicKey = localStorage.getItem("PUBLIC_KEY") ;
+    if (!publicKey) {
+        throw new Error("Public key not found");
+    }
+    return publicKey;
 }

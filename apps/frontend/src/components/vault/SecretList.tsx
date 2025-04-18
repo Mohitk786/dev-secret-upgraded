@@ -38,7 +38,7 @@ const SecretList: React.FC<SecretListProps> = ({
     );
   }
   
-  const filteredSecrets = vault?.vault?.secrets?.filter(secret => 
+  const filteredSecrets = vault?.vault?.secrets?.filter((secret: any) => 
     secret.key?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     secret.environment?.toLowerCase().includes(searchQuery.toLowerCase())
   ) || [];
@@ -60,10 +60,10 @@ const SecretList: React.FC<SecretListProps> = ({
         
         <div className="space-y-4">
           {filteredSecrets.length > 0 ? (
-            filteredSecrets.map(secret => (
+            filteredSecrets.map((secret: any) => (
               <SecretItem
                 vault={vault}
-                isSharedVault={isSharedVault}
+                isSharedVault={isSharedVault || false}
                 key={secret.id}
                 secret={secret}
                 visibleSecrets={visibleSecrets}

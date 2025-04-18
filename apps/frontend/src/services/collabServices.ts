@@ -2,6 +2,8 @@ import { axiosInstance } from "@/lib/axiosInstance";
 import { Invite } from "@/types/types";
 
 export const sendInvite = async (data: Invite) => {
+
+    console.log("data invite", data)
     const response = await axiosInstance.post("/collab/invite", data);
     return response.data;
 };
@@ -28,7 +30,7 @@ export const updateCollaboratorPermissions = async (vaultId: string, memberId: s
 
 export const getVaultCollaborators = async (vaultId: string) => {
     const response = await axiosInstance.get(`/collab/vault-collaborators/${vaultId}`);
-    return response.data;
+    return response.data?.collaborators;
 };
 
 export const getVaultLogs = async (vaultId: string) => {
@@ -38,7 +40,7 @@ export const getVaultLogs = async (vaultId: string) => {
 
 export const getSharedWithMeVaults = async () => {
     const response = await axiosInstance.get("/collab/shared-with-me");
-    return response.data;
+    return response.data?.vaults;
 }
 
 export const getSharedVault = async (vaultId: string) => {

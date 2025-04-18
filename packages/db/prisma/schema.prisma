@@ -18,7 +18,7 @@ model User {
   invitesSent   Invite[] @relation("Inviter")         // Invites sent by the user
   invitesReceived Invite[] @relation("Invitee")       // Invites received by the user
   createdAt     DateTime @default(now())              // Account creation timestamp
-
+  vaultKeys        VaultKey[]
   AuditLog AuditLog[]
 
   SecretEncryption SecretEncryption[]
@@ -26,13 +26,25 @@ model User {
   Secret Secret[]
 }
 
+model VaultKey {
+  id              String   @id @default(uuid())
+  vaultId         String
+  userId          String
+  encryptedKey    String    // Base64 string of AES key encrypted with user's RSA public key
+
+  vault           Vault    @relation(fields: [vaultId], references: [id], onDelete: Cascade)
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([vaultId, userId]) // Make sure one entry per user per vault
+}
 
 
 model Vault {
   id            String   @id @default(uuid())        
   name          String                               
   description String?                          
-  icon          String?                            
+  icon          String?      
+  vaultKeys      VaultKey[]    
   ownerId       String               
   owner         User     @relation("OwnerVaults", fields: [ownerId], references: [id]) 
   secrets       Secret[]                             // Secrets stored in the vault
@@ -80,11 +92,7 @@ model Secret {
   id            String            @id @default(cuid())
   vault         Vault             @relation(fields: [vaultId], references: [id])
   vaultId       String
-  key           String            
-  value         String            
-  environment   Environment       
-  type          SecretType        
-  icon          String?           
+  encryptedSecret           String            
   createdBy     User              @relation(fields: [createdById], references: [id])
   createdById   String
   createdAt     DateTime          @default(now())
@@ -92,6 +100,7 @@ model Secret {
 
   encryptedFor  SecretEncryption[]
 }
+
 enum CollaboratorStatus {
   ACCEPTED      // Collaborator is active
   REVOKED       // Access was removed by the owner
@@ -112,7 +121,7 @@ model Invite {
   invitee       User?    @relation("Invitee", fields: [inviteeId], references: [id])
   canEdit       Boolean  @default(false)
   canDelete     Boolean  @default(false)
-  canView       Boolean  @default(false)
+  canView       Boolean  @default(true)
   canAdd        Boolean  @default(false)
   status        InviteStatus @default(PENDING)         // Current status (pending/accepted/etc.)
   expiresAt     DateTime                              

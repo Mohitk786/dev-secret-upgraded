@@ -29,11 +29,12 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useCreateSecretMutation } from "@/hooks/mutations/useSecretMutations";
-import { useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
-import { encryptData, getPublicKey } from "@/lib/rsaKeyGen";
-import { useToast } from "@/hooks/utils/use-toast";
-
+import { encryptData, getPublicKey } from "@/E2E/rsaKeyGen";
+import useToast from "@/hooks/utils/useToast";
+import { useRouter } from "next/navigation";
+import { encryptSecret} from "@/E2E/encryption";
+import { socketInstance } from "@/lib/scoketInstance";
 const formSchema = z.object({
   key: z.string().min(1, { message: "Secret name is required" }),
   value: z.string().min(1, { message: "Secret value is required" }),
@@ -67,8 +68,8 @@ const secretTypeOptions = [
 
 const AddSecretPopup = ({ open, onOpenChange, vaultId }: AddSecretPopupProps) => {
   const createSecretMutation = useCreateSecretMutation();
-  const {toast} = useToast();
-
+  const {showToast} = useToast();
+  const router = useRouter();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -82,40 +83,29 @@ const AddSecretPopup = ({ open, onOpenChange, vaultId }: AddSecretPopupProps) =>
   const onSubmit = async (data: FormValues) => {
     try {
 
-      const publicKey = getPublicKey();
+      const encryptedSecret = await encryptSecret(data, vaultId);
+      console.log("encryptedSecret", encryptedSecret);
 
-      if(!publicKey) {
-        toast({
-          title: "No public key found",
-          description: "Login again to get a public key",
-        })
-      }
+      // socketInstance.emit('new-secret', {
+      //   vaultId: vaultId,       
+      // socketInstance.emit('new-secret', {
+      //   vaultId: vaultId,       
+      //   encryptedSecret: encryptedSecret, 
+      // });
+      
 
-
-
-      const encryptedValue = await encryptData(data.value, publicKey);
-      const encryptedKey = await encryptData(data.key, publicKey);
-
-
-      await createSecretMutation.mutateAsync({
-        ...data,
-        key: encryptedKey,
-        value: encryptedValue,
-        vaultId,
-      });
-
-      toast({
-        title: "Secret added successfully!",
-        description: "Your secret has been added to the vault",
+      showToast({
+        type: "success",
+        message: "Secret added successfully!",
       });
       form.reset();
       onOpenChange(false);
 
-    } catch (error) {
+    } catch (error:any) {
       console.log("error", error);
-      toast({
-        title: "Failed to add secret",
-        description: error.message,
+      showToast({
+        type: "error",
+        message: error.message,
       });
     }
   };

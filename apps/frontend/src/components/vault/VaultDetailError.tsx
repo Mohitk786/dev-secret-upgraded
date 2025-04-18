@@ -1,14 +1,14 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 
 interface VaultDetailErrorProps {
   error: Error | null | unknown;
 }
 
 const VaultDetailError: React.FC<VaultDetailErrorProps> = ({ error }) => {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   return (
     <div className="flex flex-col items-center justify-center h-[70vh] space-y-4">
@@ -16,7 +16,7 @@ const VaultDetailError: React.FC<VaultDetailErrorProps> = ({ error }) => {
       <p className="text-muted-foreground">
         {error instanceof Error ? error.message : "Could not find the requested vault."}
       </p>
-      <Button onClick={() => navigate("/vaults")}>
+      <Button onClick={() => router.push("/vaults")}>
         Back to Vaults
       </Button>
     </div>

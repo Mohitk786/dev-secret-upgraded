@@ -20,7 +20,7 @@ async function checkVaultAccess(userId: string, vaultId: string) {
 
 export const createSecret = async (data: CreateSecretData, userId: string) => {
     try {
-        if (!data.key || !data.value || !data.environment || !data.type || !data.vaultId)
+        if (!data.encryptedSecret || !data.vaultId)
             throw new Error("Missing required fields")
 
         const { isOwner, collaborator } = await checkVaultAccess(userId, data.vaultId)
@@ -30,10 +30,7 @@ export const createSecret = async (data: CreateSecretData, userId: string) => {
 
         const secret = await prisma.secret.create({
             data: {
-                key: data.key,
-                value: data.value,
-                environment: data.environment,
-                type: data.type,
+                encryptedSecret: data.encryptedSecret,
                 vaultId: data.vaultId,
                 createdById: userId,
             }
@@ -44,7 +41,7 @@ export const createSecret = async (data: CreateSecretData, userId: string) => {
                 vaultId: data.vaultId,
                 actorId: userId,
                 action: "secret_created",
-                description: `Secret created with key ${data.key}`,
+                description: `Secret created`,
             },
         });
 
@@ -94,7 +91,7 @@ export const deleteSecret = async (data: DeleteSecretData, userId: string) => {
                 vaultId: secret.vaultId,
                 actorId: userId,
                 action: "secret_deleted",
-                description: `Secret ${secret.key} deleted by ${userId}`,
+                description: `Secret deleted`,
             },
         });
 
@@ -121,7 +118,7 @@ export const updateSecret = async (data: UpdateSecretData, userId: string) => {
 
         const updated = await prisma.secret.update({
             where: { id: secretId },
-            data: { key: data.key, value: data.value, environment: data.environment, type: data.type },
+            data: { encryptedSecret: data.encryptedSecret },
         });
 
         await prisma.auditLog.create({
@@ -129,7 +126,7 @@ export const updateSecret = async (data: UpdateSecretData, userId: string) => {
                 vaultId: secret.vaultId,
                 actorId: userId,
                 action: "secret_updated",
-                description: `Secret ${secret.key} updated`,
+                description: `Secret updated`,
             },
         });
 

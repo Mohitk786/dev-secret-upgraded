@@ -1,10 +1,6 @@
 
 export interface CreateSecretData {
-    key: string;
-    value: string;
-    environment: "DEVELOPMENT" | "STAGING" | "PRODUCTION";
-    type: "GENERIC" | "PASSWORD" | "API_KEY" | "ENV_VARIABLE" | "SSH_KEY" | "DATABASE_CREDENTIAL" | "TOKEN";
-    icon?: string;
+    encryptedSecret: string;
     vaultId: string;
 }
 
@@ -20,10 +16,7 @@ export interface DeleteSecretData {
 
 export interface UpdateSecretData {
     secretId: string;
-    key?: string;
-    value?: string;
-    environment?: "DEVELOPMENT" | "STAGING" | "PRODUCTION";
-    type?: "GENERIC" | "PASSWORD" | "API_KEY" | "ENV_VARIABLE" | "SSH_KEY" | "DATABASE_CREDENTIAL" | "TOKEN";
+    encryptedSecret: string;
     vaultId: string;
 }
 
@@ -55,4 +48,16 @@ export interface AcceptInviteData {
 export interface RevokeCollaboratorData {
     vaultId: string;
     collaboratorId: string;
+}
+
+interface VaultKey {
+    vaultId: string;
+    userId: string;
+    encryptedKey: string;
+}
+
+
+export interface AllowCollaboratorData {
+    vaultId: string;
+    collaborators: VaultKey[];
 }

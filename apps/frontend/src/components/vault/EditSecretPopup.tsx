@@ -1,3 +1,4 @@
+"use client";
 
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -31,8 +32,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { useUpdateSecretMutation } from "@/hooks/mutations/useSecretMutations";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
-import { encryptData, getPublicKey } from "@/lib/rsaKeyGen";
-import { useToast } from "@/hooks/utils/use-toast";
+import { encryptData, getPublicKey } from "@/E2E/rsaKeyGen";
+import useToast from "@/hooks/utils/useToast";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   key: z.string().min(1, { message: "Secret name is required" }),
@@ -67,7 +69,8 @@ const secretTypeOptions = [
 
 const EditSecretPopup = ({ open, onOpenChange, secret }: EditSecretPopupProps) => {
   const updateSecretMutation = useUpdateSecretMutation();
-  const {toast} = useToast();
+  const {showToast} = useToast();
+  const router = useRouter();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -96,10 +99,12 @@ const EditSecretPopup = ({ open, onOpenChange, secret }: EditSecretPopupProps) =
     const publicKey = getPublicKey();
 
     if(!publicKey) {
-      toast({
-        title: "No public key found",
-        description: "Login again to get a public key",
+      showToast({
+        type: "error",
+        message: "No public key found",
       })
+      router.push("/login");
+      return;
     }
 
     const encryptedKey = await encryptData(data.key, publicKey);
@@ -119,9 +124,9 @@ const EditSecretPopup = ({ open, onOpenChange, secret }: EditSecretPopupProps) =
       onOpenChange(false);
     } catch (error) {
       console.error(error);
-      toast({
-        title: "Failed to update secret",
-        description: "Please try again",
+      showToast({
+        type: "error",
+        message: "Failed to update secret",
       })
     }
   };

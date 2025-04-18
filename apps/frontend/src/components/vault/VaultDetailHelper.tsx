@@ -1,6 +1,8 @@
+"use client"
 
-import React, { useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AddSecretPopup from "@/components/vault/AddSecretPopup";
@@ -10,20 +12,21 @@ import { useGetVaultQuery } from "@/hooks/queries/useVaultQuery";
 
 import VaultHeader from "@/components/vault/VaultHeader";
 import SecretList from "@/components/vault/SecretList";
-import VaultDetailSkeleton from "@/components/vault/VaultDetailSkeleton";
-import VaultDetailError from "@/components/vault/VaultDetailError";
-import { decryptData, getPrivateKey } from "@/lib/rsaKeyGen";
+
+import { decryptData, getPrivateKey } from "@/E2E/rsaKeyGen";
+import  useToast  from "@/hooks/utils/useToast";
+import { socketInstance } from "@/lib/scoketInstance";
+import { Secret } from "@/types/types";
 
 const VaultDetail = ({isSharedVault}:{isSharedVault:boolean}) => {
-  const { id } = useParams<{ id: string }>();
+  const { vaultId } = useParams<{ vaultId: string }>();
   const [searchQuery, setSearchQuery] = useState("");
   const [visibleSecrets, setVisibleSecrets] = useState<string[]>([]);
   const [isAddSecretOpen, setIsAddSecretOpen] = useState(false);
   const [editingSecret, setEditingSecret] = useState<any>(null);
   const [isEditSecretOpen, setIsEditSecretOpen] = useState(false);
-  
-  const { data: vault, isLoading, error } = isSharedVault ? useGetSharedVaultQuery(id || "") : useGetVaultQuery(id || "");
-
+  const  {showToast}  = useToast();
+  const { data: vault, isLoading, error } = isSharedVault ? useGetSharedVaultQuery(vaultId || "") : useGetVaultQuery(vaultId || "");
 
   const toggleSecretVisibility = (secretId: string) => {
     setVisibleSecrets(prevVisible => 
@@ -34,8 +37,15 @@ const VaultDetail = ({isSharedVault}:{isSharedVault:boolean}) => {
   };
 
   const handleEditSecret = async (secret: any) => {
-    console.log("hii mai hu nobita", secret)
     const privateKey = await getPrivateKey();
+    
+    if(!privateKey){
+      showToast({
+        type: "error",
+        message: "Please enter your private key to edit the secret"
+      })
+      return;
+    }
     let decryptedKey;
     let decryptedValue;
 
@@ -60,24 +70,30 @@ const VaultDetail = ({isSharedVault}:{isSharedVault:boolean}) => {
     setIsEditSecretOpen(true);
   };
 
-  if (isLoading) {
-    return <VaultDetailSkeleton />;
-  }
+  // if (isLoading) {
+  //   return <VaultDetailSkeleton />;
+  // }
 
-  if (error || !vault) {
-    return <VaultDetailError error={error} />;
-  }
+  // if (error || !vault) {
+  //   return <VaultDetailError error={error} />;
+  // }
+
+
+//  useEffect(()=>{
+//   socketInstance.connect();
+//   socketInstance.on("secret-created", (data: Secret) => {
+//     console.log("secret-created", data);
+//   }); 
+
+//   return ()=>{
+//     socketInstance.disconnect();
+//   } 
+//  },[])
 
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center gap-2 text-muted-foreground">
-        <Link to={`/vaults${isSharedVault ? "/shared-with-me" : ""}`}>
-          <Button variant="ghost" size="sm" className="gap-1">
-            <ArrowLeft className="h-4 w-4" /> Back to Vaults
-          </Button>
-        </Link>
-      </div>
+      
 
       <VaultHeader 
         vault={vault} 
@@ -85,25 +101,26 @@ const VaultDetail = ({isSharedVault}:{isSharedVault:boolean}) => {
         isSharedVault={isSharedVault}
       />
       
-      {(vault?.vault?.secrets) ? <SecretList
+      <SecretList
         isSharedVault={isSharedVault}
-        vault={vault || []}
+        vault={ []}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         visibleSecrets={visibleSecrets}
         toggleSecretVisibility={toggleSecretVisibility}
         onEditSecret={handleEditSecret}
         setIsAddSecretOpen={setIsAddSecretOpen}
-      /> : <div className="text-center py-8">
+      /> 
+      {/* : <div className="text-center py-8">
         <p className="text-muted-foreground">
           You no longer have access to the Secrets in this Vault
         </p>
-      </div>}
+      </div>} */}
 
       {!isSharedVault && <AddSecretPopup 
         open={isAddSecretOpen}
         onOpenChange={setIsAddSecretOpen}
-        vaultId={id || ""}
+        vaultId={vaultId || ""}
       />}
       
       {editingSecret && (

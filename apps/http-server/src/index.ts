@@ -4,8 +4,10 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import { config } from '@secret-vault/backend-common/config';
-import initializeRoutes from './AllRoutes';
 import cookieParser from 'cookie-parser';
+import authRoutes from './modules/auth/authRoutes';
+import secretRoutes from './modules/secret/secretRoutes';
+import vaultRoutes from './modules/vault/vaultRoutes';
 dotenv.config();
 
 const app = express();
@@ -21,7 +23,9 @@ app.use(cors({
     credentials: true,
 }));
 
-initializeRoutes(app)
+app.use('/api', authRoutes);
+app.use('/api', vaultRoutes);
+app.use('/api', secretRoutes);
 
 
 app.listen(config.PORT, () => {

@@ -40,7 +40,7 @@ export const sendAcceptanceEmail = async (sender: any, vault: any, inviteLink: a
 };
 
 
-export const sendInviteEmail = async (email: any, sender: any, vault: any, inviteLink: any) => {
+export const sendInviteEmail = async (email: string, sender: any, vault: any, inviteLink: any) => {
   await sendEmail(
     email,
     

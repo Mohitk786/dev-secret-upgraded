@@ -1,5 +1,5 @@
 
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { 
   DropdownMenu, 
@@ -31,11 +31,11 @@ const VaultHeader = ({ vault, setIsAddSecretOpen, isSharedVault }: VaultHeaderPr
       <div>
         <h1 className="text-3xl font-bold flex items-center gap-2">
           <span className="text-primary">
-            {vault?.vault?.icon || "🔒"}
+            {vault?.icon || "🔒"}
           </span>
-          {vault?.vault?.name}
+          {vault?.name}
         </h1>
-        <p className="text-muted-foreground mt-1">{vault?.vault?.description}</p>
+        <p className="text-muted-foreground mt-1">{vault?.description}</p>
       </div>
       <div className="flex items-center gap-2">
         <Button
@@ -44,7 +44,7 @@ const VaultHeader = ({ vault, setIsAddSecretOpen, isSharedVault }: VaultHeaderPr
           className="gap-1"
           asChild
         >
-          <Link to={`/vaults/${vault?.vault?.id}/logs`}>
+          <Link href={`/vaults/${vault?.id}/logs`}>
             <FileText className="h-4 w-4" />
             <span className="hidden md:inline">Activity Logs</span>
           </Link>
@@ -58,7 +58,7 @@ const VaultHeader = ({ vault, setIsAddSecretOpen, isSharedVault }: VaultHeaderPr
           className="gap-1"
           asChild
         >
-          <Link to={`/vaults/${vault?.vault?.id}/collaborators`}>
+          <Link href={`/u/dashboard/vaults/${vault?.id}/collaborators`}>
             <Users className="h-4 w-4" />
             <span className="hidden md:inline">Collaborators</span>
           </Link>
@@ -81,12 +81,12 @@ const VaultHeader = ({ vault, setIsAddSecretOpen, isSharedVault }: VaultHeaderPr
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem asChild>
-              <Link to={`/vaults/edit/${vault?.vault?.id}`} className="cursor-pointer flex items-center">
+              <Link href={`/vaults/edit/${vault?.id}`} className="cursor-pointer flex items-center">
                 <Pencil className="h-4 w-4 mr-2" /> Edit Vault
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link to={`/vaults/invite/${vault?.vault?.id}`} className="cursor-pointer flex items-center">
+              <Link href={`/vaults/invite/${vault?.id}`} className="cursor-pointer flex items-center">
                 <Users className="h-4 w-4 mr-2" /> Invite Members
               </Link>
             </DropdownMenuItem>

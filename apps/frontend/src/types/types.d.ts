@@ -1,14 +1,13 @@
 
 export interface Secret {
-    id: string;
+    id?: string;
     key: string
     value: string
-    type: string
-    vaultId: string
-    environment: string
-    createdAt: string
-    updatedAt: string
-    encryptedSecrets?: any[];
+    type: "GENERIC" | "PASSWORD" | "API_KEY" | "ENV_VARIABLE" | "SSH_KEY" | "DATABASE_CREDENTIAL" | "TOKEN"
+    vaultId?: string
+    environment?: "DEVELOPMENT" | "STAGING" | "PRODUCTION"
+    createdAt?: string
+    updatedAt?: string
 }
 
 export interface SecretItemProps {
@@ -17,6 +16,7 @@ export interface SecretItemProps {
     toggleSecretVisibility: (secretId: string) => void;
     onEditSecret: (secret: any) => void;
     isSharedVault: boolean;
+    vault: any;
   }
 
 export interface NavItem {

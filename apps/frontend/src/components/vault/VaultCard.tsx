@@ -9,7 +9,7 @@ const VaultCard = ({ vault, isSharedVault }: { vault: any, isSharedVault: boolea
     const { user } = useAuth();
     
     return (
-        <Link href={`/vaults${isSharedVault ? "/shared" : ""}/${vault?.id}`} key={vault?.id}>
+        <Link href={`/u/dashboard/vaults${isSharedVault ? "/shared" : ""}/${vault?.id}`} key={vault?.id}>
             <Card className="h-full overflow-hidden transition-all hover:border-primary/50 hover:shadow-md group">
                 <CardContent className="p-6">
                     <div className="flex items-start justify-between">
