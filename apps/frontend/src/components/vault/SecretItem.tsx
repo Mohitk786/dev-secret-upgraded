@@ -88,12 +88,12 @@ const SecretItem: React.FC<SecretItemProps> = ({
     <div className="secret-item flex flex-col sm:flex-row  to-secondary/10 p-4 rounded-lg">
       <div className="flex-1">
         <h3 className="font-medium flex items-center gap-2">
-          <span className="text-xl">{getTypeEmoji(secret.type)}</span>
+          <span className="text-xl">{getTypeEmoji(secret.type || "N/A")}</span>
           {secret.key}
         </h3>
         <div className="mt-1 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
           <div className="text-sm text-muted-foreground flex items-center gap-1">
-            <span>{getEnvironmentEmoji(secret.environment)}</span>
+            <span>{getEnvironmentEmoji(secret.environment || "N/A")}</span>
             {secret.environment}
           </div>
         </div>

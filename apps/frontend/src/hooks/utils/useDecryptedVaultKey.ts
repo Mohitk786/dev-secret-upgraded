@@ -20,8 +20,6 @@ export const useDecryptedVaultKey = (
     : useGetVaultQuery(vaultId);
 
 
-  console.log("🔑 vaul 1    t", vault)
-
   useEffect(() => {
     if (!vaultKey) return;
 

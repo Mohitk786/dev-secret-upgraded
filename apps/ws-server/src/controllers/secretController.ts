@@ -3,7 +3,7 @@ import prisma from "@secret-vault/db/client";
 import { CreateSecretData, DeleteSecretData, GetSecretsData, UpdateSecretData } from "../types/types";
 
 
-async function checkVaultAccess(userId: string, vaultId: string) {
+export async function checkVaultAccess(userId: string, vaultId: string) {
 
     const vault = await prisma.vault.findUnique({
         where: { id: vaultId }, include: {

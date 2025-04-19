@@ -41,7 +41,6 @@ const SecretList: React.FC<SecretListProps> = ({
     secret.environment?.toLowerCase().includes(searchQuery.toLowerCase())
   ) || [];
 
-//  console.log("🔑 filteredSecrets", filteredSecrets);
   
   return (
     <Card>

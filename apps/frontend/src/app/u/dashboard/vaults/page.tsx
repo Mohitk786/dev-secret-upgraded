@@ -6,13 +6,14 @@ import VaultPage from "@/components/vault/vaultPage";
 
 const VaultList = () => {
 
+
   const { data: vaults, isLoading, error } = useGetVaultsQuery();
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
 
-
+  
 
 
   return (

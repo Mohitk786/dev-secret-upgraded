@@ -31,7 +31,6 @@ export type AddSecretFormValues = z.infer<typeof formSchema>;
 
 
 const decryptEachSecret = async (secret: Secret, decryptedVaultKey: CryptoKey): Promise<Secret> => {
-    // console.log("🔑 secret", secret);
     const decryptedSecret = await decryptSecret(secret, decryptedVaultKey);
     return {
       ...decryptedSecret,
@@ -58,6 +57,9 @@ const VaultDetail = ({ isSharedVault }: { isSharedVault: boolean }) => {
     vault,
     setDecryptedSecrets
   } = useDecryptedVaultKey(vaultId || "", isSharedVault);
+
+  const [hasAccess, setHasAccess] = useState(vault?.collaborators?.hasSecretAccess || vault?.ownerId === user?.id);
+
 
 
 
@@ -97,8 +99,30 @@ const VaultDetail = ({ isSharedVault }: { isSharedVault: boolean }) => {
       });
     }
 
+    const onAccessToggled = async (data: { message: string, hasSecretAccess: boolean }) => {
+      showToast({
+        type: "success",
+        message: data?.message,
+      });
+      if(!data?.hasSecretAccess) {
+        setDecryptedSecrets([])
+        setVisibleSecrets([])
+        setHasAccess(false)
+      }else{
 
+        if (vault?.secrets && decryptedVaultKey) {
+          //kyoki jab access toggle hoga toh vault.secrets mein kuch bhi nahi hoga
+          const decrypted = await Promise.all(
+            vault.secrets.map((secret: Secret) => decryptSecret(secret, decryptedVaultKey))
+          );
+          setDecryptedSecrets(decrypted);
+          setHasAccess(true)
+        }
+        
+      }
+    }
 
+    socket.on("access-toggled", onAccessToggled);
     socket.on("secret-created", onSecretCreated);
     socket.on("secret-deleted", onSecretDeleted);
     socket.on("secret-updated", onSecretUpdated);
@@ -106,6 +130,7 @@ const VaultDetail = ({ isSharedVault }: { isSharedVault: boolean }) => {
       socket.off("secret-created", onSecretCreated);
       socket.off("secret-deleted", onSecretDeleted);
       socket.off("secret-updated", onSecretUpdated);
+      socket.off("access-toggled", onAccessToggled);
     };
   }, [vaultId, decryptedVaultKey]);
 
@@ -126,7 +151,6 @@ const VaultDetail = ({ isSharedVault }: { isSharedVault: boolean }) => {
     return <VaultDetailSkeleton />;
   }
 
-  console.log("🔑 vault", vault)
 
   if (error || !vault) {
     return <VaultDetailError error={error} />;
@@ -143,7 +167,7 @@ const VaultDetail = ({ isSharedVault }: { isSharedVault: boolean }) => {
         setIsAddSecretOpen={setIsAddSecretOpen}
       />
 
-      {(vault?.collaborators?.hasSecretAccess || vault?.ownerId === user?.id) ?
+      {hasAccess ?
         <SecretList
           isSharedVault={isSharedVault}
           secrets={decryptedSecrets}

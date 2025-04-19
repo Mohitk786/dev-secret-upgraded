@@ -152,3 +152,44 @@ export const allowAllCollaborators = async (userId: string, vaultId: string, col
         throw new Error('Failed to allow all collaborators');
     }
 }
+
+export const toggleCollaboratorAccess = async (userId: string, vaultId: string, collaboratorId: string) => {
+    try {
+        const vault = await checkVaultOwnership(userId, vaultId);
+        if (!vault) {
+            throw new Error('You are not the owner of this vault');
+        }
+
+        const collaborator = await prisma.collaborator.findUnique({
+            where: {
+                userId_vaultId: {
+                    vaultId,
+                    userId: collaboratorId,
+                },
+            },
+        });
+        
+        if (!collaborator) {
+            throw new Error('Collaborator not found');
+        }
+
+        const updatedCollaborator = await prisma.collaborator.update({
+            where: { id: collaborator.id },
+            data: {
+                hasSecretAccess: !collaborator.hasSecretAccess,
+            },
+            include: {
+                user: {
+                    select: {
+                        name: true,
+                    },
+                },
+            },
+        });
+        return {message: `Your access to this vault has been ${collaborator.hasSecretAccess ? 'Revoked' : 'Enabled'}. by owner`, updatedCollaborator};
+
+    } catch (error:any) {
+        console.error(error);
+        return {message: error?.message}
+    }
+}

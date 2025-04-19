@@ -162,15 +162,15 @@ const VaultCollaborators = () => {
   };
 
   const handleConfirmAccess = async () => {
-    // console.log("saare collaborators", data?.data)
     const finalData = await accessToAll(vault?.id, collaborators)
     await confirmAccess({ finalData, vaultId: vaultId as string })
   }
 
-  // const handleToggleAccess = async (collaborator: Collaborator) => {
-  //   console.log("toggle access collaborator", collaborator)
-  //   await toggleAccess({ collaboratorId: collaborator.user.id, vaultId: vaultId as string, hasSecretAccess: !collaborator.hasSecretAccess })
-  // }
+  const handleToggleAccess = async (collaborator: Collaborator) => {
+    console.log("toggle access collaborator", collaborator)
+    socket.emit("join-vault", vaultId as string)
+    socket.emit("toggle-access", { collaboratorId: collaborator.user.id, vaultId: vaultId as string})
+  }
 
  const handleActionClick = async (flag:string, collaborator?: Collaborator) => {
   setIsAccessConfirmModalOpen(true)
@@ -179,9 +179,9 @@ const VaultCollaborators = () => {
     setModalData({...ConfirmModalData.access_to_all, onConfirm: handleConfirmAccess})
   }
   
-  // if(flag === "toggle_access"){
-  //   setModalData({...ConfirmModalData.toggle_access, onConfirm: handleToggleAccess, collaborator: collaborator})
-  // }
+  if(flag === "toggle_access"){
+    setModalData({...ConfirmModalData.toggle_access, onConfirm: handleToggleAccess, collaborator: collaborator})
+  }
   // if(flag === "remove_collaborator"){
   //   setModalData({...ConfirmModalData.remove_collaborator, onConfirm: handleRemoveCollaborator})
   // }
@@ -191,8 +191,6 @@ const VaultCollaborators = () => {
  
 
   useEffect(()=>{
-    
-
 
     socket.emit("get-online-users", vaultId as string)
     const handleOnlineUsers = (data: any) => {
@@ -204,9 +202,8 @@ const VaultCollaborators = () => {
       socket.off("online-users", handleOnlineUsers)
     }
 
-  },[])
+  },[]) 
 
-  console.log("🔑 onlineUsers", onlineUsers)
   return (
     <>
       <div className="space-y-6">

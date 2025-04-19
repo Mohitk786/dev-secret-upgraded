@@ -17,10 +17,11 @@ import {
 import {
   deleteVault,
   updateVault,
-  revokeCollaboratorAccess,
+  toggleCollaboratorAccess,
   allowAllCollaborators,
 } from "./controllers/vaultControllert";
 import { getSocketByUserId } from "./utils/getSocketI";
+import { checkVaultAccess } from "./controllers/secretController";  
 
 export const io = new Server(8000, {
   cors: {
@@ -42,19 +43,15 @@ io.on("connection", async (socket) => {
     return socket.disconnect();
   }
 
-  socket.on("authenticate", (userId: string) => {
-    userSocketMap.set(userId, socket.id); // Save the socket ID associated with the user ID
-  });
+  socket.on("join-vault", async (vaultId: string) => {
+
+   const {owner, collaborator} = await checkVaultAccess(userId, vaultId)
+
+   if(!owner && !collaborator){
+    return socket.emit("error", "You do not have access to this vault");
+   }
 
 
-  socket.on("get-online-users", (vaultId: string) => {
-    socket.emit("online-users", {
-      vaultId,
-      onlineUsers: Array.from(vaultOnlineUsers[vaultId] || []),
-    })
-  })  
-
-  socket.on("join-vault", (vaultId: string) => {
     socket.join(`vault-${vaultId}`);
 
     if (!vaultOnlineUsers[vaultId]) {
@@ -67,18 +64,33 @@ io.on("connection", async (socket) => {
         onlineUsers: Array.from(vaultOnlineUsers[vaultId]),
     })
 
-    // ✅ Notify everyone except this socket
+    // Notify everyone except this socket
     socket.to(`vault-${vaultId}`).emit("user-joined", {
       userId,
       vaultId,
     });
 
   });
+  socket.on("authenticate", (userId: string) => {
+    userSocketMap.set(userId, socket.id); // Save the socket ID associated with the user ID
+  });
+
+
+  socket.on("get-online-users", (vaultId: string) => {
+    socket.emit("online-users", {
+      vaultId,
+      onlineUsers: Array.from(vaultOnlineUsers[vaultId] || []),
+    })
+  })  
+
 
 
   socket.on("create-secret", async (data: CreateSecretData) => {
     const secret = await createSecret(data, userId);
+    
     io.to(`vault-${data.vaultId}`).emit("secret-created", secret);
+
+
   });
 
 
@@ -122,30 +134,35 @@ io.on("connection", async (socket) => {
     io.to(`vault-${vaultId}`).emit("collaborator-allowed", allowed);
   });
 
-  socket.on("revoke-collaborator", async (data: RevokeCollaboratorData) => {
+  socket.on("toggle-access", async (data: RevokeCollaboratorData) => {
     const { vaultId, collaboratorId } = data;
-    const revokeSuccess = await revokeCollaboratorAccess(
+    const update = await toggleCollaboratorAccess(
       userId,
       vaultId,
       collaboratorId
     );
 
-    if (!revokeSuccess) {
-      return socket.emit("error", "Failed to revoke access");
+    if (!update) {
+      return socket.emit("error", "Failed to toggle access");
     }
-    socket.emit("collaborator-access-revoked", {
-      message: `Collaborator ${collaboratorId} access has been revoked.`,
+
+
+    socket.emit("access-toggled", {
+      message:  `You ${update?.updatedCollaborator?.hasSecretAccess ? 'enabled' : 'revoked'} ${update?.updatedCollaborator?.user?.name}'s access to this vault`,
     });
 
     const collaboratorSocket = getSocketByUserId(collaboratorId);
 
     if (collaboratorSocket) {
-      io.to(collaboratorSocket.id).emit("access-revoked", {
-        message: "Your access to this vault has been revoked.",
+      io.to(collaboratorSocket.id).emit("access-toggled", {
+        message: update.message,
+        hasSecretAccess: update?.updatedCollaborator?.hasSecretAccess
       });
 
-      // Optionally disconnect the collaborator from the vault room to stop receiving updates
+      //make the collaborator leave the vault room
+     if(!update?.updatedCollaborator?.hasSecretAccess){
       collaboratorSocket.leave(`vault-${vaultId}`);
+     }
     }
   });
 

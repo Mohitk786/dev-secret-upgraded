@@ -451,6 +451,7 @@ export async function confirmAccess(req: CustomRequest, res: Response): Promise<
 
     await prisma.vaultKey.createMany({
       data: encryptedVaultKeys,
+      skipDuplicates: true,
     })
 
 
