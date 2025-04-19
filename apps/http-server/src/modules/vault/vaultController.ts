@@ -240,6 +240,11 @@ export async function sentInvite(req: CustomRequest, res: Response): Promise<any
     const { vaultId, email, canEdit, canDelete, canView, canAdd } = req.body;
     const userId = req.user?.id;
 
+    if (!userId) {
+      res.status(401).json({ message: 'Unauthorized' });
+      return;
+    }
+
     const vault = await checkVaultOwnership(userId!, vaultId);
 
     if (!vault) {
@@ -270,7 +275,8 @@ export async function sentInvite(req: CustomRequest, res: Response): Promise<any
       //try after the reamiing time from 24 hours
       const remainingTime = new Date(existingInvite.expiresAt).getTime() - Date.now();
       const remainingTimeInHours = remainingTime / (1000 * 60 * 60);
-      res.status(400).json({ message: `Invite already sent to this email, Try after ${remainingTimeInHours} hours ` });
+      const remainingTimeInMinutes = remainingTime / (1000 * 60);
+      res.status(400).json({ message: `Invite already sent to this email, Try after ${remainingTimeInHours} hours ${remainingTimeInMinutes} minutes` });  //add mins also
       return;
     }
 
@@ -278,7 +284,8 @@ export async function sentInvite(req: CustomRequest, res: Response): Promise<any
     const invite = await prisma.invite.create({
       data: {
         vaultId,
-        inviterId: userId!,
+        inviterId: userId,
+        inviteeId: user.id,   // jisko invite kiya hai
         inviteeEmail: email,
         canEdit,
         canDelete,
@@ -288,8 +295,19 @@ export async function sentInvite(req: CustomRequest, res: Response): Promise<any
       },
     });
 
-    const inviteLink = `${config.REACT_URL}/invites/${invite.id}`;
-    await sendInviteEmail(email, userId!, vault, inviteLink);
+    const inviter = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        name: true,
+        email: true,
+        avatarUrl: true,
+      },
+    });
+
+    const inviteLink = `${config.REACT_URL}/u/invites/${invite.id}`;
+    await sendInviteEmail(email, inviter, vault, inviteLink);
 
     res.status(200).json({
       message: 'Invite sent successfully',

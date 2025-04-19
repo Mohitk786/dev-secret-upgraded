@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Plus, Eye, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { APP_ROUTES } from "@/constants/data";
 
 // Mock data to simulate recent vault access
 const recentActivity = [
@@ -32,7 +33,7 @@ const Dashboard = () => {
             Welcome to DevVault - manage your development secrets securely.
           </p>
         </div>
-        <Link href="/vaults/new">
+        <Link href={APP_ROUTES.VAULTS_NEW}>
           <Button className="flex items-center gap-2 bg-primary hover:bg-primary/90">
             <Plus className="h-4 w-4" />
             New Vault

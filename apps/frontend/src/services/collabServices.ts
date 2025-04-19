@@ -13,7 +13,7 @@ export const acceptInvite = async (inviteId: string) => {
 };
 
 export const getInvites = async (type: string, status: string) => {
-    const response = await axiosInstance.get(`/collab/invites?type=${type || "sent"}&status=${status || "ALL"}`);
+    const response = await axiosInstance.get(`/invites?type=${type || "sent"}&status=${status || "ALL"}`);
     return response.data?.invites;
 };
 
