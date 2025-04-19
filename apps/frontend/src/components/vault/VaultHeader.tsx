@@ -47,7 +47,7 @@ const VaultHeader = ({ vault, setIsAddSecretOpen }: VaultHeaderProps) => {
           className="gap-1"
           asChild
         >
-          <Link href={`/vaults/${vault?.id}/logs`}>
+          <Link href={`/u/dashboard/vaults/${vault?.id}/logs`}>
             <FileText className="h-4 w-4" />
             <span className="hidden md:inline">Activity Logs</span>
           </Link>

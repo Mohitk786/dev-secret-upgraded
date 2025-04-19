@@ -59,7 +59,7 @@ model Vault {
 
 model Collaborator {
   id           String   @id @default(uuid())           
-  userId       String                                 // The user who is a collaborator
+  userId       String                                // The user who is a collaborator
   user         User     @relation(fields: [userId], references: [id])
   vaultId      String                                 // The vault being collaborated on
   vault        Vault    @relation(fields: [vaultId], references: [id])
@@ -67,6 +67,7 @@ model Collaborator {
   canDelete    Boolean  @default(false)   
   canAdd       Boolean  @default(false)             
   canView      Boolean  @default(true)
+  hasSecretAccess Boolean @default(false)
   status       CollaboratorStatus @default(ACCEPTED)  
   invitedAt    DateTime @default(now())                
   acceptedAt   DateTime?                              
@@ -141,7 +142,8 @@ enum InviteStatus {
 
 model AuditLog {
   id          String   @id @default(uuid())           
-  vaultId     String                                
+  vaultId     String       
+  secretId    String?
   vault       Vault    @relation(fields: [vaultId], references: [id])
   actorId     String?                                // Who performed the action (nullable if system)
   actor       User?    @relation(fields: [actorId], references: [id])

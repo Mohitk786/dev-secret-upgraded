@@ -53,7 +53,8 @@ import { useConfirmAccess, useToggleAccess } from "@/hooks/mutations/useCollab";
 import { ConfirmModalData } from "@/constants/data";
 import { accessToAll } from "@/E2E/operations/accessToAll";
 import ConfirmAccess from "@/components/utils/ConfirmAccess";
-// import { confirmAccess } from "@/services/collabServices";
+import  useSocket  from "@/hooks/utils/useSocket";
+    // import { confirmAccess } from "@/services/collabServices";
 
 interface Collaborator {
   id: string;
@@ -74,9 +75,7 @@ interface Collaborator {
 const VaultCollaborators = () => {
 
   const { vaultId } = useParams();
-  const router = useRouter();
-  const { showToast } = useToast();
-  const queryClient = useQueryClient();
+  const socket = useSocket();
   const [isAccessConfirmModalOpen, setIsAccessConfirmModalOpen] = useState(false);
   const [modalData, setModalData] = useState<any>({
     title: "",
@@ -92,7 +91,7 @@ const VaultCollaborators = () => {
   const { data:collaborators, isLoading } = useGetVaultCollaboratorsQuery(vaultId as string)
 
   const { mutate: confirmAccess, isPending: isConfirmingAccess } = useConfirmAccess();
-
+  const [onlineUsers, setOnlineUsers] = useState<any[]>([]);
 
   // const { mutate: toggleAccess, isPending: isTogglingAccess } = useToggleAccess();
 
@@ -179,6 +178,7 @@ const VaultCollaborators = () => {
   if(flag === "access_to_all"){
     setModalData({...ConfirmModalData.access_to_all, onConfirm: handleConfirmAccess})
   }
+  
   // if(flag === "toggle_access"){
   //   setModalData({...ConfirmModalData.toggle_access, onConfirm: handleToggleAccess, collaborator: collaborator})
   // }
@@ -190,7 +190,23 @@ const VaultCollaborators = () => {
  }
  
 
+  useEffect(()=>{
+    
 
+
+    socket.emit("get-online-users", vaultId as string)
+    const handleOnlineUsers = (data: any) => {
+      setOnlineUsers(data.onlineUsers)
+    }
+    
+    socket.on("online-users", handleOnlineUsers)
+    return () => {
+      socket.off("online-users", handleOnlineUsers)
+    }
+
+  },[])
+
+  console.log("🔑 onlineUsers", onlineUsers)
   return (
     <>
       <div className="space-y-6">
@@ -264,7 +280,7 @@ const VaultCollaborators = () => {
                             </div>
                           )}
                           <div>
-                            <p>{collaborator?.user?.name || collaborator?.user?.email}</p>
+                            <p className="flex items-center gap-2">{collaborator?.user?.name || collaborator?.user?.email} {onlineUsers && onlineUsers.includes(collaborator?.user?.id) && <span className="text-green-500 text-xs">Online</span>}</p>
                             {collaborator?.user?.name && (
                               <p className="text-xs text-muted-foreground">{collaborator?.user?.email}</p>
                             )}

@@ -17,7 +17,6 @@ async function checkVaultOwnership(userId: string, vaultId: string): Promise<any
   return vault;
 }
 
-
 // API: Create a vault
 export async function createVault(req: CustomRequest, res: Response): Promise<any> {
   try {
@@ -68,6 +67,8 @@ export async function getVault(req: CustomRequest, res: Response): Promise<any> 
     }
 
     const { isOwner, collaborator } = await checkVaultAccess(userId!, vaultId);
+
+    
 
     if (!isOwner && !collaborator) {
       res.status(403).json({ message: 'You are not authorized to access this vault' });
@@ -459,6 +460,67 @@ export async function confirmAccess(req: CustomRequest, res: Response): Promise<
 
   } catch (err: any) {
     res.status(500).json({ message: 'Failed to confirm access', error: err.message });
+  }
+}
+
+export async function getVaultLogs(req: CustomRequest, res: Response): Promise<any> {
+  try {
+    const vaultId = req.params.vaultId;
+    const userId = req.user?.id;
+    const { limit, offset } = req.query;
+
+    if (!vaultId) {
+      res.status(400).json({ message: 'Vault ID is required' });
+      return;
+    }
+
+    if (!userId) {
+      res.status(401).json({ message: 'Unauthorized' });
+      return;
+    }
+
+    const vault = await checkVaultAccess(userId!, vaultId);
+
+    if (!vault) {
+      res.status(404).json({ message: 'You are not authorized to access this vault' });
+      return;
+    }
+
+
+
+
+    const logs = await prisma.auditLog.findMany({
+      where: {
+        vaultId,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+
+      select: {
+        id: true,
+        action: true,
+        description: true,
+        createdAt: true,
+        actor: {
+          select: {
+            name: true,
+            email: true,
+            avatarUrl: true,
+          },
+        },
+      },
+      take: limit ? parseInt(limit as string) : 20,
+      skip: offset ? parseInt(offset as string) : 0,
+    });
+
+    res.status(200).json({
+      logs,
+      message: "Vault logs fetched successfully",
+    });
+
+  } catch (err: any) {
+    res.status(500).json({ message: 'Failed to get vault logs', error: err.message });
   }
 }
 

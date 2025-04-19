@@ -47,6 +47,12 @@ io.on("connection", async (socket) => {
   });
 
 
+  socket.on("get-online-users", (vaultId: string) => {
+    socket.emit("online-users", {
+      vaultId,
+      onlineUsers: Array.from(vaultOnlineUsers[vaultId] || []),
+    })
+  })  
 
   socket.on("join-vault", (vaultId: string) => {
     socket.join(`vault-${vaultId}`);
