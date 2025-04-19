@@ -6,7 +6,7 @@ import { checkVaultAccess } from '../secret/secretController';
 import { config } from '@secret-vault/backend-common/config';
 
 
-async function checkVaultOwnership(userId: string, vaultId: string): Promise<any> {
+export async function checkVaultOwnership(userId: string, vaultId: string): Promise<any> {
   const vault = await prisma.vault.findUnique({
     where: { id: vaultId },
   });

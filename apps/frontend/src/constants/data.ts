@@ -7,6 +7,7 @@ import {
     Settings,
     Share,
     Mail,
+    Trash,
   } from "lucide-react";
 
 export const BASE_URL ='http://localhost:5000/api';
@@ -16,9 +17,10 @@ export const mainNavItems = [
     { title: "Dashboard", icon: Home, href: "/u/dashboard" },
     { title: "Vaults", icon: ShieldCheck, href: "/u/dashboard/vaults" },
     { title: "Shared with me", icon: Share, href: "/u/dashboard/vaults/shared-with-me" },
-    { title: "Invites", icon: Mail, href: "/invites" },
-    { title: "Audit Logs", icon: History, href: "/audit-logs" },
-    { title: "Settings", icon: Settings, href: "/settings" },
+    { title: "Invites", icon: Mail, href: "/u/dashboard/invites" },
+    { title: "Audit Logs", icon: History, href: "/u/dashboard/audit-logs" },
+    { title: "Recycle Bin", icon: Trash, href: "/u/dashboard/recycle-bin" },
+    { title: "Settings", icon: Settings, href: "/u/dashboard/settings" },
   ];
 
 export const pricingNavItems = [

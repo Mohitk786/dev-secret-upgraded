@@ -63,6 +63,24 @@ export async function deleteVault(data: VaultDeletedData, userId: string) {
           isDeleted: true,
         },
       });
+
+     //delete all collaborators
+     await prisma.collaborator.deleteMany({
+        where: {
+            vaultId,
+        },
+     });
+
+      //remove all vault keys except the owner
+      await prisma.vaultKey.deleteMany({
+        where: {
+            vaultId,
+            userId: {
+                not: userId,
+            },
+        },
+      });
+
       return { message: 'Vault deleted successfully',  vaultId, };
 
     } catch (err: any) {
