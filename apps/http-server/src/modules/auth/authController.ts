@@ -62,6 +62,7 @@ export const signUpUser = async (req: Request, res: Response): Promise<void> => 
 export const signInUser = async (req: Request, res: Response): Promise<void> => {
     try {
         const { email, password } = req.body;
+        console.log(email, password);
 
         const existingUser = await prisma.user.findFirst({
             where: {
@@ -93,8 +94,8 @@ export const signInUser = async (req: Request, res: Response): Promise<void> => 
         const token = sign({ id: existingUser.id }, config.JWT_SECRET as string, { expiresIn: '7d' });
 
         res.cookie('dev_secret_vault_auth_token', token, {
-            secure: true,
-            sameSite: 'none',
+            secure: false,
+            // sameSite: 'none',
             httpOnly: true,
             maxAge: 7 * 24 * 60 * 60 * 1000
         });

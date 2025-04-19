@@ -43,32 +43,36 @@ export const updateVault = async (data: VaultUpdatedData, userId: string) => {
 }
 
 
-export const deleteVault = async (data: VaultDeletedData, userId: string) => {
+
+
+
+export async function deleteVault(data: VaultDeletedData, userId: string) {
     try {
+      const { vaultId } = data;
+  
+      if (!userId) {
+        throw new Error('Unauthorized');
+      }
+  
+      const vault = await checkVaultOwnership(userId!, vaultId);
+  
+      if (!vault) {
+        throw new Error('Vault not found');
+      }
+  
+      await prisma.vault.update({
+        where: { id: vaultId },
+        data: {
+          isDeleted: true,
+        },
+      });
+      return { message: 'Vault deleted successfully',  vaultId, };
 
-        const { vaultId } = data;
-        if (!vaultId) {
-            throw new Error('Vault ID is required');
-        }
-
-        await checkVaultOwnership(userId, vaultId);
-        await prisma.vault.delete({ where: { id: vaultId } });
-
-        await prisma.auditLog.create({
-            data: {
-                vaultId,
-                actorId: userId,
-                action: 'vault_deleted',
-                description: 'Vault was deleted by owner',
-            },
-        });
-        return { message: 'Vault deleted successfully' };
-
-    } catch (error) {
-        console.error(error);
+    } catch (err: any) {
+        console.error(err);
         throw new Error('Failed to delete vault');
     }
-}
+  }
 
 export const revokeCollaboratorAccess = async (userId: string, vaultId: string, collaboratorId: string) => {
     try {

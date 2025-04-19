@@ -8,16 +8,13 @@ import { decryptSecret } from "@/E2E/decryption";
 
 export const useDecryptedVaultKey = (
   vaultId: string,
-  isSharedVault: boolean
 ) => {
   const [decryptedVaultKey, setDecryptedVaultKey] = useState<CryptoKey | null>(null);
   const [decryptedSecrets, setDecryptedSecrets] = useState<Secret[]>([]);
   const { showToast } = useToast();
 
   const { data: vaultKey } = useGetVaultKeyQuery(vaultId);
-  const { data: vault, isLoading, error } = isSharedVault
-    ? useGetSharedVaultQuery(vaultId)
-    : useGetVaultQuery(vaultId);
+  const { data: vault, isLoading, error } = useGetVaultQuery(vaultId);
 
 
   useEffect(() => {
@@ -42,7 +39,7 @@ export const useDecryptedVaultKey = (
     };
 
     decryptVaultKey();
-  }, [vaultKey]);
+  }, [vaultKey, vault?.secrets]);
 
   return {
     decryptedVaultKey,

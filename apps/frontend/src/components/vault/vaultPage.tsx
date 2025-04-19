@@ -51,7 +51,7 @@ const vaultPage = ({ title, description, icon, vaults, isSharedVault }: VaultPag
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {filteredVaults && filteredVaults.map(vault => (
-                    <VaultCard isSharedVault={false} key={vault?.id} vault={vault} />
+                    <VaultCard key={vault?.id} vault={vault} />
                 ))}
 
                 { isSharedVault ? <></> : <Link href="/u/dashboard/vaults/new">

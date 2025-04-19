@@ -5,11 +5,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Check } from "lucide-react";
 import { useAuth } from "@/hooks/queries/authQueries";
 
-const VaultCard = ({ vault, isSharedVault }: { vault: any, isSharedVault: boolean }) => {
+const VaultCard = ({ vault }: { vault: any }) => {
     const { user } = useAuth();
+    const isOwner = vault?.ownerId === user?.id;
     
     return (
-        <Link href={`/u/dashboard/vaults${isSharedVault ? "/shared" : ""}/${vault?.id}`} key={vault?.id}>
+        <Link href={`/u/dashboard/vaults${isOwner ? "" : "/shared"}/${vault?.id}`} key={vault?.id}>
             <Card className="h-full overflow-hidden transition-all hover:border-primary/50 hover:shadow-md group">
                 <CardContent className="p-6">
                     <div className="flex items-start justify-between">

@@ -48,10 +48,12 @@ model Vault {
   vaultKeys      VaultKey[]    
   ownerId       String               
   owner         User     @relation("OwnerVaults", fields: [ownerId], references: [id]) 
-  secrets       Secret[]                             // Secrets stored in the vault
+  secrets       Secret[]                             
   collaborators Collaborator[]                       // Collaborators on the vault
   invites       Invite[]                             // Invites related to this vault
-  auditLogs     AuditLog[]                           
+  auditLogs     AuditLog[]   
+  isDeleted     Boolean  @default(false)
+  deletedAt     DateTime?
   createdAt     DateTime @default(now())             
   updatedAt     DateTime @updatedAt                  
 }

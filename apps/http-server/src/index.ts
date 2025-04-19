@@ -16,8 +16,6 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 
-console.log(config.REACT_URL);
-
 app.use(cors({
     origin: config.REACT_URL,
     credentials: true,
@@ -25,9 +23,10 @@ app.use(cors({
 
 app.use('/api', authRoutes);
 app.use('/api', vaultRoutes);
-app.use('/api', secretRoutes);
+app.use('/api', secretRoutes);  
 
 
 app.listen(config.PORT, () => {
-  console.log(`Server running on http://localhost:${config.PORT}`);
+  console.log(`Server running on http://${config.SERVER_URL}:${config.PORT}`);
 });
+

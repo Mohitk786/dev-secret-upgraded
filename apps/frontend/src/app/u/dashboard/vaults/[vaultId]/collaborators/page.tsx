@@ -22,7 +22,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import useToast  from "@/hooks/utils/useToast";
+import useToast from "@/hooks/utils/useToast";
 import {
   Users,
   MoreVertical,
@@ -33,7 +33,8 @@ import {
   Trash2,
   UserX,
   ShieldCheck,
-  ShieldX
+  ShieldX,
+  Plus
 } from "lucide-react";
 import {
   AlertDialog,
@@ -53,8 +54,9 @@ import { useConfirmAccess, useToggleAccess } from "@/hooks/mutations/useCollab";
 import { ConfirmModalData } from "@/constants/data";
 import { accessToAll } from "@/E2E/operations/accessToAll";
 import ConfirmAccess from "@/components/utils/ConfirmAccess";
-import  useSocket  from "@/hooks/utils/useSocket";
-    // import { confirmAccess } from "@/services/collabServices";
+import useSocket from "@/hooks/utils/useSocket";
+import { useAuth } from "@/hooks/queries/authQueries";
+// import { confirmAccess } from "@/services/collabServices";
 
 interface Collaborator {
   id: string;
@@ -69,6 +71,7 @@ interface Collaborator {
   canView: boolean;
   canEdit: boolean;
   canDelete: boolean;
+  canAdd: boolean;
   hasSecretAccess: boolean;
 }
 
@@ -80,23 +83,23 @@ const VaultCollaborators = () => {
   const [modalData, setModalData] = useState<any>({
     title: "",
     description1: "",
-    description2: "", 
+    description2: "",
     buttonText: "",
-    onConfirm: () => {},
+    onConfirm: () => { },
     collaborator: null,
   });
   const [collaboratorToRemove, setCollaboratorToRemove] = useState<Collaborator | null>(null);
 
   const { data: vault } = useGetVaultQuery(vaultId as string);
-  const { data:collaborators, isLoading } = useGetVaultCollaboratorsQuery(vaultId as string)
-
+  const { data: collaborators, isLoading } = useGetVaultCollaboratorsQuery(vaultId as string)
+  const { user } = useAuth()
   const { mutate: confirmAccess, isPending: isConfirmingAccess } = useConfirmAccess();
   const [onlineUsers, setOnlineUsers] = useState<any[]>([]);
 
   // const { mutate: toggleAccess, isPending: isTogglingAccess } = useToggleAccess();
 
   // const { decyptedSecrets } = useDecryptAllSecrets(vault?.vault)
-  
+
 
   // const removeCollaboratorMutation = useMutation({
   //   mutationFn: async (collaboratorId: string) => {
@@ -147,7 +150,7 @@ const VaultCollaborators = () => {
   //   }
   // };
 
-  const togglePermission = (collaborator: Collaborator, permission: 'canView' | 'canEdit' | 'canDelete') => {
+  const togglePermission = (collaborator: Collaborator, permission: 'canView' | 'canEdit' | 'canDelete' | 'canAdd') => {
     // Cannot disable view permission
     if (permission === 'canView') return;
 
@@ -169,45 +172,45 @@ const VaultCollaborators = () => {
   const handleToggleAccess = async (collaborator: Collaborator) => {
     console.log("toggle access collaborator", collaborator)
     socket.emit("join-vault", vaultId as string)
-    socket.emit("toggle-access", { collaboratorId: collaborator.user.id, vaultId: vaultId as string})
+    socket.emit("toggle-access", { collaboratorId: collaborator.user.id, vaultId: vaultId as string })
   }
 
- const handleActionClick = async (flag:string, collaborator?: Collaborator) => {
-  setIsAccessConfirmModalOpen(true)
+  const handleActionClick = async (flag: string, collaborator?: Collaborator) => {
+    setIsAccessConfirmModalOpen(true)
 
-  if(flag === "access_to_all"){
-    setModalData({...ConfirmModalData.access_to_all, onConfirm: handleConfirmAccess})
+    if (flag === "access_to_all") {
+      setModalData({ ...ConfirmModalData.access_to_all, onConfirm: handleConfirmAccess })
+    }
+
+    if (flag === "toggle_access") {
+      setModalData({ ...ConfirmModalData.toggle_access, onConfirm: handleToggleAccess, collaborator: collaborator })
+    }
+    // if(flag === "remove_collaborator"){
+    //   setModalData({...ConfirmModalData.remove_collaborator, onConfirm: handleRemoveCollaborator})
+    // }
+
+    setIsAccessConfirmModalOpen(true)
   }
-  
-  if(flag === "toggle_access"){
-    setModalData({...ConfirmModalData.toggle_access, onConfirm: handleToggleAccess, collaborator: collaborator})
-  }
-  // if(flag === "remove_collaborator"){
-  //   setModalData({...ConfirmModalData.remove_collaborator, onConfirm: handleRemoveCollaborator})
-  // }
 
-  setIsAccessConfirmModalOpen(true)
- }
- 
 
-  useEffect(()=>{
+  useEffect(() => {
 
     socket.emit("get-online-users", vaultId as string)
     const handleOnlineUsers = (data: any) => {
       setOnlineUsers(data.onlineUsers)
     }
-    
+
     socket.on("online-users", handleOnlineUsers)
     return () => {
       socket.off("online-users", handleOnlineUsers)
     }
 
-  },[]) 
+  }, [vaultId])
 
   return (
     <>
       <div className="space-y-6">
-       
+
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
@@ -223,7 +226,7 @@ const VaultCollaborators = () => {
                 Invite Member
               </Button>
             </Link>
-            <Button className="flex items-center gap-2 bg-green-400 hover:bg-green-600 text-black" onClick={()=>handleActionClick("access_to_all")} disabled={isConfirmingAccess}>
+            <Button className="flex items-center gap-2 bg-green-400 hover:bg-green-600 text-black" onClick={() => handleActionClick("access_to_all")} disabled={isConfirmingAccess}>
               <ShieldCheck className="h-4 w-4" />
               Confirm Access
             </Button>
@@ -261,7 +264,7 @@ const VaultCollaborators = () => {
                   <TableRow>
                     <TableHead>Member</TableHead>
                     <TableHead>Permissions</TableHead>
-                    <TableHead>Actions</TableHead>
+                    {vault?.ownerId !== user?.id && <TableHead>Actions</TableHead>}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -312,9 +315,19 @@ const VaultCollaborators = () => {
                           >
                             <Trash2 className="h-3 w-3 mr-1" /> Delete
                           </Badge>
+
+                          <Badge
+                            variant={collaborator?.canAdd ? "outline" : "secondary"}
+                            className={collaborator?.canAdd
+                              ? "bg-blue-500/10 text-blue-500 border-blue-500/20 cursor-pointer"
+                              : "cursor-pointer"}
+                            onClick={() => togglePermission(collaborator, 'canAdd')}
+                          >
+                            <Plus className="h-3 w-3 mr-1" /> Add
+                          </Badge>
                         </div>
                       </TableCell>
-                      <TableCell>
+                      {vault?.ownerId !== user?.id && <TableCell>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon">
@@ -333,12 +346,12 @@ const VaultCollaborators = () => {
                               className={`${collaborator?.hasSecretAccess ? "text-red-600 cursor-pointer" : "text-green-600 cursor-pointer"}`}
                               onClick={() => handleActionClick("toggle_access", collaborator)}
                             >
-                             {collaborator?.hasSecretAccess ? <ShieldX className="h-4 w-4 mr-2" /> : <ShieldCheck className="h-4 w-4 mr-2" />}
+                              {collaborator?.hasSecretAccess ? <ShieldX className="h-4 w-4 mr-2" /> : <ShieldCheck className="h-4 w-4 mr-2" />}
                               {collaborator?.hasSecretAccess ? "Revoke Access" : "Allow Access"}
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
-                      </TableCell>
+                      </TableCell>}
                     </TableRow>
                   ))}
                 </TableBody>
@@ -368,9 +381,9 @@ const VaultCollaborators = () => {
           </AlertDialogContent>
         </AlertDialog>
 
-        <ConfirmAccess 
-          open={isAccessConfirmModalOpen} 
-          onOpenChange={setIsAccessConfirmModalOpen} 
+        <ConfirmAccess
+          open={isAccessConfirmModalOpen}
+          onOpenChange={setIsAccessConfirmModalOpen}
           modalData={modalData}
         />
       </div>

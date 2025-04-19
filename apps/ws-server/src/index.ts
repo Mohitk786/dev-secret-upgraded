@@ -84,12 +84,9 @@ io.on("connection", async (socket) => {
   })  
 
 
-
   socket.on("create-secret", async (data: CreateSecretData) => {
     const secret = await createSecret(data, userId);
-    
     io.to(`vault-${data.vaultId}`).emit("secret-created", secret);
-
 
   });
 
@@ -116,16 +113,23 @@ io.on("connection", async (socket) => {
     
     socket.to(`vault-${data.vaultId}`).emit("secret-updated", updated);
   });
-
-  socket.on("vault-updated", async (data: VaultUpdatedData) => {
-    const updated = await updateVault(data, userId);
-    io.to(`vault-${data.vaultId}`).emit("vault-updated", updated);
-  });
-
   
   socket.on("delete-vault", async (data: VaultDeletedData) => {
+
+    console.log("deleting vault", data)
     const deleted = await deleteVault(data, userId);
-    io.to(`vault-${data.vaultId}`).emit("vault-deleted", deleted);
+    console.log("deleted vault", deleted)
+
+      socket.emit("vault-deleted", {
+        message: "You have deleted a vault",
+        vaultId: deleted.vaultId
+      });
+
+      //send to all except the socket that made the request
+      io.to(`vault-${data.vaultId}`).emit("vault-deleted", {
+        message: "Vault owner has deleted the vault",
+        vaultId: deleted.vaultId
+      });
   });
 
   socket.on("allow-all-collaborators", async (data: AllowCollaboratorData) => {

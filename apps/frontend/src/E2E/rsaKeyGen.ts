@@ -1,5 +1,9 @@
+"use client"
+
 
 export const generateRSAKeyPair = async () => {
+
+
     const keyPair = await window.crypto.subtle.generateKey(
         {
             name: "RSA-OAEP",
@@ -10,6 +14,8 @@ export const generateRSAKeyPair = async () => {
         true,
         ["encrypt", "decrypt"]
     );
+
+
 
     // 2. Export Public & Private Keys
     const publicKey = await crypto.subtle.exportKey("spki", keyPair.publicKey);
@@ -22,6 +28,8 @@ export const generateRSAKeyPair = async () => {
     // 4. Save Private Key to LocalStorage
     localStorage.setItem("PRIVATE_KEY", privKeyBase64);
 
+    
+
     // 5. Download Private Key as file
     const blob = new Blob([privKeyBase64], { type: "text/plain" });
     const link = document.createElement("a");
@@ -32,6 +40,7 @@ export const generateRSAKeyPair = async () => {
     document.body.removeChild(link);
 
     return pubKeyBase64
+    
 }
 
 export const encryptData = async (data: string, publicKeyBase64: string) => {

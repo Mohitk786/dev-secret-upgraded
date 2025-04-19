@@ -17,7 +17,7 @@ async function checkVaultOwnership(userId: string, vaultId: string): Promise<any
   return vault;
 }
 
-// API: Create a vault
+
 export async function createVault(req: CustomRequest, res: Response): Promise<any> {
   try {
     const { name, description, icon, encryptedVaultKeyBase64 } = req.body;
@@ -50,7 +50,72 @@ export async function createVault(req: CustomRequest, res: Response): Promise<an
   }
 }
 
-// API: Get vault details with secrets (for owner)
+
+export async function updateVault(req: CustomRequest, res: Response): Promise<any> {
+  try {
+    const { name, description, icon } = req.body;
+    const { vaultId } = req.params as { vaultId: string };
+    const userId = req.user?.id;
+
+    if (!userId) {
+      res.status(401).json({ message: 'Unauthorized' });
+      return;
+    }
+
+    const vault = await checkVaultOwnership(userId!, vaultId);
+
+    if (!vault) {
+      res.status(404).json({ message: 'Vault not found' });
+      return;
+    }
+
+    const updatedVault = await prisma.vault.update({
+      where: { id: vaultId },
+      data: {
+        name,
+        description,
+        icon,
+      },
+    });
+
+    res.status(200).json({ vault: updatedVault });
+  } catch (err: any) {
+    res.status(500).json({ message: 'Failed to update vault', error: err.message });
+  }
+}
+
+
+export async function deleteVault(req: CustomRequest, res: Response): Promise<any> {
+  try {
+    const { vaultId } = req.params as { vaultId: string };
+    const userId = req.user?.id;
+
+    if (!userId) {
+      res.status(401).json({ message: 'Unauthorized' });
+      return;
+    }
+
+    const vault = await checkVaultOwnership(userId!, vaultId);
+
+    if (!vault) {
+      res.status(404).json({ message: 'Vault not found' });
+      return;
+    }
+
+    await prisma.vault.update({
+      where: { id: vaultId },
+      data: {
+        isDeleted: true,
+      },
+    });
+
+    res.status(200).json({ message: 'Vault deleted successfully' });
+  } catch (err: any) {
+    res.status(500).json({ message: 'Failed to delete vault', error: err.message });
+  }
+}
+
+
 export async function getVault(req: CustomRequest, res: Response): Promise<any> {
   try {
     const vaultId = req.params.vaultId;
@@ -82,6 +147,7 @@ export async function getVault(req: CustomRequest, res: Response): Promise<any> 
             userId,
           },
         },
+        isDeleted: false,
       },
       include: {
         secrets: {
@@ -147,9 +213,11 @@ export async function getVaults(req: CustomRequest, res: Response): Promise<any>
       return;
     }
 
+
     const vaults = await prisma.vault.findMany({
       where: {
         ownerId: userId,
+        isDeleted: false,
       },
       include: {
         collaborators: true,
@@ -355,11 +423,15 @@ export async function getSharedWithMeVaults(req: CustomRequest, res: Response): 
     const collaborators = await prisma.collaborator.findMany({
       where: {
         userId,
+        vault: {
+          isDeleted: false,
+        },
       },
       include: {
         vault: true,
       },
     });
+
 
     if (collaborators.length === 0) {
       res.status(200).json({
@@ -452,6 +524,15 @@ export async function confirmAccess(req: CustomRequest, res: Response): Promise<
     await prisma.vaultKey.createMany({
       data: encryptedVaultKeys,
       skipDuplicates: true,
+    })
+
+    await prisma.collaborator.updateMany({
+      where: {
+        vaultId,
+      },
+      data: {
+        hasSecretAccess: true,
+      }
     })
 
 

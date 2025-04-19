@@ -18,6 +18,7 @@ import {
   FileText
 } from "lucide-react";
 import { useAuth } from "@/hooks/queries/authQueries";
+import  useSocket  from "@/hooks/utils/useSocket";
 
 interface VaultHeaderProps {
   vault: any;
@@ -26,8 +27,13 @@ interface VaultHeaderProps {
 
 const VaultHeader = ({ vault, setIsAddSecretOpen }: VaultHeaderProps) => {
 
+  const socket = useSocket();
   const { user } = useAuth();
   const isOwner = vault?.ownerId === user?.id;
+
+  const handleDeleteVault = async (vaultId: string) => {
+     socket.emit("delete-vault", {vaultId});
+  };
   
   return (
     <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:justify-between sm:items-center">
@@ -86,12 +92,12 @@ const VaultHeader = ({ vault, setIsAddSecretOpen }: VaultHeaderProps) => {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem asChild>
-              <Link href={`/vaults/edit/${vault?.id}`} className="cursor-pointer flex items-center">
+              <Link href={`/u/dashboard/vaults/edit/${vault?.id}`} className="cursor-pointer flex items-center">
                 <Pencil className="h-4 w-4 mr-2" /> Edit Vault
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href={`/vaults/invite/${vault?.id}`} className="cursor-pointer flex items-center">
+              <Link href={`/u/dashboard/vaults/invite/${vault?.id}`} className="cursor-pointer flex items-center">
                 <Users className="h-4 w-4 mr-2" /> Invite Members
               </Link>
             </DropdownMenuItem>
@@ -99,7 +105,7 @@ const VaultHeader = ({ vault, setIsAddSecretOpen }: VaultHeaderProps) => {
               <Copy className="h-4 w-4 mr-2" /> Copy Vault ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10">
+            <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10 cursor-pointer" onClick={() => handleDeleteVault(vault?.id)}>
               <Trash className="h-4 w-4 mr-2" /> Delete Vault
             </DropdownMenuItem>
           </DropdownMenuContent>

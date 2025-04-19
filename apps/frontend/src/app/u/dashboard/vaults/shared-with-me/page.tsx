@@ -25,9 +25,9 @@ const SharedWithMe = () => {
                 isSharedVault={true}
             />
 
-            {true ? <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {[].map((vault: any) => (
-                    <VaultCard isSharedVault={true} key={vault?.id} vault={vault} />
+            {vaults.length > 0 ? <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {vaults.map((vault: any) => (
+                    <VaultCard key={vault?.id} vault={vault} />
                 ))}
             </div> :
                 <div className="flex justify-center items-center h-full">
