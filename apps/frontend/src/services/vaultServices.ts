@@ -7,6 +7,7 @@ export const getVaults = async () => {
 
 export const getVault = async (vaultId: string) => {
   const res = await axiosInstance.get(`/vaults/${vaultId}`);
+  console.log("🔑 vault", res.data?.vault)
   return res.data?.vault;
 };
 

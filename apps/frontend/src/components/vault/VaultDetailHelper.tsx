@@ -126,6 +126,8 @@ const VaultDetail = ({ isSharedVault }: { isSharedVault: boolean }) => {
     return <VaultDetailSkeleton />;
   }
 
+  console.log("🔑 vault", vault)
+
   if (error || !vault) {
     return <VaultDetailError error={error} />;
   }
@@ -141,21 +143,21 @@ const VaultDetail = ({ isSharedVault }: { isSharedVault: boolean }) => {
         setIsAddSecretOpen={setIsAddSecretOpen}
       />
 
-
-      <SecretList
-        isSharedVault={isSharedVault}
-        secrets={decryptedSecrets}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        visibleSecrets={visibleSecrets}
+      {(vault?.collaborators?.hasSecretAccess || vault?.ownerId === user?.id) ?
+        <SecretList
+          isSharedVault={isSharedVault}
+          secrets={decryptedSecrets}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          visibleSecrets={visibleSecrets}
         toggleSecretVisibility={toggleSecretVisibility}
         setIsAddSecretOpen={setIsAddSecretOpen}
       />
-      {/* : <div className="text-center py-8">
+      : <div className="text-center py-8">
         <p className="text-muted-foreground">
-          You no longer have access to the Secrets in this Vault
+        🔒 Access Denied: You no longer have permission to view the secrets in this vault. Contact the owner to get access.
         </p>
-      </div>} */}
+      </div>}
 
       {vault?.ownerId === user?.id &&
         <AddSecretPopup

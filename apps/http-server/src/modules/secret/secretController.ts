@@ -10,7 +10,7 @@ export
     where: { userId, vaultId },
   });
   if (!collaborator) throw new Error("Access denied");
-  if(!collaborator.hasSecretAccess) throw new Error("Your access is revoked by the owner");
+  // if(!collaborator.hasSecretAccess) throw new Error("Your access is revoked by the owner");
 
   return { isOwner: false, collaborator };
 }

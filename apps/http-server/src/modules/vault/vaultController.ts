@@ -68,12 +68,12 @@ export async function getVault(req: CustomRequest, res: Response): Promise<any> 
 
     const { isOwner, collaborator } = await checkVaultAccess(userId!, vaultId);
 
-    
-
     if (!isOwner && !collaborator) {
       res.status(403).json({ message: 'You are not authorized to access this vault' });
       return;
     }
+
+
 
     const vault = await prisma.vault.findFirst({
       where: {
@@ -98,10 +98,12 @@ export async function getVault(req: CustomRequest, res: Response): Promise<any> 
             canDelete: true,
             canEdit: true,
             canView: true,
+            hasSecretAccess: true,
           }
         }
       },
     });
+
 
     let updatedVault;
     if (vault?.ownerId !== userId) {
@@ -112,9 +114,11 @@ export async function getVault(req: CustomRequest, res: Response): Promise<any> 
           canDelete: vault?.collaborators[0]?.canDelete,
           canEdit: vault?.collaborators[0]?.canEdit,
           canView: vault?.collaborators[0]?.canView,
-        }
+        },
+        collaborators: {
+          hasSecretAccess: vault?.collaborators[0]?.hasSecretAccess,
+        },
       }
-      delete updatedVault?.collaborators;
 
       return res.status(200).json({
         vault: updatedVault,
