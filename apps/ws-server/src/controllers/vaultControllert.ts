@@ -43,9 +43,6 @@ export const updateVault = async (data: VaultUpdatedData, userId: string) => {
 }
 
 
-
-
-
 export async function deleteVault(data: VaultDeletedData, userId: string) {
     try {
       const { vaultId } = data;
@@ -197,3 +194,73 @@ export const toggleCollaboratorAccess = async (userId: string, vaultId: string, 
         return {message: error?.message}
     }
 }
+
+export const removeCollaborator = async (userId: string, vaultId: string, collaboratorId: string) => {
+    try {
+        const vault = await checkVaultOwnership(userId, vaultId);
+        if (!vault) {
+            throw new Error('You are not the owner of this vault');
+        }
+
+        const collaborator = await prisma.collaborator.findUnique({
+            where: {
+                userId_vaultId: {
+                    vaultId,
+                    userId: collaboratorId,
+                },
+            },
+            include: {
+                user: {
+                    select: {
+                        name: true,
+                    },
+                },
+            },
+        });
+
+        if (!collaborator) {
+            throw new Error('Collaborator not found');
+        }
+
+        await prisma.collaborator.delete({
+            where: { id: collaborator.id, vaultId },
+        });
+
+
+        await prisma.vaultKey.delete({
+            where: {        
+                vaultId_userId: {
+                    vaultId,
+                    userId: collaborator.userId,
+                },
+            },
+        });
+
+        const collaboratorUser = await prisma.user.findUnique({
+            where: { id: collaborator.userId },
+            select: {
+                name: true,
+            },
+        });
+
+
+        if (!collaboratorUser) {
+            throw new Error('Collaborator user not found');
+        }
+
+        await prisma.auditLog.create({
+            data: {
+                vaultId,
+                actorId: userId,
+                action: 'collaborator_removed',
+                description: `Collaborator ${collaboratorUser?.name} has been removed from the vault.`,
+            },  
+        });
+
+        return {message: `Collaborator ${collaboratorUser?.name} has been removed from the vault.`, collaborator: collaborator};
+
+    } catch (error:any) {
+        console.error(error);
+        throw new Error('Failed to remove collaborator');
+    }
+}   

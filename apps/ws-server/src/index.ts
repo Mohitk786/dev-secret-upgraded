@@ -10,15 +10,15 @@ import {
   DeleteSecretData,
   UpdateSecretData,
   VaultDeletedData,
-  VaultUpdatedData,
   AllowCollaboratorData,
   RevokeCollaboratorData,
+  RemoveCollaboratorData,
 } from "./types/types";
 import {
   deleteVault,
-  updateVault,
   toggleCollaboratorAccess,
   allowAllCollaborators,
+  removeCollaborator,
 } from "./controllers/vaultControllert";
 import { getSocketByUserId } from "./utils/getSocketI";
 import { checkVaultAccess } from "./controllers/secretController";  
@@ -92,6 +92,7 @@ io.on("connection", async (socket) => {
 
 
   socket.on("delete-secret", async (data: DeleteSecretData) => {
+    
     const deleted = await deleteSecret(data, userId);
     
     socket.emit("secret-deleted", {
@@ -116,9 +117,7 @@ io.on("connection", async (socket) => {
   
   socket.on("delete-vault", async (data: VaultDeletedData) => {
 
-    console.log("deleting vault", data)
     const deleted = await deleteVault(data, userId);
-    console.log("deleted vault", deleted)
 
       socket.emit("vault-deleted", {
         message: "You have deleted a vault",
@@ -169,6 +168,32 @@ io.on("connection", async (socket) => {
      }
     }
   });
+
+
+  socket.on("remove-collaborator", async (data: RemoveCollaboratorData) => {
+    const { vaultId, collaboratorId } = data;
+    console.log("removeing-collaborator", data)
+    const removed = await removeCollaborator(userId, vaultId, collaboratorId);
+    if(!removed){
+      return socket.emit("error", "Failed to remove collaborator");
+    }
+
+    console.log("removed", removed)
+
+    socket.emit("collaborator-removed", {
+      message: `You removed ${removed.collaborator.user.name} from the vault`,
+    });
+
+     //emit to the removed collaborator
+     const collaboratorSocket = getSocketByUserId(collaboratorId);
+     if (collaboratorSocket) {
+      io.to(collaboratorSocket.id).emit("collaborator-removed", {
+        message: `You were removed from the vault`,
+      });
+     }
+
+  });
+
 
   socket.on("disconnect", () => {
     console.log(`❌ Disconnected: ${userId}`);

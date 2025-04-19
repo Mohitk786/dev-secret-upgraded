@@ -92,7 +92,7 @@ const VaultHeader = ({ vault, setIsAddSecretOpen }: VaultHeaderProps) => {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem asChild>
-              <Link href={`/u/dashboard/vaults/edit/${vault?.id}`} className="cursor-pointer flex items-center">
+              <Link href={`/u/dashboard/vaults/${vault?.id}/edit`} className="cursor-pointer flex items-center">
                 <Pencil className="h-4 w-4 mr-2" /> Edit Vault
               </Link>
             </DropdownMenuItem>

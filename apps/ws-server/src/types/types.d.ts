@@ -61,3 +61,8 @@ export interface AllowCollaboratorData {
     vaultId: string;
     collaborators: VaultKey[];
 }
+
+export interface RemoveCollaboratorData {
+    vaultId: string;
+    collaboratorId: string;
+}

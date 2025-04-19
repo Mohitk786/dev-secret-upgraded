@@ -101,25 +101,6 @@ const VaultCollaborators = () => {
   // const { decyptedSecrets } = useDecryptAllSecrets(vault?.vault)
 
 
-  // const removeCollaboratorMutation = useMutation({
-  //   mutationFn: async (collaboratorId: string) => {
-  //     return axiosInstance.delete(`/collab/vault-collaborators/${vaultId}/${collaboratorId}`);
-  //   },
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries({ queryKey: ["vault-collaborators", vaultId] });
-  //     showToast({
-  //       type: "success",
-  //       message: "Collaborator removed",
-  //     });
-  //     setCollaboratorToRemove(null);
-  //   },
-  //   onError: (error: any) => {
-  //     showToast({
-  //       type: "error",
-  //       message: "Error removing collaborator",
-  //     });
-  //   }
-  // });
 
   // const updatePermissionsMutation = useMutation({
   //   mutationFn: async ({ memberId, permissions }: { memberId: string, permissions: any }) => {
@@ -140,15 +121,16 @@ const VaultCollaborators = () => {
   //   }
   // });
 
-  // const handleRemoveCollaborator = (collaborator: Collaborator) => {
-  //   setCollaboratorToRemove(collaborator);
-  // };
+  const handleRemoveCollaborator = (collaborator: Collaborator) => {
+    setCollaboratorToRemove(collaborator);
+  };
 
-  // const confirmRemoveCollaborator = () => {
-  //   if (collaboratorToRemove) {
-  //     removeCollaboratorMutation.mutate(collaboratorToRemove.id);
-  //   }
-  // };
+  const confirmRemoveCollaborator = () => {
+    if (collaboratorToRemove) {
+      socket.emit("remove-collaborator", { collaboratorId: collaboratorToRemove.id, vaultId: vaultId as string })
+      setCollaboratorToRemove(null)
+    }
+  };
 
   const togglePermission = (collaborator: Collaborator, permission: 'canView' | 'canEdit' | 'canDelete' | 'canAdd') => {
     // Cannot disable view permission
@@ -158,10 +140,10 @@ const VaultCollaborators = () => {
       [permission]: !collaborator[permission]
     };
 
-    // updatePermissionsMutation.mutate({
-    //   memberId: collaborator?.id,
-    //   permissions: newPermissions
-    // });
+      // updatePermissionsMutation.mutate({
+      //   memberId: collaborator?.id,
+      //   permissions: newPermissions
+      // });
   };
 
   const handleConfirmAccess = async () => {
@@ -185,9 +167,9 @@ const VaultCollaborators = () => {
     if (flag === "toggle_access") {
       setModalData({ ...ConfirmModalData.toggle_access, onConfirm: handleToggleAccess, collaborator: collaborator })
     }
-    // if(flag === "remove_collaborator"){
-    //   setModalData({...ConfirmModalData.remove_collaborator, onConfirm: handleRemoveCollaborator})
-    // }
+    if (flag === "remove_collaborator") {
+      setModalData({ ...ConfirmModalData.remove_collaborator, onConfirm: handleRemoveCollaborator, collaborator: collaborator })
+    }
 
     setIsAccessConfirmModalOpen(true)
   }
@@ -220,7 +202,7 @@ const VaultCollaborators = () => {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Link href={`/u/dashboard/vaults/invite/${vaultId}`}>
+            <Link href={`/u/dashboard/vaults/${vaultId}/invite`}>
               <Button className="flex items-center gap-2">
                 <UserPlus className="h-4 w-4" />
                 Invite Member
@@ -251,7 +233,7 @@ const VaultCollaborators = () => {
             ) : collaborators.length === 0 ? (
               <div className="p-8 text-center">
                 <p className="text-muted-foreground">No collaborators yet</p>
-                <Link href={`/u/dashboard/vaults/invite/${vaultId}`}>
+                <Link href={`/u/dashboard/vaults/${vaultId}/invite`}>
                   <Button variant="outline" className="mt-4">
                     <UserPlus className="h-4 w-4 mr-2" />
                     Invite Collaborators
