@@ -22,7 +22,6 @@ export const signUpUser = async (req: Request, res: Response): Promise<void> => 
             }
         })
 
-        console.log(existingUser);
 
         if (existingUser) {
             res.status(409).json({

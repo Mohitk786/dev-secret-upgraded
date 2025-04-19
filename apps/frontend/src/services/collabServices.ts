@@ -3,7 +3,6 @@ import { Invite } from "@/types/types";
 
 export const sendInvite = async (data: Invite) => {
 
-    console.log("data invite", data)
     const response = await axiosInstance.post("/collab/invite", data);
     return response.data;
 };

@@ -18,7 +18,6 @@ export const accessToAll = async (vaultId: string, collaborators: Collaborator[]
         }   
     }))
 
-    console.log("finalData", finalData)
     
     return finalData;
 }                   

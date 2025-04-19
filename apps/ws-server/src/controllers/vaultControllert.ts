@@ -202,6 +202,7 @@ export const removeCollaborator = async (userId: string, vaultId: string, collab
             throw new Error('You are not the owner of this vault');
         }
 
+
         const collaborator = await prisma.collaborator.findUnique({
             where: {
                 userId_vaultId: {
@@ -217,6 +218,7 @@ export const removeCollaborator = async (userId: string, vaultId: string, collab
                 },
             },
         });
+
 
         if (!collaborator) {
             throw new Error('Collaborator not found');

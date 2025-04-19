@@ -18,7 +18,6 @@ export const sendEmail = async (to: string, subject: string, text: string) => {
     };
 
     const info = await transporter.sendMail(mailOptions);
-    console.log('Email sent: ' + info.response);
 
     return info.response;
 }   

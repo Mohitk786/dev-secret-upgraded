@@ -14,7 +14,6 @@ export function middleware(request: NextRequest) {
     pathname.startsWith(route)
   );
 
-  console.log("token mil gya", token);
 
   // 🔒 If logged in and trying to visit a public route → redirect to dashboard
   if (token && isAuthPage) {

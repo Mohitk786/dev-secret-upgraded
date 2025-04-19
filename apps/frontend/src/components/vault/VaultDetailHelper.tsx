@@ -71,8 +71,8 @@ const VaultDetail = ({ isSharedVault }: { isSharedVault: boolean }) => {
 
 
   useEffect(() => {
-
-    socket.emit("join-vault", vaultId);
+  
+    socket.emit("join-vault", vaultId as string)
 
     const onSecretCreated = async (data: { message: string, secret: Secret }) => {
 
@@ -130,7 +130,6 @@ const VaultDetail = ({ isSharedVault }: { isSharedVault: boolean }) => {
     }
 
     const onVaultDeleted = async (data: { message: string, vaultId: string }) => {
-      console.log("data deleton ", data)
       if (vault?.ownerId === user?.id) {
         router.push("/u/dashboard/vaults");
       } else {
@@ -180,7 +179,6 @@ const VaultDetail = ({ isSharedVault }: { isSharedVault: boolean }) => {
   }
 
 
-  console.log(vault?.permission)
 
   return (
     <div className="space-y-6 animate-fade-in">

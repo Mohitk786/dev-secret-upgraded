@@ -88,18 +88,24 @@ const VaultCollaborators = () => {
     onConfirm: () => { },
     collaborator: null,
   });
-  const [collaboratorToRemove, setCollaboratorToRemove] = useState<Collaborator | null>(null);
 
   const { data: vault } = useGetVaultQuery(vaultId as string);
-  const { data: collaborators, isLoading } = useGetVaultCollaboratorsQuery(vaultId as string)
+  const { data: collaboratorsData, isLoading } = useGetVaultCollaboratorsQuery(vaultId as string)
+  const [collaborators, setCollaborators] = useState<Collaborator[]>([]);
   const { user } = useAuth()
   const { mutate: confirmAccess, isPending: isConfirmingAccess } = useConfirmAccess();
   const [onlineUsers, setOnlineUsers] = useState<any[]>([]);
-
+  const router = useRouter()
+  const { showToast } = useToast()
   // const { mutate: toggleAccess, isPending: isTogglingAccess } = useToggleAccess();
 
   // const { decyptedSecrets } = useDecryptAllSecrets(vault?.vault)
 
+  useEffect(() => {
+    if (collaboratorsData) {
+      setCollaborators(collaboratorsData)
+    }
+  }, [collaboratorsData])
 
 
   // const updatePermissionsMutation = useMutation({
@@ -122,15 +128,10 @@ const VaultCollaborators = () => {
   // });
 
   const handleRemoveCollaborator = (collaborator: Collaborator) => {
-    setCollaboratorToRemove(collaborator);
+    socket.emit("remove-collaborator", { collaboratorId: collaborator.user.id, vaultId: vaultId as string })
   };
 
-  const confirmRemoveCollaborator = () => {
-    if (collaboratorToRemove) {
-      socket.emit("remove-collaborator", { collaboratorId: collaboratorToRemove.id, vaultId: vaultId as string })
-      setCollaboratorToRemove(null)
-    }
-  };
+
 
   const togglePermission = (collaborator: Collaborator, permission: 'canView' | 'canEdit' | 'canDelete' | 'canAdd') => {
     // Cannot disable view permission
@@ -140,19 +141,18 @@ const VaultCollaborators = () => {
       [permission]: !collaborator[permission]
     };
 
-      // updatePermissionsMutation.mutate({
-      //   memberId: collaborator?.id,
-      //   permissions: newPermissions
-      // });
+    // updatePermissionsMutation.mutate({
+    //   memberId: collaborator?.id,
+    //   permissions: newPermissions
+    // });
   };
 
   const handleConfirmAccess = async () => {
-    const finalData = await accessToAll(vault?.id, collaborators)
+    const finalData = await accessToAll(vault?.id, collaboratorsData)
     await confirmAccess({ finalData, vaultId: vaultId as string })
   }
 
   const handleToggleAccess = async (collaborator: Collaborator) => {
-    console.log("toggle access collaborator", collaborator)
     socket.emit("join-vault", vaultId as string)
     socket.emit("toggle-access", { collaboratorId: collaborator.user.id, vaultId: vaultId as string })
   }
@@ -177,13 +177,37 @@ const VaultCollaborators = () => {
 
   useEffect(() => {
 
+    socket.emit("join-vault", vaultId as string)
+
     socket.emit("get-online-users", vaultId as string)
     const handleOnlineUsers = (data: any) => {
       setOnlineUsers(data.onlineUsers)
     }
 
+    const handleRemoveCollaborator = (data: { message: string, collaboratorId: string }) => {
+
+      if (vault?.ownerId === user?.id) {
+        showToast({
+          type: "success",
+          message: data.message
+        })
+        setCollaborators(collaborators.filter((collaborator: Collaborator) => collaborator.userId !== data.collaboratorId))
+      }
+
+      if (user?.id === data.collaboratorId) {
+        showToast({
+          type: "info",
+          message: "You have been removed from this vault.",
+        });
+        router.push("/u/dashboard/vaults/shared-with-me");
+      }
+
+    }
+
+    socket.on("collaborator-removed", handleRemoveCollaborator)
     socket.on("online-users", handleOnlineUsers)
     return () => {
+      socket.off("collaborator-removed", handleRemoveCollaborator)
       socket.off("online-users", handleOnlineUsers)
     }
 
@@ -246,7 +270,7 @@ const VaultCollaborators = () => {
                   <TableRow>
                     <TableHead>Member</TableHead>
                     <TableHead>Permissions</TableHead>
-                    {vault?.ownerId !== user?.id && <TableHead>Actions</TableHead>}
+                    {vault?.ownerId === user?.id && <TableHead>Actions</TableHead>}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -309,7 +333,7 @@ const VaultCollaborators = () => {
                           </Badge>
                         </div>
                       </TableCell>
-                      {vault?.ownerId !== user?.id && <TableCell>
+                      {vault?.ownerId === user?.id && <TableCell>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon">
@@ -341,27 +365,6 @@ const VaultCollaborators = () => {
             )}
           </CardContent>
         </Card>
-
-        <AlertDialog open={!!collaboratorToRemove} onOpenChange={(open) => !open && setCollaboratorToRemove(null)}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Remove Collaborator</AlertDialogTitle>
-              <AlertDialogDescription>
-                Are you sure you want to remove {collaboratorToRemove?.user?.name || collaboratorToRemove?.user?.email}?
-                They will no longer have access to this vault.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              {/* <AlertDialogAction
-                onClick={confirmRemoveCollaborator}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              >
-                Remove
-              </AlertDialogAction> */}
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
 
         <ConfirmAccess
           open={isAccessConfirmModalOpen}

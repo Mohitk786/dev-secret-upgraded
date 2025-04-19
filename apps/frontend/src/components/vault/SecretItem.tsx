@@ -78,7 +78,6 @@ const SecretItem: React.FC<SecretItemProps> = ({
   };
 
   const onEditSecret = (secret: Secret) => {
-    console.log("🔑 secret", secret);
     setEditingSecret(secret);
     setIsEditSecretOpen(true);
   };

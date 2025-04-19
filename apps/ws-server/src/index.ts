@@ -172,16 +172,14 @@ io.on("connection", async (socket) => {
 
   socket.on("remove-collaborator", async (data: RemoveCollaboratorData) => {
     const { vaultId, collaboratorId } = data;
-    console.log("removeing-collaborator", data)
     const removed = await removeCollaborator(userId, vaultId, collaboratorId);
     if(!removed){
       return socket.emit("error", "Failed to remove collaborator");
     }
 
-    console.log("removed", removed)
-
     socket.emit("collaborator-removed", {
       message: `You removed ${removed.collaborator.user.name} from the vault`,
+      collaboratorId: removed.collaborator.id,
     });
 
      //emit to the removed collaborator
@@ -189,6 +187,7 @@ io.on("connection", async (socket) => {
      if (collaboratorSocket) {
       io.to(collaboratorSocket.id).emit("collaborator-removed", {
         message: `You were removed from the vault`,
+        collaboratorId: removed.collaborator.id,
       });
      }
 
