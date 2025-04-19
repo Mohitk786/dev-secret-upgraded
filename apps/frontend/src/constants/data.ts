@@ -13,14 +13,36 @@ import {
 export const BASE_URL ='http://localhost:5000/api';
 
 
+export const APP_ROUTES = {
+
+    
+    DASHBOARD: "/u/dashboard",
+    VAULTS: "/u/v",
+    VAULTS_NEW: "/u/v/new",
+    VAULT_DETAIL: "/u/v/:vaultId",
+    
+    VAULT_DETAIL_SHARED: "/u/v/shared-with-me/:vaultId",
+    SHARED_WITH_ME: "/u/v/shared-with-me",
+    INVITES: "/u/invites",
+    INVITE_DETAIL: "/u/invites/:inviteId",
+    AUDIT_LOGS: "/u/audit-logs",
+    RECYCLE_BIN: "/u/recycle-bin",
+    SETTINGS: "/u/settings",
+  
+    LOGIN: "/login",
+    SIGNUP: "/signup",
+    PRICING: "/pricing",
+  
+}
+
 export const mainNavItems = [
-    { title: "Dashboard", icon: Home, href: "/u/dashboard" },
-    { title: "Vaults", icon: ShieldCheck, href: "/u/dashboard/vaults" },
-    { title: "Shared with me", icon: Share, href: "/u/dashboard/vaults/shared-with-me" },
-    { title: "Invites", icon: Mail, href: "/u/dashboard/invites" },
-    { title: "Audit Logs", icon: History, href: "/u/dashboard/audit-logs" },
-    { title: "Recycle Bin", icon: Trash, href: "/u/dashboard/recycle-bin" },
-    { title: "Settings", icon: Settings, href: "/u/dashboard/settings" },
+    { title: "Dashboard", icon: Home, href: APP_ROUTES.DASHBOARD },
+    { title: "Vaults", icon: ShieldCheck, href: APP_ROUTES.VAULTS },
+    { title: "Shared with me", icon: Share, href: APP_ROUTES.SHARED_WITH_ME },
+    { title: "Invites", icon: Mail, href: APP_ROUTES.INVITES },
+    { title: "Audit Logs", icon: History, href: APP_ROUTES.AUDIT_LOGS },
+    { title: "Recycle Bin", icon: Trash, href: APP_ROUTES.RECYCLE_BIN },
+    { title: "Settings", icon: Settings, href: APP_ROUTES.SETTINGS },
   ];
 
 export const pricingNavItems = [

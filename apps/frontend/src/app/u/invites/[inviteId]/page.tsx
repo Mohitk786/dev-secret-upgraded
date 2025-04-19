@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle, XCircle, Shield, PenLine, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import useToast from "@/hooks/utils/useToast";
+import { APP_ROUTES } from "@/constants/data";
 
 const AcceptInvite = () => {
     const { inviteId } = useParams();
@@ -26,7 +27,7 @@ const AcceptInvite = () => {
 
             // Redirect to vaults after 3 seconds
             const timer = setTimeout(() => {
-                router.push("/u/dashboard/vaults/shared-with-me");
+                router.push(APP_ROUTES.SHARED_WITH_ME);
             }, 3000);
 
             return () => clearTimeout(timer);
@@ -67,7 +68,7 @@ const AcceptInvite = () => {
                         </div>
                     </CardContent>
                     <CardFooter>
-                        <Button variant="secondary" className="w-full" onClick={() => router.push("/u/dashboard/vaults/shared-with-me")}>
+                            <Button variant="secondary" className="w-full" onClick={() => router.push(APP_ROUTES.SHARED_WITH_ME)}>
                             Return to Vaults
                         </Button>
                     </CardFooter>
@@ -97,7 +98,7 @@ const AcceptInvite = () => {
                         </div>
                     </CardContent>
                     <CardFooter>
-                        <Button className="w-full" onClick={() => router.push("/vaults")}>
+                        <Button className="w-full" onClick={() => router.push(APP_ROUTES.VAULTS)}>
                             Go to Vaults
                         </Button>
                     </CardFooter>
@@ -134,10 +135,10 @@ const AcceptInvite = () => {
                     </div>
                 </CardContent>
                 <CardFooter className="flex justify-between">
-                    <Button variant="outline" onClick={() => router.push("/vaults")}>
+                        <Button variant="outline" onClick={() => router.push(APP_ROUTES.VAULTS)}>
                         Decline
                     </Button>
-                    <Button onClick={() => router.push(`/invites/${inviteId}`)}>
+                    <Button onClick={() => router.push(`${APP_ROUTES.INVITES}/${inviteId}`)}>
                         Accept Invitation
                     </Button>
                 </CardFooter>

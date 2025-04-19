@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import AddSecretPopup from "@/components/vault/AddSecretPopup";
-import { useGetSharedVaultQuery, useGetVaultKeyQuery } from "@/hooks/queries/useCollabQuery";
 import { useGetVaultQuery } from "@/hooks/queries/useVaultQuery";
 
 import VaultHeader from "@/components/vault/VaultHeader";
@@ -13,11 +12,12 @@ import useToast from "@/hooks/utils/useToast";
 import { Secret } from "@/types/types";
 import VaultDetailError from "./VaultDetailError";
 import VaultDetailSkeleton from "./VaultDetailSkeleton";
-import { decryptSecret, decryptVaultKeyWithPrivateKey } from "@/E2E/decryption";
+import { decryptSecret } from "@/E2E/decryption";
 import { z } from "zod";
 import useSocket from "@/hooks/utils/useSocket";
 import { useAuth } from "@/hooks/queries/authQueries";
-import { useDecryptedVaultKey } from "@/hooks/utils/useDecryptedVaultKey";
+import { useDecryptedSecrets } from "@/hooks/utils/useDecryptedSecrets";
+import { APP_ROUTES } from "@/constants/data";
 
 export const formSchema = z.object({
   key: z.string().min(1, { message: "Secret name is required" }),
@@ -48,16 +48,11 @@ const VaultDetail = ({ isSharedVault }: { isSharedVault: boolean }) => {
   const { showToast } = useToast();
   const { user } = useAuth();
   const router = useRouter();
+  const { data: vault, isLoading, error } = useGetVaultQuery(vaultId);
 
   const socket = useSocket();
 
-  const { decryptedVaultKey,
-    decryptedSecrets,
-    isLoading,
-    error,
-    vault,
-    setDecryptedSecrets
-  } = useDecryptedVaultKey(vaultId || "");
+  const { decryptedVaultKey, decryptedSecrets, setDecryptedSecrets} = useDecryptedSecrets(vaultId, vault?.secrets);
 
   const [hasAccess, setHasAccess] = useState<Boolean>(false);
 
@@ -131,13 +126,13 @@ const VaultDetail = ({ isSharedVault }: { isSharedVault: boolean }) => {
 
     const onVaultDeleted = async (data: { message: string, vaultId: string }) => {
       if (vault?.ownerId === user?.id) {
-        router.push("/u/dashboard/vaults");
+          router.push(APP_ROUTES.VAULTS);
       } else {
-        router.push("/u/dashboard/shared-with-me");
+        router.push(APP_ROUTES.SHARED_WITH_ME);
       }
 
       showToast({
-        type: "success",
+        type: "success",  
         message: data?.message,
       });
     }

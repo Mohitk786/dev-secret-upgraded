@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useGetVaultQuery } from "@/hooks/queries/useVaultQuery";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,7 +26,6 @@ import {
   Users,
   MoreVertical,
   UserPlus,
-  ArrowLeft,
   Shield,
   PenLine,
   Trash2,
@@ -36,27 +34,14 @@ import {
   ShieldX,
   Plus
 } from "lucide-react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+
 import { useGetVaultCollaboratorsQuery } from "@/hooks/queries/useCollabQuery";
-// import { useDecryptAllSecrets } from "@/hooks/utils/useDecryptAllSecrets";
-import { useConfirmAccess, useToggleAccess } from "@/hooks/mutations/useCollab";
-// import { reEncryptData } from "@/lib/reEncryption";
-// import ConfirmAccess from "@/components/Helper/ConfirmAccess";
-import { ConfirmModalData } from "@/constants/data";
+import { useConfirmAccess } from "@/hooks/mutations/useCollab";
+import { ConfirmModalData, APP_ROUTES    } from "@/constants/data";
 import { accessToAll } from "@/E2E/operations/accessToAll";
 import ConfirmAccess from "@/components/utils/ConfirmAccess";
 import useSocket from "@/hooks/utils/useSocket";
 import { useAuth } from "@/hooks/queries/authQueries";
-// import { confirmAccess } from "@/services/collabServices";
 
 interface Collaborator {
   id: string;
@@ -97,9 +82,7 @@ const VaultCollaborators = () => {
   const [onlineUsers, setOnlineUsers] = useState<any[]>([]);
   const router = useRouter()
   const { showToast } = useToast()
-  // const { mutate: toggleAccess, isPending: isTogglingAccess } = useToggleAccess();
-
-  // const { decyptedSecrets } = useDecryptAllSecrets(vault?.vault)
+ 
 
   useEffect(() => {
     if (collaboratorsData) {
@@ -127,11 +110,10 @@ const VaultCollaborators = () => {
   //   }
   // });
 
+
   const handleRemoveCollaborator = (collaborator: Collaborator) => {
     socket.emit("remove-collaborator", { collaboratorId: collaborator.user.id, vaultId: vaultId as string })
   };
-
-
 
   const togglePermission = (collaborator: Collaborator, permission: 'canView' | 'canEdit' | 'canDelete' | 'canAdd') => {
     // Cannot disable view permission
@@ -199,7 +181,7 @@ const VaultCollaborators = () => {
           type: "info",
           message: "You have been removed from this vault.",
         });
-        router.push("/u/dashboard/vaults/shared-with-me");
+        router.push(APP_ROUTES.SHARED_WITH_ME);
       }
 
     }
@@ -226,7 +208,7 @@ const VaultCollaborators = () => {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Link href={`/u/dashboard/vaults/${vaultId}/invite`}>
+            <Link href={`${APP_ROUTES.VAULTS}/${vaultId}/invite`}>
               <Button className="flex items-center gap-2">
                 <UserPlus className="h-4 w-4" />
                 Invite Member
@@ -257,7 +239,7 @@ const VaultCollaborators = () => {
             ) : collaborators.length === 0 ? (
               <div className="p-8 text-center">
                 <p className="text-muted-foreground">No collaborators yet</p>
-                <Link href={`/u/dashboard/vaults/${vaultId}/invite`}>
+                <Link href={`${APP_ROUTES.VAULTS}/${vaultId}/invite`}>
                   <Button variant="outline" className="mt-4">
                     <UserPlus className="h-4 w-4 mr-2" />
                     Invite Collaborators

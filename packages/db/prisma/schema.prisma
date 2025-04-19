@@ -36,7 +36,7 @@ model VaultKey {
   vault           Vault    @relation(fields: [vaultId], references: [id], onDelete: Cascade)
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([vaultId, userId]) // Make sure one entry per user per vault
+  @@unique([vaultId, userId]) 
 }
 
 

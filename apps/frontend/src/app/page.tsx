@@ -9,6 +9,7 @@ import {
 import { Shield, Key, Lock, Users} from "lucide-react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { APP_ROUTES } from "@/constants/data";
 
 const features = [
   {
@@ -60,8 +61,8 @@ const Index = () => {
               <span className="text-xl font-bold">KeyVault</span>
             </div>
             <div className="flex space-x-4">
-              <Button variant="ghost" onClick={() => router.push("/login")}>Sign In</Button>
-              <Button onClick={() => router.push("/signup")}>Get Started</Button>
+              <Button variant="ghost" onClick={() => router.push(APP_ROUTES.LOGIN)}>Sign In</Button>
+              <Button onClick={() => router.push(APP_ROUTES.SIGNUP)}>Get Started</Button>
             </div>
           </div>
         </div>
@@ -93,7 +94,7 @@ const Index = () => {
             transition={{ duration: 0.5, delay: 0.4 }}
             className="mt-10 flex justify-center space-x-4"
           >
-            <Button size="lg" onClick={() => router.push("/register")}>
+            <Button size="lg" onClick={() => router.push(APP_ROUTES.SIGNUP)}>
               Start Free Trial
             </Button>
             <Button size="lg" variant="outline">
@@ -157,10 +158,10 @@ const Index = () => {
             Join thousands of developers who trust KeyVault for their secret management needs.
           </p>
           <div className="flex justify-center space-x-4">
-            <Button size="lg" onClick={() => router.push("/register")}>
+              <Button size="lg" onClick={() => router.push(APP_ROUTES.SIGNUP)}>
               Start Free Trial
             </Button>
-            <Button size="lg" variant="outline" onClick={() => router.push("/pricing")}>
+            <Button size="lg" variant="outline" onClick={() => router.push(APP_ROUTES.PRICING)}>
               View Pricing
             </Button>
           </div>

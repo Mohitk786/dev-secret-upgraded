@@ -4,13 +4,14 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Check } from "lucide-react";
 import { useAuth } from "@/hooks/queries/authQueries";
-
+import { APP_ROUTES } from "@/constants/data";
 const VaultCard = ({ vault }: { vault: any }) => {
     const { user } = useAuth();
     const isOwner = vault?.ownerId === user?.id;
+
     
     return (
-        <Link href={`/u/dashboard/vaults${isOwner ? "" : "/shared"}/${vault?.id}`} key={vault?.id}>
+        <Link href={`${APP_ROUTES.VAULTS}${isOwner ? "" : "/shared"}/${vault?.id}`} key={vault?.id}>
             <Card className="h-full overflow-hidden transition-all hover:border-primary/50 hover:shadow-md group">
                 <CardContent className="p-6">
                     <div className="flex items-start justify-between">

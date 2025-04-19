@@ -52,6 +52,7 @@ export const getDeletedSecrets = async (req: CustomRequest, res: Response):Promi
             include: {
                 vault: {
                     select: {
+                        id:true,
                         name: true,
                     },
                 },

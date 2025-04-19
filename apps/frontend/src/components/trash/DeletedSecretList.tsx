@@ -7,6 +7,7 @@ import {  Store, Trash2 } from "lucide-react";
 import { useRestoreSecretMutation, usePermanentDeleteSecretMutation } from "@/hooks/mutations/useTrashMutations";
 import moment from "moment";
 
+
 interface DeletedSecretListProps {
   secrets: any[];
   isLoading: boolean;
@@ -24,7 +25,15 @@ export const DeletedSecretList = ({ secrets, isLoading }: DeletedSecretListProps
     return <div className="text-center py-8 text-muted-foreground">No deleted secrets found</div>;
   }
 
-  
+  // const { decryptedVaultKey, decryptedSecrets, setDecryptedSecrets} = useDecryptedSecrets(vaultId, vault?.secrets);
+ 
+  //  const decryptedSecrets = secrets.map(async (secret:any)=>{
+
+  //   const decryptedVaultKey = await decryptVaultKeyWithPrivateKey(secret.vaultKey);
+  //   const decryptedSecret = await decryptSecret(secret, decryptedVaultKey);
+  //   return decryptedSecret;
+  //  })
+ 
 
   return (
     <Table>
@@ -45,10 +54,10 @@ export const DeletedSecretList = ({ secrets, isLoading }: DeletedSecretListProps
 
           return (
             <TableRow key={secret.id}>
-              <TableCell>{secret.key}</TableCell>
+              <TableCell>{secret.key || "..."}</TableCell>
               <TableCell>{secret.vault.name}</TableCell>
               <TableCell>
-                <Badge variant="secondary">{secret.type}</Badge>
+                <Badge variant="secondary">{secret.type || "..."}</Badge>
               </TableCell>
               <TableCell>{moment(deletedDate).format('MMM dd, yyyy')}</TableCell>
               <TableCell>{daysLeft} days</TableCell>

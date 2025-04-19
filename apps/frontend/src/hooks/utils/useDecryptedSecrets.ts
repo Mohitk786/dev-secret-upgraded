@@ -1,20 +1,18 @@
 import { useEffect, useState } from "react";
 import { decryptVaultKeyWithPrivateKey } from "@/E2E/decryption";
-import { Secret } from "@/types/types";
-import { useGetSharedVaultQuery, useGetVaultKeyQuery } from "@/hooks/queries/useCollabQuery";
-import { useGetVaultQuery } from "@/hooks/queries/useVaultQuery";
+import { Secret, } from "@/types/types";
+import { useGetVaultKeyQuery } from "@/hooks/queries/useCollabQuery";
 import useToast from "@/hooks/utils/useToast";
 import { decryptSecret } from "@/E2E/decryption";
 
-export const useDecryptedVaultKey = (
+export const useDecryptedSecrets = (
   vaultId: string,
+  encryptedSecrets: Secret[]
 ) => {
   const [decryptedVaultKey, setDecryptedVaultKey] = useState<CryptoKey | null>(null);
   const [decryptedSecrets, setDecryptedSecrets] = useState<Secret[]>([]);
   const { showToast } = useToast();
-
   const { data: vaultKey } = useGetVaultKeyQuery(vaultId);
-  const { data: vault, isLoading, error } = useGetVaultQuery(vaultId);
 
 
   useEffect(() => {
@@ -25,7 +23,7 @@ export const useDecryptedVaultKey = (
         const key = await decryptVaultKeyWithPrivateKey(vaultKey);
         setDecryptedVaultKey(key);
         const secrets = await Promise.all(
-          vault?.secrets.map((secret: Secret) =>
+          encryptedSecrets.map((secret: Secret) =>
             decryptSecret(secret, key)
           ) || []
         );
@@ -39,14 +37,14 @@ export const useDecryptedVaultKey = (
     };
 
     decryptVaultKey();
-  }, [vaultKey, vault?.secrets]);
+  }, [vaultKey, encryptedSecrets]);
 
   return {
     decryptedVaultKey,
     decryptedSecrets,
-    isLoading,
-    error,
-    vault,
+    // isLoading,
+    // error,
+    // vault,
     setDecryptedSecrets
   };
 };

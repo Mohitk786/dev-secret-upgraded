@@ -3,7 +3,7 @@ import { createVault, deleteVault, updateVault } from "@/services/vaultServices"
 import { QUERY_KEYS } from "@/constants/queryKeys";
 import { useRouter } from "next/navigation";
 import useToast from "../utils/useToast";
-
+import { APP_ROUTES } from "@/constants/data";
 export const useCreateVaultMutation = () => {
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -13,14 +13,14 @@ export const useCreateVaultMutation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.VAULTS] });
       showToast({type: "success", message: "Vault created successfully! ✨"});
-      router.push("/u/dashboard/vaults");
+      router.push(APP_ROUTES.VAULTS);
     },
     onError: (err: any) => showToast({type: "error", message: err.response?.data?.message || "Error"}),
   });
 };
 
 export const useUpdateVaultMutation = () => {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient(); 
   const { showToast } = useToast();
   return useMutation({
     mutationFn: updateVault,

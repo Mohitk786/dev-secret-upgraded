@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import Link from 'next/link'
 import { Plus } from 'lucide-react'
 import VaultCard from './VaultCard'
+import { APP_ROUTES } from '@/constants/data'
 
 interface VaultPageHeaderProps {
     title: string;
@@ -54,7 +55,7 @@ const vaultPage = ({ title, description, icon, vaults, isSharedVault }: VaultPag
                     <VaultCard key={vault?.id} vault={vault} />
                 ))}
 
-                { isSharedVault ? <></> : <Link href="/u/dashboard/vaults/new">
+                { isSharedVault ? <></> : <Link href={APP_ROUTES.VAULTS_NEW}>
                     <Card className="h-full overflow-hidden transition-all border-dashed border-primary/30 hover:border-primary/70 flex items-center justify-center">
                         <CardContent className="p-6 text-center flex flex-col items-center justify-center h-full">
                             <div className="rounded-full bg-primary/10 p-4 mb-4">
@@ -66,10 +67,10 @@ const vaultPage = ({ title, description, icon, vaults, isSharedVault }: VaultPag
                             </p>
                         </CardContent>
                     </Card>
-                </Link>}
+                </Link>}    
             </div>
         </>
     )
-}
+}   
 
 export default vaultPage

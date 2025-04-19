@@ -2,7 +2,7 @@ import { login, signup } from "@/services/authServices";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import useToast from "../utils/useToast";
-
+import { APP_ROUTES } from "@/constants/data";
 
 export const useLoginMutation = () => {
     const router = useRouter();
@@ -32,11 +32,11 @@ export const useSignupMutation = () => {
         mutationFn: signup,
         onSuccess: () => {
             showToast({type: "success", message:"Private key saved to your device. Please keep it safe. You will need it in future to login to your account otherwise you will not be able to access your account."});
-            router.push("/login");
-        },
+            router.push(APP_ROUTES.LOGIN);
+        },  
         onError: (error: any) => {
             showToast({type: "error", message: error?.response?.data?.message});
         }
-    })
+    })  
 
 }

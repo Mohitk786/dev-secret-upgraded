@@ -28,6 +28,7 @@ import { useGetVaultQuery } from "@/hooks/queries/useVaultQuery";
 import { useUpdateVaultMutation } from "@/hooks/mutations/useVaultMutations";
 import { Separator } from "@/components/ui/separator";
 import { useEffect } from "react";
+import { APP_ROUTES } from "@/constants/data";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -91,7 +92,7 @@ const EditVault = () => {
         vaultId: vaultId,
         data: values
       });
-      router.push(`/u/dashboard/vaults/${vaultId}`);
+      router.push(`${APP_ROUTES.VAULTS}/${vaultId}`);
     } catch (error) {
       console.error("Failed to update vault:", error);
     }
@@ -118,7 +119,7 @@ const EditVault = () => {
         <p className="text-muted-foreground mt-2">
           {error instanceof Error ? error.message : "Could not find the requested vault"}
         </p>
-        <Button onClick={() => router.push("/u/dashboard/vaults")} className="mt-4">
+        <Button onClick={() => router.push(APP_ROUTES.VAULTS)} className="mt-4">
           Back to Vaults
         </Button>
       </div>
@@ -227,7 +228,7 @@ const EditVault = () => {
               />
 
               <div className="flex justify-end gap-2 pt-4">
-                <Button type="button" variant="outline" onClick={() => router.push(`/u/dashboard/vaults/${vaultId}`)}>
+                <Button type="button" variant="outline" onClick={() => router.push(`${APP_ROUTES.VAULTS}/${vaultId}`)}>
                   Cancel
                 </Button>
                 <Button 

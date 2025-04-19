@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/queries/authQueries";
 import  useSocket  from "@/hooks/utils/useSocket";
-
+import { APP_ROUTES } from "@/constants/data";
 interface VaultHeaderProps {
   vault: any;
   setIsAddSecretOpen: (value: boolean) => void;
@@ -53,7 +53,7 @@ const VaultHeader = ({ vault, setIsAddSecretOpen }: VaultHeaderProps) => {
           className="gap-1"
           asChild
         >
-          <Link href={`/u/dashboard/vaults/${vault?.id}/logs`}>
+          <Link href={`${APP_ROUTES.VAULTS}/${vault?.id}/logs`}>
             <FileText className="h-4 w-4" />
             <span className="hidden md:inline">Activity Logs</span>
           </Link>
@@ -67,7 +67,7 @@ const VaultHeader = ({ vault, setIsAddSecretOpen }: VaultHeaderProps) => {
           className="gap-1"
           asChild
         >
-          <Link href={`/u/dashboard/vaults/${vault?.id}/collaborators`}>
+          <Link href={`${APP_ROUTES.VAULTS}/${vault?.id}/collaborators`}>
             <Users className="h-4 w-4" />
             <span className="hidden md:inline">Collaborators</span>
           </Link>
@@ -92,12 +92,12 @@ const VaultHeader = ({ vault, setIsAddSecretOpen }: VaultHeaderProps) => {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem asChild>
-              <Link href={`/u/dashboard/vaults/${vault?.id}/edit`} className="cursor-pointer flex items-center">
+              <Link href={`${APP_ROUTES.VAULTS}/${vault?.id}/edit`} className="cursor-pointer flex items-center">
                 <Pencil className="h-4 w-4 mr-2" /> Edit Vault
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href={`/u/dashboard/vaults/invite/${vault?.id}`} className="cursor-pointer flex items-center">
+              <Link href={`${APP_ROUTES.VAULTS}/${vault?.id}/invite`} className="cursor-pointer flex items-center">
                 <Users className="h-4 w-4 mr-2" /> Invite Members
               </Link>
             </DropdownMenuItem>
