@@ -40,6 +40,13 @@ export const getAllInvites = async (req: any, res: any) => {
                         name: true,
                         id: true
                     }
+                },
+                inviter:{
+                    select:{
+                        id: true,
+                        email: true,
+                        name: true,
+                    }
                 }
             }
         });

@@ -8,11 +8,21 @@ export const sendInvite = async (data: Invite) => {
 };
 
 export const acceptInvite = async (inviteId: string) => {
-    const response = await axiosInstance.get(`/collab/accept-invite/${inviteId}`);
+    const response = await axiosInstance.post(`/collab/accept-invite/${inviteId}`);
     return response.data;
 };
 
-export const getInvites = async (type: string, status: string) => {
+export const rejectInvite = async (inviteId: string) => {
+    const response = await axiosInstance.post(`/collab/reject-invite/${inviteId}`);
+    return response.data;
+};
+
+export const getInvite = async (inviteId: string) => {
+    const response = await axiosInstance.get(`/collab/invite/${inviteId}`);
+    return response.data?.invite;
+};
+
+export const getInvites = async (type: string, status: string) => { 
     const response = await axiosInstance.get(`/invites?type=${type || "sent"}&status=${status || "ALL"}`);
     return response.data?.invites;
 };

@@ -3,16 +3,16 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const config = {
-  RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID,
-  RAZORPAY_WEBHOOK_SECRET: process.env.RAZORPAY_WEBHOOK_SECRET,
-  RAZORPAY_WEBHOOK_URL: process.env.RAZORPAY_WEBHOOK_URL,
-  JWT_SECRET: process.env.JWT_SECRET,
-  PORT: process.env.PORT,
-  REACT_URL: process.env.REACT_URL,
-  SERVER_URL: process.env.SERVER_URL,
-  EMAIL: process.env.EMAIL,
-  PASSWORD: process.env.PASSWORD,
-  SESSION_KEY: process.env.SESSION_KEY,
-  NODE_ENV: process.env.NODE_ENV,
+    JWT_SECRET: "secret",
+    PORT: 5000,
+    REACT_URL: "http://localhost:3000",
+    SERVER_URL: "http://localhost:5000",
+    EMAIL: "kumarmohit08004@gmail.com",
+    PASSWORD: "qzjq lbis ylof gyot",
+    SESSION_KEY: "your-secret-key",
+    NODE_ENV: "development",
+    RAZORPAY_WEBHOOK_SECRET: "my_secret",
+    RAZORPAY_KEY_ID: "rzp_test_7CveMu5u6Bc9PZ",
+    RAZORPAY_KEY_SECRET: "l7dezZNHSTg18DOkK8KCvhmg",
+    RAZORPAY_WEBHOOK_URL: "https://ce84-122-176-1-23.ngrok-free.app/api/payment/webhook",
 }
-

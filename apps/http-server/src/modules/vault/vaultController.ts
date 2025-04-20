@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import prisma from '@secret-vault/db/client';
 import { CustomRequest } from '../../middleware/auth';
 import { sendInviteEmail } from '@secret-vault/backend-common/emailTemplates';
@@ -263,6 +263,18 @@ export async function sentInvite(req: CustomRequest, res: Response): Promise<any
       return;
     }
 
+   
+    const collaborator = await prisma.collaborator.findFirst({
+      where: {
+        userId: user.id,
+        vaultId,
+      },
+    });
+
+    if(collaborator){
+      res.status(400).json({ message: 'User is already a collaborator' });
+      return;
+    }
 
     const existingInvite = await prisma.invite.findFirst({
       where: {
@@ -341,8 +353,13 @@ export async function acceptInvite(req: CustomRequest, res: Response): Promise<a
       return;
     }
 
-    if (invite.inviteeId === userId) {
-      res.status(400).json({ message: 'You are already a member of this vault' });
+    if(invite.inviteeId !== userId){
+      res.status(403).json({ message: 'You are not authorized to accept this invite' });
+      return;
+    }
+
+    if (invite.status === 'ACCEPTED') {
+      res.status(400).json({ message: 'You have already accepted this invite' });
       return;
     }
 
@@ -396,11 +413,72 @@ export async function acceptInvite(req: CustomRequest, res: Response): Promise<a
   }
 }
 
+export async function getInvite(req: CustomRequest, res: Response): Promise<any> {
+  try {
+    const { inviteId } = req.params;
+    const userId = req.user?.id;  
+
+    if(!userId){
+      res.status(401).json({ message: 'Unauthorized' });
+      return;
+    }
+
+    const invite = await prisma.invite.findUnique({
+      where: {
+        id: inviteId,
+      },
+      select:{
+        canAdd: true,
+        canDelete: true,
+        canEdit: true,
+        canView: true,
+        inviteeId: true,
+        status: true,
+      }
+    });
+
+    if(!invite){
+      res.status(404).json({ message: 'Invite not found' });
+      return;
+    }
+
+    if(invite.status !== 'PENDING'){
+      res.status(400).json({ message: `Invite already ${invite.status.toLowerCase()}` });
+      return;
+    }
+
+    if(invite.inviteeId !== userId){
+      res.status(403).json({ message: 'You are not authorized to access this invite' });
+      return;
+    }
+
+    res.status(200).json({
+      invite,
+    }); 
+
+  } catch (err: any) {
+    res.status(500).json({ message: 'Failed to get invite', error: err.message });
+  }
+} 
+
+
+
+
 
 export async function getAllCollaborators(req: CustomRequest, res: Response): Promise<any> {
   try {
     const vaultId = req.params.vaultId as string;
     const userId = req.user?.id;
+   
+    if(!vaultId){
+      res.status(400).json({ message: 'Vault ID is required' });
+      return;
+    }
+
+    if(!userId){
+      res.status(401).json({ message: 'Unauthorized' });
+      return;
+    }
 
     const { isOwner, collaborator } = await checkVaultAccess(userId!, vaultId);
 
@@ -627,6 +705,55 @@ export async function getVaultLogs(req: CustomRequest, res: Response): Promise<a
     res.status(500).json({ message: 'Failed to get vault logs', error: err.message });
   }
 }
+
+
+export async function rejectInvite(req: CustomRequest, res: Response): Promise<any> {
+  try {
+    const { inviteId } = req.params;
+    const userId = req.user?.id;
+
+    if (!userId) {
+      res.status(401).json({ message: 'Unauthorized' });
+      return;
+    }
+
+    const invite = await prisma.invite.findUnique({
+      where: {
+        id: inviteId,
+      },
+    });
+
+    if (!invite) {
+      res.status(404).json({ message: 'Invite not found' });
+      return;
+    }
+
+    if (invite.inviteeId !== userId) {
+      res.status(403).json({ message: 'You are not authorized to reject this invite' });
+      return;
+    }
+
+    if (invite.status !== 'PENDING') {
+      res.status(400).json({ message: 'Invite already accepted' });
+      return;
+    }   
+
+    await prisma.invite.update({
+      where: { id: inviteId },
+      data: {
+        status: 'REJECTED',
+      },
+    });
+
+    res.status(200).json({
+      message: 'Invite rejected successfully',
+    });
+
+  } catch (err: any) {
+    res.status(500).json({ message: 'Failed to reject invite', error: err.message });
+  }
+}
+
 
 
 

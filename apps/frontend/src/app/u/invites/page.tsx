@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useInvitesQuery } from "@/hooks/queries/useCollabQuery";
-import { useConfirmAccess } from "@/hooks/mutations/useCollab";
+import { useAcceptInvite, useRejectInvite} from "@/hooks/mutations/useCollab";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,11 +14,15 @@ import { Loading } from "@/components/ui/Loading";
 interface InviteProps {
   id: string;
   inviteeEmail?: string;
-  inviterEmail?: string;
   status: string;
   createdAt: string;
   vault: {
     name: string;
+    id: string;
+  };
+  inviter: {
+    name: string;
+    email: string;
     id: string;
   };
   canView: boolean;
@@ -33,7 +37,6 @@ const InviteTable = ({ invites, onAccept, onReject, showActions = false, activeT
   showActions?: boolean,
   activeTab: string
 }) => {
-  console.log("invites", invites);
   return (
    
 
@@ -70,7 +73,7 @@ const InviteTable = ({ invites, onAccept, onReject, showActions = false, activeT
                 <tbody className="[&_tr:last-child]:border-0">
                   {invites.map((invite) => (
                     <tr key={invite.id} className="border-b transition-colors hover:bg-muted/50">
-                      {activeTab === "received" && <td className="p-4 align-middle">{invite.inviterEmail}</td>}
+                      {activeTab === "received" && <td className="p-4 align-middle">{invite.inviter.name || invite.inviter.email}</td>}
                       {activeTab === "sent" && <td className="p-4 align-middle">{invite.inviteeEmail}</td>}
                       <td className="p-4 align-middle font-medium">{invite.vault.name}</td>
                       <td className="p-4 align-middle">
@@ -147,15 +150,16 @@ const Invites = () => {
   const [activeTab, setActiveTab] = useState("received");
   const [status, setStatus] = useState("ALL");
   const { data: invitesData, isLoading } = useInvitesQuery(activeTab, status);
+  const { mutate: acceptInvite } = useAcceptInvite();
+  const { mutate: rejectInvite } = useRejectInvite();
   
-  const { mutate: confirmAccess } = useConfirmAccess();
 
   const handleAcceptInvite = (inviteId: string) => {
-    confirmAccess({ inviteId });
+    acceptInvite(inviteId);
   };
 
   const handleRejectInvite = (inviteId: string) => {
-    console.log("rejecting invite", inviteId);
+    rejectInvite(inviteId);
   };
 
   return (
@@ -197,6 +201,7 @@ const Invites = () => {
             />
           )}
         </TabsContent>
+
         <TabsContent value="sent">
           {isLoading ? (
            <Loading />
