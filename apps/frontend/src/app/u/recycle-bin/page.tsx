@@ -20,11 +20,6 @@ const RecycleBin = () => {
     queryFn: getDeletedSecrets,
   });
 
-
-  console.log("deletedVaults", deletedVaults);
-  console.log("deletedSecrets", deletedSecrets);
-
- 
   return (
     <div className="container max-w-6xl mx-auto space-y-6 p-6">
       <Card>

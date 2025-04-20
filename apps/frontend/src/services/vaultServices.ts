@@ -30,7 +30,6 @@ export const getVaultKey = async (vaultId: string) => {
     const response = await axiosInstance.get(`/vaults/${vaultId}/vault-key`);
     return response.data?.vaultKey; 
   }catch(err){
-      console.log("Error getting vault key", err);
       return null;
   }
   } 

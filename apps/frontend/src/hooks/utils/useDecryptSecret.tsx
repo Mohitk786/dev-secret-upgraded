@@ -29,7 +29,6 @@ export const decryptSecret = ({key, value}: { key: string; value: string }) => {
           setDecryptedValue(decryptedValue);
 
         } catch (error: any) {
-          console.log(error);
           setError("Failed to decrypt the secret");
             showToast({
             type: "error",

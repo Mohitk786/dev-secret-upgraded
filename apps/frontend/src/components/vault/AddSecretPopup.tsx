@@ -89,7 +89,6 @@ const AddSecretPopup = ({ open, onOpenChange }: AddSecretPopupProps) => {
       onOpenChange(false);
 
     } catch (error:any) {
-      console.log("error", error);
       showToast({
         type: "error",
         message: error.message,

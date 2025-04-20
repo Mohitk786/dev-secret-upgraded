@@ -754,7 +754,6 @@ export async function updateCollaborator(req: CustomRequest, res: Response): Pro
   try {
     const { vaultId, collaboratorId } = req.params;
     const { canEdit, canDelete, canView, canAdd } = req.body;
-    console.log(canEdit, canDelete, canView, canAdd);
     const userId = req.user?.id;
 
     if (!userId) {
