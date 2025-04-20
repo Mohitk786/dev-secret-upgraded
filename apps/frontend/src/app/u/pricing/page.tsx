@@ -14,7 +14,29 @@ import { Check } from "lucide-react";
 import { axiosInstance } from "@/lib/axiosInstance";
 
 
+import { CheckCircle, ShieldCheck, User, Vault, Lock, Users, Mail, Sparkles, Headphones, Building2, KeyRound, LogOut } from "lucide-react";
 
+const featureIcons: Record<string, any> = {
+  "Up to 5 vaults": <Vault className="h-5 w-5 text-green-500" />,
+  "Unlimited items per vault": <CheckCircle className="h-5 w-5 text-green-500" />,
+  "Basic encryption": <Lock className="h-5 w-5 text-yellow-500" />,
+  "Email support": <Mail className="h-5 w-5 text-blue-500" />,
+  "1 user only": <User className="h-5 w-5 text-gray-500" />,
+
+  "Unlimited vaults": <Vault className="h-5 w-5 text-green-500" />,
+  "Advanced encryption": <ShieldCheck className="h-5 w-5 text-purple-500" />,
+  "Secure sharing": <Lock className="h-5 w-5 text-teal-500" />,
+  "Priority support": <Headphones className="h-5 w-5 text-indigo-500" />,
+  "Up to 10 users": <Users className="h-5 w-5 text-orange-500" />,
+  "Access control & permissions": <KeyRound className="h-5 w-5 text-pink-500" />,
+
+  "Everything in Professional": <Sparkles className="h-5 w-5 text-yellow-400" />,
+  "Dedicated support manager": <Headphones className="h-5 w-5 text-indigo-500" />,
+  "Custom integrations": <Building2 className="h-5 w-5 text-sky-500" />,
+  "SSO & SAML support": <LogOut className="h-5 w-5 text-fuchsia-500" />,
+  "Unlimited users": <Users className="h-5 w-5 text-orange-500" />,
+  "Advanced audit logs": <CheckCircle className="h-5 w-5 text-green-600" />,
+};
 
 const Pricing = () => {
   const [isUserPremium, setIsUserPremium] = useState(false);
@@ -59,6 +81,12 @@ const Pricing = () => {
     rzp.open();
   }
 
+  const enhanceFeatures = (features: string[]) =>
+    features.map((feature) => ({
+      text: feature,
+      icon: featureIcons[feature],
+    }));
+
   return (
     <div className="flex flex-col items-center">
       <div className="text-center mb-12 md:mb-16">
@@ -71,20 +99,20 @@ const Pricing = () => {
         </p>
       </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto">
+      <div className="grid justify-center md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto">
         <PricingTier
           buttonText={isUserPremium ? "Already Purchased" : "Buy Now"}
           onClick={() => handleBuyClick("starter")}
           title="Starter"
           price="$9"
           description="Perfect for individuals and small projects."
-          features={[
+          features={enhanceFeatures([
             "Up to 5 vaults",
             "Unlimited items per vault",
             "Basic encryption",
             "Email support",
             "1 user only",
-          ]}
+          ])}
         />
 
         <PricingTier
@@ -93,14 +121,14 @@ const Pricing = () => {
           title="Professional"
           price="$29"
           description="Ideal for professionals and growing teams."
-          features={[
+          features={enhanceFeatures([
             "Unlimited vaults",
             "Advanced encryption",
             "Secure sharing",
             "Priority support",
             "Up to 10 users",
             "Access control & permissions",
-          ]}
+          ])}
           popular={true}
         />
 
@@ -109,14 +137,14 @@ const Pricing = () => {
           title="Enterprise"
           price="Custom"
           description="For large organizations with advanced security needs."
-          features={[
+          features={enhanceFeatures([
             "Everything in Professional",
             "Dedicated support manager",
             "Custom integrations",
             "SSO & SAML support",
             "Unlimited users",
             "Advanced audit logs",
-          ]}
+          ])}
           buttonText="Contact Sales"
         />
       </div>
@@ -149,7 +177,7 @@ const PricingTier = ({
   title: string;
   price: string;
   description: string;
-  features: string[];
+  features: { text: string; icon: any }[];
   popular?: boolean;
   buttonText?: string;
   onClick: () => void;
@@ -181,9 +209,9 @@ const PricingTier = ({
     <CardContent className="flex-grow">
       <ul className="space-y-2">
         {features.map((feature, i) => (
-          <li key={i} className="flex items-center">
-            <Check className="h-4 w-4 text-primary mr-2 flex-shrink-0" />
-            <span className="text-sm">{feature}</span>
+          <li key={i} className="flex gap-2 items-center">
+            <p>{feature.icon}</p>
+            <span className="text-sm">{feature.text}</span>
           </li>
         ))}
       </ul>

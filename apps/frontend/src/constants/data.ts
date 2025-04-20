@@ -55,25 +55,6 @@ export const plansNavItems = [
     { title: "Enterprise", icon: CreditCard, href: APP_ROUTES.PRICING },
   ];
   
-  
-
- export const features = [
-    { name: "Number of vaults", starter: "5", professional: "Unlimited", enterprise: "Unlimited" },
-    { name: "Items per vault", starter: "Unlimited", professional: "Unlimited", enterprise: "Unlimited" },
-    { name: "Basic encryption", starter: true, professional: true, enterprise: true },
-    { name: "Advanced encryption", starter: false, professional: true, enterprise: true },
-    { name: "Secure sharing", starter: false, professional: true, enterprise: true },
-    { name: "File attachments", starter: "100MB", professional: "1GB", enterprise: "10GB" },
-    { name: "User accounts", starter: "1", professional: "10", enterprise: "Unlimited" },
-    { name: "Team management", starter: false, professional: true, enterprise: true },
-    { name: "Access logs", starter: "7 days", professional: "30 days", enterprise: "1 year" },
-    { name: "API access", starter: false, professional: true, enterprise: true },
-    { name: "Custom integrations", starter: false, professional: false, enterprise: true },
-    { name: "SSO & SAML", starter: false, professional: false, enterprise: true },
-    { name: "Priority support", starter: false, professional: true, enterprise: true },
-    { name: "Dedicated support", starter: false, professional: false, enterprise: true },
-];
-
 export const ConfirmModalData = {
     access_to_all: {
         title: "Confirm Access",
@@ -94,3 +75,33 @@ export const ConfirmModalData = {
         buttonText: "Confirm"
     }
 }
+
+
+
+export const features = [
+    { name: "Number of vaults", starter: "5", professional: "Unlimited", enterprise: "Unlimited" },
+    { name: "Items per vault", starter: "Unlimited", professional: "Unlimited", enterprise: "Unlimited" },
+    { name: "Basic encryption", starter: true, professional: true, enterprise: true },
+    { name: "Advanced encryption", starter: false, professional: true, enterprise: true },
+    { name: "Secure sharing", starter: false, professional: true, enterprise: true },
+    { name: "File attachments", starter: "100MB", professional: "1GB", enterprise: "10GB" },
+    { name: "User accounts", starter: "1", professional: "10", enterprise: "Unlimited" },
+    { name: "Team management", starter: false, professional: true, enterprise: true },
+    { name: "Access logs", starter: "7 days", professional: "30 days", enterprise: "1 year" },
+    { name: "API access", starter: false, professional: true, enterprise: true },
+    { name: "Custom integrations", starter: false, professional: false, enterprise: true },
+    { name: "SSO & SAML", starter: false, professional: false, enterprise: true },
+    { name: "Priority support", starter: false, professional: true, enterprise: true },
+    { name: "Dedicated support", starter: false, professional: false, enterprise: true },
+];
+
+export const upcomingFeatures = [
+    { name: "Mobile app access", starter: false, professional: true, enterprise: true },
+    { name: "Offline mode", starter: false, professional: true, enterprise: true },
+    { name: "Biometric authentication", starter: false, professional: true, enterprise: true },
+    { name: "Auto-rotation of secrets", starter: false, professional: false, enterprise: true },
+    { name: "Compliance reporting", starter: false, professional: false, enterprise: true },
+    { name: "Hardware security keys", starter: false, professional: true, enterprise: true },
+    { name: "AI-powered secret analysis", starter: false, professional: false, enterprise: true },
+    { name: "Custom retention policies", starter: false, professional: true, enterprise: true }
+];

@@ -31,6 +31,6 @@ app.use('/api/invites', invitesRoutes);
 app.use('/api', paymentRoutes);
 
 app.listen(config.PORT, () => {
-  console.log(`Server running on http://${config.SERVER_URL}:${config.PORT}`);
+  console.log(`Server running on ${config.SERVER_URL}`);
 });
 
