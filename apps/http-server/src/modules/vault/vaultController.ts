@@ -461,10 +461,6 @@ export async function getInvite(req: CustomRequest, res: Response): Promise<any>
   }
 } 
 
-
-
-
-
 export async function getAllCollaborators(req: CustomRequest, res: Response): Promise<any> {
   try {
     const vaultId = req.params.vaultId as string;
@@ -754,6 +750,44 @@ export async function rejectInvite(req: CustomRequest, res: Response): Promise<a
   }
 }
 
+export async function updateCollaborator(req: CustomRequest, res: Response): Promise<any> {
+  try {
+    const { vaultId, collaboratorId } = req.params;
+    const { canEdit, canDelete, canView, canAdd } = req.body;
+    console.log(canEdit, canDelete, canView, canAdd);
+    const userId = req.user?.id;
 
+    if (!userId) {
+      res.status(401).json({ message: 'Unauthorized' });
+      return;
+    }
 
+  
+    const collaborator = await prisma.collaborator.findUnique({
+      where: {
+        id: collaboratorId,
+        vaultId,
+      },
+    });
+
+    if (!collaborator) {
+      res.status(404).json({ message: 'Collaborator not found' });
+      return;
+    }
+
+    await prisma.collaborator.update({
+      where: { id: collaboratorId },
+      data: { canEdit, canDelete, canView, canAdd },
+    });
+
+    res.status(200).json({
+      message: 'Collaborator updated successfully', 
+      collaborator,
+    });
+    
+    
+      }catch(err: any){ 
+    res.status(500).json({ message: 'Failed to update collaborator', error: err.message });
+  }
+} 
 

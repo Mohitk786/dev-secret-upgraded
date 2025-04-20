@@ -42,7 +42,8 @@ import { accessToAll } from "@/E2E/operations/accessToAll";
 import ConfirmAccess from "@/components/utils/ConfirmAccess";
 import useSocket from "@/hooks/utils/useSocket";
 import { useAuth } from "@/hooks/queries/authQueries";
-
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { axiosInstance } from "@/lib/axiosInstance";
 interface Collaborator {
   id: string;
   userId: string;
@@ -62,8 +63,9 @@ interface Collaborator {
 
 const VaultCollaborators = () => {
 
-  const { vaultId } = useParams();
+  const { vaultId } = useParams(); 
   const socket = useSocket();
+  const queryClient = useQueryClient();
   const [isAccessConfirmModalOpen, setIsAccessConfirmModalOpen] = useState(false);
   const [modalData, setModalData] = useState<any>({
     title: "",
@@ -91,54 +93,61 @@ const VaultCollaborators = () => {
   }, [collaboratorsData])
 
 
-  // const updatePermissionsMutation = useMutation({
-  //   mutationFn: async ({ memberId, permissions }: { memberId: string, permissions: any }) => {
-  //     return axiosInstance.patch(`/collab/vault-collaborators/${vaultId}/${memberId}`, permissions);
-  //   },
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries({ queryKey: ["vault-collaborators", vaultId] });
-  //     showToast({
-  //       type: "success",
-  //       message: "Permissions updated",
-  //     });
-  //   },
-  //   onError: (error: any) => {
-  //     showToast({
-  //       type: "error",
-  //       message: "Error updating permissions",
-  //     });
-  //   }
-  // });
+  const updatePermissionsMutation = useMutation({
+    mutationFn: async ({ memberId, permissions }: { memberId: string, permissions: any }) => {
+      return axiosInstance.patch(`/collab/vault-collaborators/${vaultId}/${memberId}`, permissions);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["vault-collaborators", vaultId] });
+      showToast({
+        type: "success",
+        message: "Permissions updated",
+      });
+    },
+    onError: (error: any) => {
+      showToast({
+        type: "error",
+        message: error?.response?.data?.message || "Error updating permissions",
+      });
+    }
+  });
 
 
   const handleRemoveCollaborator = (collaborator: Collaborator) => {
     socket.emit("remove-collaborator", { collaboratorId: collaborator.user.id, vaultId: vaultId as string })
   };
-
+  
   const togglePermission = (collaborator: Collaborator, permission: 'canView' | 'canEdit' | 'canDelete' | 'canAdd') => {
     // Cannot disable view permission
-    if (permission === 'canView') return;
-
+    if (permission === 'canView'){
+      showToast({
+        type: "info",
+        message: "Revoke client to access the vault",
+      });
+      return;
+    }
+    
     const newPermissions = {
       [permission]: !collaborator[permission]
     };
-
-    // updatePermissionsMutation.mutate({
-    //   memberId: collaborator?.id,
-    //   permissions: newPermissions
-    // });
-  };
-
+    
+    updatePermissionsMutation.mutate({
+        memberId: collaborator?.id,
+        permissions: newPermissions
+      });
+    };
+    
   const handleConfirmAccess = async () => {
     const finalData = await accessToAll(vault?.id, collaboratorsData)
     await confirmAccess({ finalData, vaultId: vaultId as string })
   }
-
+  
   const handleToggleAccess = async (collaborator: Collaborator) => {
     socket.emit("join-vault", vaultId as string)
     socket.emit("toggle-access", { collaboratorId: collaborator.user.id, vaultId: vaultId as string })
+    queryClient.invalidateQueries({ queryKey: ["vault-collaborators", vaultId as string] });        
   }
-
+  
   const handleActionClick = async (flag: string, collaborator?: Collaborator) => {
     setIsAccessConfirmModalOpen(true)
 

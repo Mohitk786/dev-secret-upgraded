@@ -50,7 +50,6 @@ export const getAllInvites = async (req: any, res: any) => {
                 }
             }
         });
-        console.log(invites);
     
 
         return res.status(200).json({ invites });
