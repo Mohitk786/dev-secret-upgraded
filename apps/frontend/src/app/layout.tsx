@@ -27,6 +27,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <script
+          src="https://checkout.razorpay.com/v1/checkout.js"
+          async
+        ></script>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
           <QueryProvider>
             <ToastContainer />

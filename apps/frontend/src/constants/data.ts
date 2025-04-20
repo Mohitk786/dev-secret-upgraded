@@ -31,7 +31,7 @@ export const APP_ROUTES = {
   
     LOGIN: "/login",
     SIGNUP: "/signup",
-    PRICING: "/pricing",
+    PRICING: "/u/pricing",
   
 }
 
@@ -46,13 +46,13 @@ export const mainNavItems = [
   ];
 
 export const pricingNavItems = [
-    { title: "Upgrade", icon: CreditCard, href: "/pricing" },
+    { title: "Upgrade", icon: CreditCard, href: APP_ROUTES.PRICING },
   ];
 
 export const plansNavItems = [
-    { title: "Free", icon: CreditCard, href: "/free" },
-    { title: "Pro", icon: CreditCard, href: "/pro" },
-    { title: "Enterprise", icon: CreditCard, href: "/enterprise" },
+    { title: "Free", icon: CreditCard, href: APP_ROUTES.PRICING },
+    { title: "Pro", icon: CreditCard, href: APP_ROUTES.PRICING },
+    { title: "Enterprise", icon: CreditCard, href: APP_ROUTES.PRICING },
   ];
   
   

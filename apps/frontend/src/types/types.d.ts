@@ -1,5 +1,11 @@
 import { z } from "zod";
 
+declare global {
+    interface Window {
+      Razorpay: any;
+    }
+  }
+
 export interface Secret {
     id?: string;
     encryptedSecret: string;
