@@ -113,3 +113,11 @@ export const signInUser = async (req: Request, res: Response): Promise<void> => 
     }
 };
 
+
+export const logoutUser = async (req: Request, res: Response): Promise<void> => {
+    res.clearCookie('dev_secret_vault_auth_token');
+    res.status(200).json({
+        success: true,
+        message: "User logged out successfully"
+    })
+}

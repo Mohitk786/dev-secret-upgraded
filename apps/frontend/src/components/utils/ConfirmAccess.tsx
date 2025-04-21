@@ -14,10 +14,10 @@ import { Button } from "@/components/ui/button";
 import { Collaborator } from "@/types/types";
 
 
-interface ModalData {
+export interface ModalData {
   title: string;
   description1: string;
-  description2: string;
+  description2?: string;
   buttonText: string;
   onConfirm: (collaborator?: Collaborator) => void;
   collaborator?: Collaborator;
@@ -49,7 +49,7 @@ const ConfirmAccess = ({open, onOpenChange, modalData}: AddSecretPopupProps) => 
         </div>
         <DialogFooter>
           <Button onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button onClick={() => (
+          <Button className={`${modalData.buttonText === "Logout" ? "bg-destructive" : ""}`} onClick={() => (
             modalData?.onConfirm(modalData?.collaborator),
             onOpenChange(false)
           )}>{modalData.buttonText}</Button>
