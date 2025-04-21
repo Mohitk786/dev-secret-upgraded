@@ -13,7 +13,6 @@ const VaultList = () => {
   if (error) return <div>Error: {error.message}</div>;
 
 
-  console.log("vaults", vaults)
 
 
   return (

@@ -79,8 +79,7 @@ export const dashboardStats = async (req: CustomRequest, res: Response): Promise
 
         return res.status(200).json(data);
 
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({ message: "Internal Server Error" });
+    } catch (error:any) {
+        return res.status(500).json({ message: `Internal Server Error: ${error?.message}` });
     }
 }

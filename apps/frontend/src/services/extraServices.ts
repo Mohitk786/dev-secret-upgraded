@@ -4,7 +4,6 @@ import { axiosInstance } from "@/lib/axiosInstance";
 export const getRandomDevMeme = async () => {
     const res = await axios.get("/api/dev-meme");
     const data = await res?.data;
-    console.log("data",data);
     return {
       title: data.title,
       imageUrl: data.imageUrl,
