@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server";
 export function middleware(request: NextRequest) {
   // ✅ Get the auth token from cookies
   const token = request.cookies.get("dev_secret_vault_auth_token")?.value;
-
+  console.log("token", token)
   const { pathname } = request.nextUrl;
 
   // ✅ Define public & private routes

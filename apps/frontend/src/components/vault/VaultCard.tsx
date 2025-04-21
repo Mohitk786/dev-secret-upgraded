@@ -21,7 +21,7 @@ const VaultCard = ({ vault }: { vault: any }) => {
                                 {vault?._count?.secrets || 0} secrets
                             </span>
                         </div>
-                        <p> {vault?.ownerId === user?.id ? <span className="text-xs text-muted-foreground ">{vault?._count?.memberships || 0} collaborators</span> : <Check className="h-4 w-4 text-green-500" />}</p>
+                        <p> {vault?.ownerId === user?.id ? <span className="text-xs text-muted-foreground ">{vault?._count?.collaborators || 0} collaborators</span> : <Check className="h-4 w-4 text-green-500" />}</p>
                     </div>
                     <div className="mt-4">
                         <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">{vault?.name}</h3>

@@ -1,8 +1,8 @@
 import { Response } from "express";
 import prisma from "@secret-vault/db/client";
 import { CustomRequest } from "../../middleware/auth";
-export
-  async function checkVaultAccess(userId: string, vaultId: string) {
+
+export async function checkVaultAccess(userId: string, vaultId: string) {
   const vault = await prisma.vault.findUnique({ where: { id: vaultId } });
   if (!vault) throw new Error("Vault not found");
   if (vault.ownerId === userId) return { isOwner: true };

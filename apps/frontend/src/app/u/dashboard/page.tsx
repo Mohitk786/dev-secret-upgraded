@@ -1,28 +1,25 @@
+"use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Eye, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { APP_ROUTES } from "@/constants/data";
+import { useDashboardStats } from "@/hooks/queries/utilityQueries";
 
-// Mock data to simulate recent vault access
 const recentActivity = [
   { id: 1, name: "AWS Development", type: "API Keys", time: "2 minutes ago", emoji: "🔑" },
   { id: 2, name: "GitHub Personal", type: "SSH Keys", time: "Yesterday", emoji: "🔐" },
   { id: 3, name: "MongoDB Atlas", type: "Database", time: "3 days ago", emoji: "💾" },
 ];
 
-// Mock data to simulate vaults
-const vaults = [
-  { id: 1, name: "Personal Projects", secretCount: 12, lastAccessed: "Today", emoji: "🚀" },
-  { id: 2, name: "Client A", secretCount: 8, lastAccessed: "Yesterday", emoji: "💼" },
-  { id: 3, name: "Client B", secretCount: 5, lastAccessed: "1 week ago", emoji: "🌈" },
-  { id: 4, name: "Open Source", secretCount: 3, lastAccessed: "1 month ago", emoji: "🔮" },
-];
 
 const Dashboard = () => {
  
+  const {data:dashboardData,isLoading, error} = useDashboardStats();
+
   return (
+   
     <div className="space-y-8 animate-fade-in">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
@@ -49,7 +46,7 @@ const Dashboard = () => {
             <div className="text-2xl">🔒</div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{vaults.length}</div>
+            <div className="text-2xl font-bold">{isLoading ? "Loading..." : dashboardData?.vaultCount}</div>
             <p className="text-xs text-muted-foreground">
               Across all projects
             </p>
@@ -62,7 +59,7 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {vaults.reduce((acc, vault) => acc + vault.secretCount, 0)}
+              {dashboardData?.secretsCount}
             </div>
             <p className="text-xs text-muted-foreground">
               Stored securely
@@ -71,13 +68,13 @@ const Dashboard = () => {
         </Card>
         <Card className="border-primary/20">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Recent Activity</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Collaborators</CardTitle>
             <div className="text-2xl">⏱️</div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{recentActivity.length}</div>
+            <div className="text-2xl font-bold">{isLoading ? "Loading..." : dashboardData?.collaboratorCount}</div>
             <p className="text-xs text-muted-foreground">
-              In the last 7 days
+              contributing to your vaults
             </p>
           </CardContent>
         </Card>
@@ -133,7 +130,7 @@ const Dashboard = () => {
               </CardTitle>
               <CardDescription>Access your secure vaults</CardDescription>
             </div>
-            <Link href="/vaults">
+            <Link href={APP_ROUTES.VAULTS}>
               <Button variant="ghost" size="sm" className="gap-1 text-primary hover:text-primary/90">
                 View All <ArrowRight className="h-3 w-3" />
               </Button>
@@ -141,17 +138,17 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <ul className="space-y-4">
-              {vaults.map((vault) => (
+              {dashboardData?.vaults.map((vault:any) => (
                 <li key={vault.id}>
                   <Link href={`/vaults/${vault.id}`}>
                     <div className="vault-card hover:border-primary/50 group">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <div className="text-2xl">{vault.emoji}</div>
+                          <div className="text-2xl">{vault?.icon}</div>
                           <div>
                             <h3 className="font-medium group-hover:text-primary transition-colors">{vault.name}</h3>
                             <p className="text-sm text-muted-foreground">
-                              {vault.secretCount} secrets • Last accessed: {vault.lastAccessed}
+                              {vault._count.secrets} secrets • created At: {vault.createdAt.split("T")[0]}
                             </p>
                           </div>
                         </div>
@@ -168,6 +165,7 @@ const Dashboard = () => {
         </Card>
       </div>
     </div>
+  
   );
 };
 

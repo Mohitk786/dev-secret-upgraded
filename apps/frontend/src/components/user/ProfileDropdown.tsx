@@ -11,11 +11,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { User, Settings, LogOut, Shield } from "lucide-react";
 import { useAuthQuery } from "@/hooks/queries/authQueries";
-import { BASE_URL } from "@/constants/data";
+import { APP_ROUTES, BASE_URL } from "@/constants/data";
+import { useRouter } from "next/navigation";
 
 const ProfileDropdown = () => {
   const { data: user, isLoading } = useAuthQuery();
   const [open, setOpen] = useState(false);
+  const router = useRouter();
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -44,7 +46,7 @@ const ProfileDropdown = () => {
           </div>
         </div>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="cursor-pointer flex items-center gap-2">
+        <DropdownMenuItem className="cursor-pointer flex items-center gap-2" onClick={() => router.push(APP_ROUTES.PROFILE)}>
           <User className="h-4 w-4" />
           <span>Profile</span>
         </DropdownMenuItem>

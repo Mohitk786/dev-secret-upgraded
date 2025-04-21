@@ -28,7 +28,7 @@ export const APP_ROUTES = {
     AUDIT_LOGS: "/u/audit-logs",
     RECYCLE_BIN: "/u/recycle-bin",
     SETTINGS: "/u/settings",
-  
+    PROFILE: "/u/profile",
     LOGIN: "/login",
     SIGNUP: "/signup",
     PRICING: "/u/pricing",
@@ -40,7 +40,7 @@ export const mainNavItems = [
     { title: "Vaults", icon: ShieldCheck, href: APP_ROUTES.VAULTS },
     { title: "Shared with me", icon: Share, href: APP_ROUTES.SHARED_WITH_ME },
     { title: "Invites", icon: Mail, href: APP_ROUTES.INVITES },
-    { title: "Audit Logs", icon: History, href: APP_ROUTES.AUDIT_LOGS },
+    // { title: "Audit Logs", icon: History, href: APP_ROUTES.AUDIT_LOGS },
     { title: "Recycle Bin", icon: Trash, href: APP_ROUTES.RECYCLE_BIN },
     { title: "Settings", icon: Settings, href: APP_ROUTES.SETTINGS },
   ];

@@ -7,6 +7,7 @@ import ProfileDropdown from "@/components/user/ProfileDropdown";
 import { ThemeToggle } from "@/components/utils/ThemeToggle";
 import { KeyRound } from "lucide-react";
 import Link from "next/link";
+import { DevHumorDrawer } from "@/components/utils/DevHumor";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -41,6 +42,7 @@ const Layout = ({ children }: LayoutProps) => {
 
         <main className="h-[calc(100vh-16px)] overflow-y-auto md:p-8">
           {children}
+          <DevHumorDrawer />
         </main>
 
       </div>

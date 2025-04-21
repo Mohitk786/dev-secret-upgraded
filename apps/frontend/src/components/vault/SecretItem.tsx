@@ -30,8 +30,8 @@ const SecretItem: React.FC<SecretItemProps> = ({
   const copyToClipboard = (value: string, name: string) => {
     navigator.clipboard.writeText(value);
     showToast({
-      type: "success",
-      message: `Copied ${name} to clipboard`
+      type: "info",
+      message: `🎉 Copied ${name} to clipboard! Now don't paste in Slack 😅`
     });
   };
 

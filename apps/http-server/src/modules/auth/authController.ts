@@ -3,7 +3,6 @@ import bcrypt from "bcryptjs";
 import prisma from "@secret-vault/db/client";
 import { config } from "@secret-vault/backend-common/config";
 import { sign } from "jsonwebtoken";
-import { CustomRequest } from "../../middleware/auth";
 
 export const signUpUser = async (req: Request, res: Response): Promise<void> => {
     try {

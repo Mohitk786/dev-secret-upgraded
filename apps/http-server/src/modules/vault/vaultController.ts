@@ -220,7 +220,12 @@ export async function getVaults(req: CustomRequest, res: Response): Promise<any>
         isDeleted: false,
       },
       include: {
-        collaborators: true,
+        _count: {
+          select: {
+            collaborators: true,
+            secrets: true,
+          },
+        },
       },
     });
 

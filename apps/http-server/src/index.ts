@@ -10,6 +10,8 @@ import vaultRoutes from './modules/vault/vaultRoutes';
 import trashRoutes from './modules/trash/trashRoutes';
 import invitesRoutes from './modules/invites/invitesRoutes';
 import paymentRoutes from './modules/payment/paymentController';
+import utilityRoutes from './modules/utilities/utilityRoutes';
+import { isAuthenticated } from './middleware/auth';
 dotenv.config();
 
 const app = express();
@@ -24,11 +26,12 @@ app.use(cors({
 }));
 
 app.use('/api', authRoutes);
-app.use('/api', vaultRoutes);
-app.use('/api', secretRoutes);  
-app.use('/api/trash', trashRoutes);
-app.use('/api/invites', invitesRoutes);
-app.use('/api', paymentRoutes);
+app.use('/api', isAuthenticated,utilityRoutes);
+app.use('/api', isAuthenticated, vaultRoutes);
+app.use('/api', isAuthenticated, secretRoutes);  //me wala route yaha par hai
+app.use('/api/trash', isAuthenticated, trashRoutes);
+app.use('/api/invites', isAuthenticated, invitesRoutes);
+app.use('/api', isAuthenticated, paymentRoutes);
 
 app.listen(config.PORT, () => {
   console.log(`Server running on ${config.SERVER_URL}`);

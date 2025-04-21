@@ -48,11 +48,11 @@ export const createSecret = async (data: CreateSecretData, userId: string) => {
                 vaultId: data.vaultId,
                 actorId: userId,
                 action: "secret_created",
-                description: `${owner?.name || collaborator?.user?.name} created a secret`,
+                description: `${owner?.name || collaborator?.user?.name} Encrypted & Saved a secret 🔒`,
             },
         });
 
-        return { message: `${owner?.name || collaborator?.user?.name} created a secret`, secret };
+        return { message: `${owner?.name || collaborator?.user?.name} Encrypted & Saved a secret 🔒`, secret };
 
     } catch (error) {
         console.error(error)
