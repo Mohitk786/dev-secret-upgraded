@@ -23,6 +23,10 @@ const ProfileDropdown = () => {
     return <div>Loading...</div>;
   }
 
+  const logout = () => {
+    router.push(APP_ROUTES.LOGIN);
+  }
+
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
@@ -59,7 +63,7 @@ const ProfileDropdown = () => {
           <span>Security</span>
         </DropdownMenuItem> */}
         <DropdownMenuSeparator />
-        <a href={`${BASE_URL}/logout`}>
+        <a href={`${BASE_URL}/logout`} onClick={() => logout()}>
           <DropdownMenuItem className="cursor-pointer flex items-center gap-2 text-destructive focus:text-destructive">
             <LogOut className="h-4 w-4" />
             <span>Logout</span>

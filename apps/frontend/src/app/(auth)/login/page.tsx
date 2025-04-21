@@ -45,7 +45,7 @@ function Login() {
 
         <SubmitButton isPending={isPending} text={isPending ? 'Signing in...' : 'Sign in'} onClick={handleSubmit} />
 
-        <div className="mt-6">
+        {/* <div className="mt-6">
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-300" />
@@ -61,7 +61,7 @@ function Login() {
               className="w-full flex justify-center items-center py-2 px-4 border border-gray-300 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" >
               <Github className="w-5 h-5 mr-2" /> GitHub </button>
           </div>
-        </div>
+        </div> */}
       </form>
       <p className="mt-6 text-center text-sm text-gray-600">
         Don’t have an account?{' '}

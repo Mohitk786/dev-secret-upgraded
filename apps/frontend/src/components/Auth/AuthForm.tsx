@@ -1,5 +1,6 @@
 import React from 'react';
 import { Shield } from 'lucide-react';
+import AppBranding from '../ui/AppName';
 
 interface AuthFormProps {
   title: string;
@@ -8,10 +9,10 @@ interface AuthFormProps {
 }
 
 const AuthForm: React.FC<AuthFormProps> = ({ title, description, children }) => (
-  <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+  <div className="h-screen bg-gradient-to-br from-pink-100 to-purple-500 flex flex-col justify-center sm:px-6 lg:px-8">
     <div className="sm:mx-auto sm:w-full sm:max-w-md">
-      <div className="flex justify-center">
-        <Shield className="w-12 h-12 text-indigo-600" />
+      <div className="flex justify-center text-black">
+        <AppBranding />
       </div>
       <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
         {title}
