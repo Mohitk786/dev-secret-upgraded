@@ -12,7 +12,7 @@ import useToast from "@/hooks/utils/useToast";
 import { Secret } from "@/types/types";
 import VaultDetailError from "./VaultDetailError";
 import VaultDetailSkeleton from "./VaultDetailSkeleton";
-import { decryptSecret } from "@/E2E/decryption";
+import { DecryptSecret } from "@/E2E/decryption";
 import { z } from "zod";
 import useSocket from "@/hooks/utils/useSocket";
 import { useAuth } from "@/hooks/queries/authQueries";
@@ -31,7 +31,7 @@ export type AddSecretFormValues = z.infer<typeof formSchema>;
 
 
 const decryptEachSecret = async (secret: Secret, decryptedVaultKey: CryptoKey): Promise<Secret> => {
-  const decryptedSecret = await decryptSecret(secret, decryptedVaultKey);
+  const decryptedSecret = await DecryptSecret(secret, decryptedVaultKey);
   return {
     ...decryptedSecret,
     id: secret.id,
@@ -54,7 +54,7 @@ const VaultDetail = ({ isSharedVault }: { isSharedVault: boolean }) => {
 
   const { decryptedVaultKey, decryptedSecrets, setDecryptedSecrets} = useDecryptedSecrets(vaultId, vault?.secrets);
 
-  const [hasAccess, setHasAccess] = useState<Boolean>(false);
+  const [hasAccess, setHasAccess] = useState<boolean>(false);
 
   useEffect(() => {
     if (vault?.ownerId === user?.id) {
@@ -62,7 +62,7 @@ const VaultDetail = ({ isSharedVault }: { isSharedVault: boolean }) => {
     } else {
       setHasAccess(vault?.collaborators?.hasSecretAccess)
     }
-  }, [vault])
+  }, [vault, user?.id]);
 
 
   useEffect(() => {
@@ -115,7 +115,7 @@ const VaultDetail = ({ isSharedVault }: { isSharedVault: boolean }) => {
         if (vault?.secrets && decryptedVaultKey) {
           //kyoki jab access toggle hoga toh vault.secrets mein kuch bhi nahi hoga
           const decrypted = await Promise.all(
-            vault.secrets.map((secret: Secret) => decryptSecret(secret, decryptedVaultKey))
+            vault.secrets.map((secret: Secret) => DecryptSecret(secret, decryptedVaultKey))
           );
           setDecryptedSecrets(decrypted);
           setHasAccess(true)
@@ -149,7 +149,8 @@ const VaultDetail = ({ isSharedVault }: { isSharedVault: boolean }) => {
       socket.off("access-toggled", onAccessToggled);
       socket.off("vault-deleted", onVaultDeleted);
     };
-  }, [vaultId, decryptedVaultKey]);
+     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vaultId, decryptedVaultKey,]);
 
 
 

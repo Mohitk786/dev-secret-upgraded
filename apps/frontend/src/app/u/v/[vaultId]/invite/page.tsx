@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import  useToast  from '@/hooks/utils/useToast';
-import { UserPlus, ArrowLeft, ShieldCheck, PenLine, Trash2, Plus } from 'lucide-react';
+import { UserPlus,  ShieldCheck, PenLine, Trash2, Plus } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
 const InviteColloborators = () => {

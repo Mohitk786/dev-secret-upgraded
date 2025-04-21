@@ -1,5 +1,4 @@
-import React from 'react';
-import { Shield } from 'lucide-react';
+import React, { Suspense } from 'react';
 import AppBranding from '../ui/AppName';
 
 interface AuthFormProps {
@@ -9,7 +8,9 @@ interface AuthFormProps {
 }
 
 const AuthForm: React.FC<AuthFormProps> = ({ title, description, children }) => (
-  <div className="h-screen bg-gradient-to-br from-pink-100 to-purple-500 flex flex-col justify-center sm:px-6 lg:px-8">
+  <Suspense fallback={<div className="flex justify-center items-center h-screen">Loading...</div>}>
+
+<div className="h-screen bg-gradient-to-br from-pink-100 to-purple-500 flex flex-col justify-center sm:px-6 lg:px-8">
     <div className="sm:mx-auto sm:w-full sm:max-w-md">
       <div className="flex justify-center text-black">
         <AppBranding />
@@ -28,6 +29,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ title, description, children }) => 
       </div>
     </div>
   </div>
+  </Suspense>
 );
 
 export default AuthForm;

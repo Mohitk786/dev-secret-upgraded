@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 
 
 const Profile = () => {
-    const { user, loading } = useAuth();
+    const { user } = useAuth();
 
     const handleDeleteAccount = () => {
         console.log("Delete Account");

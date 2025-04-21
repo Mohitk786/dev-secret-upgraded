@@ -1,5 +1,3 @@
-import { Secret } from "@/types/types";
-import { getPublicKey } from "./rsaKeyGen";
 import { getVaultKey } from "@/services/vaultServices";
 import { decryptVaultKeyWithPrivateKey } from "./decryption";
 

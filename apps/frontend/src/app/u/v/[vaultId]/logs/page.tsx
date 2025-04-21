@@ -34,21 +34,21 @@ import {
 } from "lucide-react";
 import moment from "moment";
 
-interface AuditLog {
-    id: string;
-    action: string;
-    createdAt: string;
-    user: {
-        id: string;
-        email: string;
-        name?: string;
-    };
-    secret: {
-        id: string;
-        key: string;
-        type: string;
-    };
-}
+// interface AuditLog {
+//     id: string;
+//     action: string;
+//     createdAt: string;
+//     user: {
+//         id: string;
+//         email: string;
+//         name?: string;
+//     };
+//     secret: {
+//         id: string;
+//         key: string;
+//         type: string;
+//     };
+// }
 
 const getActionIcon = (action: string) => {
     switch (action) {

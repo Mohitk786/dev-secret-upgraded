@@ -3,7 +3,7 @@ import { decryptData } from "@/E2E/rsaKeyGen";
 import { getPrivateKey } from "@/E2E/rsaKeyGen";
 import  useToast  from "@/hooks/utils/useToast";
 
-export const decryptSecret = ({key, value}: { key: string; value: string }) => {
+export const DecryptSecret = ({key, value}: { key: string; value: string }) => {
     
   const [decryptedKey, setDecryptedKey] = useState<string | null>(null);
     const [decryptedValue, setDecryptedValue] = useState<string | null>(null);
@@ -43,6 +43,7 @@ export const decryptSecret = ({key, value}: { key: string; value: string }) => {
       if (key && value) {
         fetchSecret(); 
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [key, value]);
   
     return {

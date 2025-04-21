@@ -6,11 +6,9 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import useToast from "@/hooks/utils/useToast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useAuth } from "@/hooks/queries/authQueries";
 import Profile from "./Profile";
 
 const Settings = () => {
-  const { user, loading } = useAuth();
   const { showToast } = useToast();
 
   const handleExportData = () => {
@@ -27,16 +25,14 @@ const Settings = () => {
     }, 1500);
   };
 
-  const handleDeleteAccount = () => {
-    showToast({
-      type: "error",
-      message: "This feature is not yet implemented"
-    })
-  };
+  // const handleDeleteAccount = () => {
+  //   showToast({
+  //     type: "error",
+  //     message: "This feature is not yet implemented"
+  //   })
+  // };
 
-  if (loading) {
-    return <div>Loading settings...</div>;
-  }
+ 
 
   return (
     <div className="">

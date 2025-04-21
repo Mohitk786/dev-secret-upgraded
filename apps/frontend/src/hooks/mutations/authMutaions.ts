@@ -1,6 +1,7 @@
+
 import { login, signup } from "@/services/authServices";
 import { useMutation } from "@tanstack/react-query";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useRouter,  useSearchParams } from "next/navigation";
 import useToast from "../utils/useToast";
 import { APP_ROUTES } from "@/constants/data";
 

@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { getRandomDevMeme } from "@/services/extraServices";
+import Image from "next/image";
 
 export function DevHumorDrawer() {
   const [open, setOpen] = useState(false);
@@ -56,12 +57,13 @@ export function DevHumorDrawer() {
             <p className="text-muted-foreground">Loading...</p>
           ) : meme ? (
             <>
-              <img
-                onClick={() => window.open(meme.imageUrl, "_blank")}
+              <Image
+                onClick={() => window.open(meme.postLink, "_blank")}
                 src={meme.imageUrl}
                 alt={meme.title}
-                className="max-h-64 w-full object-contain rounded-lg shadow-md"
+                className="max-h-64 w-full object-contain rounded-lg shadow-md cursor-pointer"
               />
+             
               <p className="text-sm text-muted-foreground">By {meme.author}</p>
               <a
                 href={meme.postLink}

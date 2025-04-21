@@ -16,7 +16,7 @@ const recentActivity = [
 
 const Dashboard = () => {
  
-  const {data:dashboardData,isLoading, error} = useDashboardStats();
+  const {data:dashboardData,isLoading} = useDashboardStats();
 
   return (
    

@@ -29,7 +29,7 @@ const ProfileDropdown = () => {
       credentials: "include",
     })
       .then((res) => res.json())
-      .then((data) => {
+      .then(() => {
         router.push(APP_ROUTES.LOGIN);
       })
       .catch((err) => {

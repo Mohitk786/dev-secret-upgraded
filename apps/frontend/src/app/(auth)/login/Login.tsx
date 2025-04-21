@@ -1,14 +1,14 @@
 "use client"
 
 import React, { useState } from 'react';
-import { Mail, Lock, Github } from 'lucide-react';
+import { Mail, Lock } from 'lucide-react';
 import Link from 'next/link';
 import { useLoginMutation } from '@/hooks/mutations/authMutaions';
 import InputField from '@/components/ui/InputField';
 import SubmitButton from '@/components/ui/SubmitButton';
 import AuthForm from '@/components/Auth/AuthForm';
 
-function Login() {
+export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -72,5 +72,3 @@ function Login() {
     </AuthForm>
   );
 }
-
-export default Login;

@@ -29,12 +29,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { useUpdateSecretMutation } from "@/hooks/mutations/useSecretMutations";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import useToast from "@/hooks/utils/useToast";
 import useSocket from "@/hooks/utils/useSocket";
-import { getPublicKey, encryptData } from "@/E2E/rsaKeyGen";
+import { getPublicKey } from "@/E2E/rsaKeyGen";
 import { encryptSecret } from "@/E2E/encryption";
 import { useParams } from "next/navigation";
 

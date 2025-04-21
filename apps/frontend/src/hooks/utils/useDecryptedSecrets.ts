@@ -3,7 +3,7 @@ import { decryptVaultKeyWithPrivateKey } from "@/E2E/decryption";
 import { Secret, } from "@/types/types";
 import { useGetVaultKeyQuery } from "@/hooks/queries/useCollabQuery";
 import useToast from "@/hooks/utils/useToast";
-import { decryptSecret } from "@/E2E/decryption";
+import { DecryptSecret } from "@/E2E/decryption";
 
 export const useDecryptedSecrets = (
   vaultId: string,
@@ -24,7 +24,7 @@ export const useDecryptedSecrets = (
         setDecryptedVaultKey(key);
         const secrets = await Promise.all(
           encryptedSecrets && encryptedSecrets.length > 0 ? encryptedSecrets.map((secret: Secret) =>
-            decryptSecret(secret, key)
+            DecryptSecret(secret, key)
           ) : []
         );
         setDecryptedSecrets(secrets);
@@ -37,7 +37,7 @@ export const useDecryptedSecrets = (
     };
 
     decryptVaultKey();
-  }, [vaultKey, encryptedSecrets]);
+  }, [vaultKey, encryptedSecrets, showToast]);
 
   return {
     decryptedVaultKey,

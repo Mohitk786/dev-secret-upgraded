@@ -89,7 +89,7 @@ const CreateVault = () => {
             <Card className="border-primary/10">
                 <CardHeader>
                     <CardTitle>Vault Details</CardTitle>
-                    <CardDescription>Configure your new vault's properties</CardDescription>
+                    <CardDescription>Configure your new vault&apos;s properties</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-6">

@@ -66,10 +66,10 @@ const SecretItem: React.FC<SecretItemProps> = ({
         vaultId: vaultId as string,
         secretId: secretId,
       });
-    } catch (error) {
+    } catch (error:any) {
       showToast({
         type: "error",
-        message: "Failed to delete secret",
+        message: `Failed to delete secret: ${error.message}`,
       });
 
     } finally {

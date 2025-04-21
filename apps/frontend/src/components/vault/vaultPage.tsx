@@ -18,7 +18,7 @@ interface VaultPageHeaderProps {
     isSharedVault: boolean;
 }
 
-const vaultPage = ({ title, description, icon, vaults, isSharedVault }: VaultPageHeaderProps) => {
+const VaultPage = ({ title, description, icon, vaults, isSharedVault }: VaultPageHeaderProps) => {
     const [searchQuery, setSearchQuery] = useState("");
 
     const filteredVaults = vaults?.filter((vault: any) =>
@@ -73,4 +73,4 @@ const vaultPage = ({ title, description, icon, vaults, isSharedVault }: VaultPag
     )
 }   
 
-export default vaultPage
+export default VaultPage

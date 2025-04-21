@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { UserPlus, Mail, Lock, Github } from "lucide-react";
+import { UserPlus, Mail, Lock } from "lucide-react";
 import Link from "next/link";
 import { useSignupMutation } from "@/hooks/mutations/authMutaions";
 import { generateRSAKeyPair } from "@/E2E/rsaKeyGen";

@@ -6,7 +6,7 @@ import { useAcceptInvite, useRejectInvite} from "@/hooks/mutations/useCollab";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { XCircle, ShieldCheck, PenLine, Trash2, Clock } from "lucide-react";
+import { XCircle, ShieldCheck, PenLine, Trash2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loading } from "@/components/ui/Loading";

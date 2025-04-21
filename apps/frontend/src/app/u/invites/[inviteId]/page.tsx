@@ -36,7 +36,9 @@ const Page = () => {
         if(invite?.status === 'ACCEPTED' || invite?.status === 'REJECTED'){
             router.push(APP_ROUTES.SHARED_WITH_ME);
         }
-    }, [invite])    
+
+    //@eslint-disable-next-line react-hooks/exhaustive-deps 
+    }, [invite,router])    
 
 
     if (!acceptPending || !rejectPending) {

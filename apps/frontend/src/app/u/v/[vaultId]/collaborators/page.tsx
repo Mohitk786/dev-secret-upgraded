@@ -43,7 +43,9 @@ import ConfirmAccess from "@/components/utils/ConfirmAccess";
 import useSocket from "@/hooks/utils/useSocket";
 import { useAuth } from "@/hooks/queries/authQueries";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import Image from "next/image";
 import { axiosInstance } from "@/lib/axiosInstance";
+
 interface Collaborator {
   id: string;
   userId: string;
@@ -202,6 +204,7 @@ const VaultCollaborators = () => {
       socket.off("online-users", handleOnlineUsers)
     }
 
+  //@eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vaultId])
 
   return (
@@ -270,7 +273,7 @@ const VaultCollaborators = () => {
                       <TableCell className="font-medium">
                         <div className="flex items-center gap-2">
                           {collaborator?.user?.avatarUrl ? (
-                            <img src={collaborator?.user?.avatarUrl} alt={collaborator?.user?.name || collaborator?.user?.email} className="w-8 h-8 rounded-full" />
+                            <Image src={collaborator?.user?.avatarUrl} alt={collaborator?.user?.name || collaborator?.user?.email} className="w-8 h-8 rounded-full" />
                           ) : (
                             <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center text-primary">
                               {collaborator?.user?.name?.charAt(0) || collaborator?.user?.email.charAt(0)}

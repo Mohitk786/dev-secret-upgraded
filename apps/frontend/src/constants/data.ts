@@ -1,9 +1,7 @@
 import {
     Home,
     ShieldCheck,
-    History,
     CreditCard,
-    Package,
     Settings,
     Share,
     Mail,

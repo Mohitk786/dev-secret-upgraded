@@ -176,7 +176,7 @@ const Index = () => {
       <section className="py-14 bg-muted">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-2xl font-bold mb-3">Want to Collaborate or Have Questions?</h2>
-          <p className="text-muted-foreground mb-6">We're always excited to partner and assist you. Reach out to us anytime!</p>
+          <p className="text-muted-foreground mb-6">We&apos;re always excited to partner and assist you. Reach out to us anytime!</p>
           <div className="flex justify-center gap-4">
             <Button size="lg" variant="outline" onClick={() => window.open("mailto:support@keyvault.com")}>
               Email Us

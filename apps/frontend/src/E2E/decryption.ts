@@ -1,5 +1,5 @@
 import { Secret } from "@/types/types";
-import { getPrivateKey, getPublicKey } from "./rsaKeyGen";
+import { getPrivateKey } from "./rsaKeyGen";
 
 export const decryptVaultKeyWithPrivateKey = async (encryptedBase64: string) => {
    
@@ -33,7 +33,7 @@ export const decryptVaultKeyWithPrivateKey = async (encryptedBase64: string) => 
   };
 
 
-export const decryptSecret = async (secret: Secret , vaultKey: CryptoKey) => {
+export const DecryptSecret = async (secret: Secret , vaultKey: CryptoKey) => {
  
   const encryptedBase64 = secret.encryptedSecret;
 

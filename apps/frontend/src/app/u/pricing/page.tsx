@@ -94,7 +94,7 @@ const Pricing = () => {
           Simple, Transparent Pricing
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-          Choose the plan that's right for you and start securing your
+          Choose the plan that&apos;s right for you and start securing your
           credentials today. All plans include a 14-day free trial.
         </p>
       </div>

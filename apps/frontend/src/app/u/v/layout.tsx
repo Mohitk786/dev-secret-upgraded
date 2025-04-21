@@ -6,7 +6,7 @@ import { ArrowLeft } from 'lucide-react'
 import { useAuth } from '@/hooks/queries/authQueries'
 import useSocket from '@/hooks/utils/useSocket'
 
-const layout = ({children}: {children: React.ReactNode}) => {
+const Layout = ({children}: {children: React.ReactNode}) => {
     const pathname = usePathname()
     const socket = useSocket()
     const router = useRouter()
@@ -33,4 +33,4 @@ const layout = ({children}: {children: React.ReactNode}) => {
     )
 }
 
-export default layout
+export default Layout
