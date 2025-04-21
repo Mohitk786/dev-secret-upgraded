@@ -22,7 +22,7 @@ const Sidebar = () => {
 
   const renderNavItems = (items: NavItem[], collapsed?: boolean) => {
     return items.map((item) => {
-      const isActive = pathname === item.href;
+      const isActive = pathname.includes(item.href);
       const isRecycleBin = item.title === "Recycle Bin";
   
       return (

@@ -60,7 +60,7 @@ export function DevHumorDrawer() {
                 onClick={() => window.open(meme.imageUrl, "_blank")}
                 src={meme.imageUrl}
                 alt={meme.title}
-                className="max-h-64 w-full object-contain rounded-lg shadow"
+                className="max-h-64 w-full object-contain rounded-lg shadow-md"
               />
               <p className="text-sm text-muted-foreground">By {meme.author}</p>
               <a

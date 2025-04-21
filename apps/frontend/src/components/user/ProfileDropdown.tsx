@@ -50,14 +50,14 @@ const ProfileDropdown = () => {
           <User className="h-4 w-4" />
           <span>Profile</span>
         </DropdownMenuItem>
-        <DropdownMenuItem className="cursor-pointer flex items-center gap-2">
+        <DropdownMenuItem className="cursor-pointer flex items-center gap-2" onClick={() => router.push(APP_ROUTES.SETTINGS)}>
           <Settings className="h-4 w-4" />
           <span>Settings</span>
         </DropdownMenuItem>
-        <DropdownMenuItem className="cursor-pointer flex items-center gap-2">
+        {/* <DropdownMenuItem className="cursor-pointer flex items-center gap-2">
           <Shield className="h-4 w-4" />
           <span>Security</span>
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
         <DropdownMenuSeparator />
         <a href={`${BASE_URL}/logout`}>
           <DropdownMenuItem className="cursor-pointer flex items-center gap-2 text-destructive focus:text-destructive">

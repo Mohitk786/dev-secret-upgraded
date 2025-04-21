@@ -60,7 +60,17 @@ export const dashboardStats = async (req: CustomRequest, res: Response): Promise
             new Map(allCollaborators.map(user => [user.id, user])).values()
         );
 
+
+        const sharedWithMe = await prisma.vault.count({
+            where: {
+                collaborators: {
+                    some: { user: { id: userId } }
+                }
+            }
+        })
+
         const data = {
+            sharedWithMe,
             vaultCount,
             collaboratorCount: uniqueCollaborators.length,
             secretsCount,

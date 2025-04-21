@@ -23,9 +23,9 @@ export const useDecryptedSecrets = (
         const key = await decryptVaultKeyWithPrivateKey(vaultKey);
         setDecryptedVaultKey(key);
         const secrets = await Promise.all(
-          encryptedSecrets.map((secret: Secret) =>
+          encryptedSecrets && encryptedSecrets.length > 0 ? encryptedSecrets.map((secret: Secret) =>
             decryptSecret(secret, key)
-          ) || []
+          ) : []
         );
         setDecryptedSecrets(secrets);
       } catch (err: any) {

@@ -80,11 +80,11 @@ const Dashboard = () => {
         </Card>
         <Card className="border-primary/20">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Security Score</CardTitle>
+            <CardTitle className="text-sm font-medium">Shared With Me</CardTitle>
             <div className="text-2xl">🛡️</div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">A+</div>
+            <div className="text-2xl font-bold">{isLoading ? "Loading..." : dashboardData?.sharedWithMe}</div>
             <p className="text-xs text-muted-foreground">
               End-to-end encrypted
             </p>
@@ -138,7 +138,7 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <ul className="space-y-4">
-              {dashboardData?.vaults.map((vault:any) => (
+              {dashboardData?.vaults && dashboardData?.vaults.length > 0 ? dashboardData?.vaults.map((vault:any) => (
                 <li key={vault.id}>
                   <Link href={`/vaults/${vault.id}`}>
                     <div className="vault-card hover:border-primary/50 group">
@@ -159,7 +159,7 @@ const Dashboard = () => {
                     </div>
                   </Link>
                 </li>
-              ))}
+              )) : <div className="text-center text-muted-foreground">No vaults found</div>}
             </ul>
           </CardContent>
         </Card>

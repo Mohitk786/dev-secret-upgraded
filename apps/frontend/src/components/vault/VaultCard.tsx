@@ -11,8 +11,8 @@ const VaultCard = ({ vault }: { vault: any }) => {
 
     
     return (
-        <Link href={`${APP_ROUTES.VAULTS}${isOwner ? "" : "/shared"}/${vault?.id}`} key={vault?.id}>
-            <Card className="h-full overflow-hidden transition-all hover:border-primary/50 hover:shadow-md group">
+        <Link href={`${isOwner ? APP_ROUTES.VAULTS : APP_ROUTES.VAULT_DETAIL_SHARED}/${vault?.id}`} key={vault?.id}>
+            <Card className="h-full overflow-hidden transition-all ">
                 <CardContent className="p-6">
                     <div className="flex items-start justify-between">
                         <div className="flex items-center gap-2">
@@ -24,7 +24,7 @@ const VaultCard = ({ vault }: { vault: any }) => {
                         <p> {vault?.ownerId === user?.id ? <span className="text-xs text-muted-foreground ">{vault?._count?.collaborators || 0} collaborators</span> : <Check className="h-4 w-4 text-green-500" />}</p>
                     </div>
                     <div className="mt-4">
-                        <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">{vault?.name}</h3>
+                        <h3 className="font-semibold text-lg  transition-colors">{vault?.name}</h3>
                         <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                             {vault?.description}
                         </p>

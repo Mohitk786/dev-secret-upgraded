@@ -21,8 +21,8 @@ export const APP_ROUTES = {
     VAULTS_NEW: "/u/v/new",
     VAULT_DETAIL: "/u/v/:vaultId",
     
-    VAULT_DETAIL_SHARED: "/u/v/shared-with-me/:vaultId",
-    SHARED_WITH_ME: "/u/v/shared-with-me",
+    VAULT_DETAIL_SHARED: "/u/v/shared",
+    SHARED_WITH_ME: "/u/shared-with-me",
     INVITES: "/u/invites",
     INVITE_DETAIL: "/u/invites/:inviteId",
     AUDIT_LOGS: "/u/audit-logs",

@@ -58,10 +58,6 @@ const VaultDetail = ({ isSharedVault }: { isSharedVault: boolean }) => {
 
   useEffect(() => {
     if (vault?.ownerId === user?.id) {
-      showToast({
-        type: "info",
-        message: `🔓 ${vault?.name} unlocked. Protect it like your production DB.`
-      })
       setHasAccess(true)
     } else {
       setHasAccess(vault?.collaborators?.hasSecretAccess)
