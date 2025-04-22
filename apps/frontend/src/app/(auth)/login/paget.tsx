@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react'
 import Login from './Login'
 
-const paget = () => {
+const page = () => {
   return (
     <Suspense fallback={<div className="flex justify-center items-center h-screen">Loading...</div>}>
         <Login />
@@ -9,4 +9,4 @@ const paget = () => {
   )
 }
 
-export default paget
+export default page
