@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Plus, Eye, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { APP_ROUTES } from "@/constants/data";
-import { getDashboardStats } from "@/actions/actions";
+import { getCurrentUser, getDashboardStats } from "@/actions/actions";
+import { redirect } from "next/navigation";
 
 const recentActivity = [
   { id: 1, name: "AWS Development", type: "API Keys", time: "2 minutes ago", emoji: "🔑" },
@@ -13,6 +14,14 @@ const recentActivity = [
 
 
 const Dashboard = async () => {
+
+  const user = await getCurrentUser();
+
+  console.log("user", user);
+
+  if (!user) {
+    redirect("/login"); 
+  }
  
   const dashboardData = await getDashboardStats();
 

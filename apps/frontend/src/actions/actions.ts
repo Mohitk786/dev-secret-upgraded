@@ -2,6 +2,8 @@
 
 import { fetchDashboardStats } from "@/services/extraServices";
 import { cookies } from "next/headers"; 
+import jwt from "jsonwebtoken";
+import { config } from "@secret-vault/backend-common/config";
 
 export async function getDashboardStats() {
     const cookieStore = await cookies();
@@ -11,4 +13,22 @@ export async function getDashboardStats() {
         throw new Error("User not authenticated"); 
       }
   return await fetchDashboardStats(authToken);
+}
+
+
+
+
+
+export async function getCurrentUser() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("dev_secret_vault_auth_token")?.value;
+
+  if (!token) return null;
+
+  try {
+    const user = jwt.verify(token, config.JWT_SECRET as string);
+    return user;
+  } catch (error) {
+    return null;
+  }
 }
