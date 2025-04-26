@@ -22,13 +22,12 @@ export async function getDashboardStats() {
 export async function getCurrentUser() {
   const cookieStore = await cookies();
   const token = cookieStore.get("dev_secret_vault_auth_token")?.value;
-
-  console
-
+  console.log("token", token);  
   if (!token) return null;
-
+    
   try {
     const user = jwt.verify(token, config.JWT_SECRET as string);
+    console.log("user", user);
     return user;
   } catch (error) {
     return null;
