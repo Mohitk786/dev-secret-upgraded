@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, Eye, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { APP_ROUTES } from "@/constants/data";
-import { getCurrentUser, getDashboardStats } from "@/actions/actions";
+import { getDashboardStats } from "@/actions/actions";
 import { redirect } from "next/navigation";
 
 const recentActivity = [
@@ -15,15 +15,12 @@ const recentActivity = [
 
 const Dashboard = async () => {
 
-  const user = await getCurrentUser();
-
-  console.log("user dashboard", user);
-
-  if (!user) {
-    redirect("/login"); 
-  }
- 
+  
   const dashboardData = await getDashboardStats();
+  
+    if (!dashboardData) {
+      redirect("/login"); 
+    }
 
   return (
    
