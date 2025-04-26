@@ -1,11 +1,9 @@
-"use client"
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Eye, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { APP_ROUTES } from "@/constants/data";
-import { useDashboardStats } from "@/hooks/queries/utilityQueries";
+import { getDashboardStats } from "@/actions/actions";
 
 const recentActivity = [
   { id: 1, name: "AWS Development", type: "API Keys", time: "2 minutes ago", emoji: "🔑" },
@@ -14,9 +12,9 @@ const recentActivity = [
 ];
 
 
-const Dashboard = () => {
+const Dashboard = async () => {
  
-  const {data:dashboardData,isLoading} = useDashboardStats();
+  const dashboardData = await getDashboardStats();
 
   return (
    
@@ -46,7 +44,7 @@ const Dashboard = () => {
             <div className="text-2xl">🔒</div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{isLoading ? "Loading..." : dashboardData?.vaultCount}</div>
+            <div className="text-2xl font-bold">{dashboardData?.vaultCount}</div>
             <p className="text-xs text-muted-foreground">
               Across all projects
             </p>
@@ -72,7 +70,7 @@ const Dashboard = () => {
             <div className="text-2xl">⏱️</div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{isLoading ? "Loading..." : dashboardData?.collaboratorCount}</div>
+            <div className="text-2xl font-bold">{dashboardData?.collaboratorCount}</div>
             <p className="text-xs text-muted-foreground">
               contributing to your vaults
             </p>
@@ -84,7 +82,7 @@ const Dashboard = () => {
             <div className="text-2xl">🛡️</div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{isLoading ? "Loading..." : dashboardData?.sharedWithMe}</div>
+            <div className="text-2xl font-bold">{dashboardData?.sharedWithMe}</div>
             <p className="text-xs text-muted-foreground">
               End-to-end encrypted
             </p>

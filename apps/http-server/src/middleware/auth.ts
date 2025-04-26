@@ -16,7 +16,8 @@ export const isAuthenticated = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const token = req?.cookies?.dev_secret_vault_auth_token;
+    const token = req?.cookies?.dev_secret_vault_auth_token || req?.headers?.authorization?.split(" ")[1];
+
     if (!token) {
       res.status(401).json({ message: "Unauthorized" });
       return;
