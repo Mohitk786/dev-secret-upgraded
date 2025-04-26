@@ -23,6 +23,8 @@ export async function getCurrentUser() {
   const cookieStore = await cookies();
   const token = cookieStore.get("dev_secret_vault_auth_token")?.value;
 
+  console
+
   if (!token) return null;
 
   try {

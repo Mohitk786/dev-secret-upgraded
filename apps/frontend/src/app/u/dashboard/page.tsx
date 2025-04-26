@@ -17,7 +17,7 @@ const Dashboard = async () => {
 
   const user = await getCurrentUser();
 
-  console.log("user", user);
+  console.log("user dashboard", user);
 
   if (!user) {
     redirect("/login"); 
