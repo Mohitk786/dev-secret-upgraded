@@ -13,15 +13,8 @@ export const getRandomDevMeme = async () => {
   };
 
 
-  export const fetchDashboardStats = async (authToken: string) => {
-    console.log("authToken", authToken);
-    const res = await axiosInstance.get("/dashboard-stats",
-      {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      }
-    );
+  export const fetchDashboardStats = async () => {
+    const res = await axiosInstance.get("/dashboard-stats");
     const data = await res?.data;
     return data;
   };
