@@ -9,6 +9,7 @@ import InputField from "@/components/ui/InputField";
 import SubmitButton from "@/components/ui/SubmitButton";
 import AuthForm from "@/components/Auth/AuthForm";
 import useToast from "@/hooks/utils/useToast";
+import { exec } from "node:child_process";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -37,16 +38,16 @@ const Register = () => {
   return (
     <AuthForm
       title="Create your KeyVault account"
-      description="Start securing your development secrets today 🚀"
+      description="Secure your dev secrets in one powerful vault 🚀"
     >
-      <form className="space-y-5" onSubmit={handleSubmit}>
+      <form className="space-y-5" onSubmit={handleSubmit} autoComplete="off">
         <InputField
           id="name"
           label="Full Name"
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          icon={<UserPlus />}
+          icon={<UserPlus className="text-zinc-400" />}
           placeholder="John Doe"
           required
         />
@@ -56,7 +57,7 @@ const Register = () => {
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          icon={<Mail />}
+          icon={<Mail className="text-zinc-400" />}
           placeholder="you@domain.com"
           required
         />
@@ -66,52 +67,37 @@ const Register = () => {
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          icon={<Lock />}
+          icon={<Lock className="text-zinc-400" />}
           placeholder="••••••••"
           required
         />
-
         <InputField
           id="confirmPassword"
           label="Confirm Password"
           type="password"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
-          icon={<Lock />}
+          icon={<Lock className="text-zinc-400" />}
           placeholder="••••••••"
           required
         />
 
         <SubmitButton
           isPending={isPending}
-          text={isPending ? "Signing up..." : "Create account"}
+          text={isPending ? "Creating account..." : "Create Account"}
           onClick={handleSubmit}
         />
-
-        {/* <div className="mt-8 space-y-4">
-          <div className="relative text-center text-muted-foreground text-sm">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-border" />
-            </div>
-            <span className="bg-background px-3 relative z-10">or continue with</span>
-          </div>
-
-          <button
-            type="button"
-            className="w-full flex justify-center items-center py-2 px-4 border border-border bg-card text-foreground rounded-xl shadow-sm hover:bg-secondary/30 transition-colors"
-          >
-            <Github className="w-5 h-5 mr-2" />
-            Sign up with GitHub
-          </button>
-        </div> */}
       </form>
 
-      <p className="mt-6 text-center text-sm text-muted-foreground">
+      <div className="mt-6 text-center text-sm text-gray-600">
         Already have an account?{" "}
-        <Link href="/login" className="font-medium text-primary hover:underline">
+        <Link
+          href="/login"
+          className="font-semibold text-zinc-400 hover:text-indigo-500 transition-colors"
+        >
           Sign in
         </Link>
-      </p>
+      </div>
     </AuthForm>
   );
 };

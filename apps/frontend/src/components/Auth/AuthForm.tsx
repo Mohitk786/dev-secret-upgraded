@@ -1,5 +1,5 @@
-import React, { Suspense } from 'react';
-import AppBranding from '../ui/AppName';
+import React, { Suspense } from "react";
+import AppBranding from "../ui/AppName";
 
 interface AuthFormProps {
   title: string;
@@ -7,28 +7,35 @@ interface AuthFormProps {
   children: React.ReactNode;
 }
 
-const AuthForm: React.FC<AuthFormProps> = ({ title, description, children }) => (
-  <Suspense fallback={<div className="flex justify-center items-center h-screen">Loading...</div>}>
-
-<div className="h-screen bg-gradient-to-br from-pink-100 to-purple-500 flex flex-col justify-center sm:px-6 lg:px-8">
-    <div className="sm:mx-auto sm:w-full sm:max-w-md">
-      <div className="flex justify-center text-black">
-        <AppBranding />
+const AuthForm: React.FC<AuthFormProps> = ({
+  title,
+  description,
+  children,
+}) => (
+  <Suspense
+    fallback={
+      <div className="flex justify-center items-center h-screen text-white">
+        Loading...
       </div>
-      <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-        {title}
-      </h2>
-      <p className="mt-2 text-center text-sm text-gray-600">
-        {description}
-      </p>
-    </div>
+    }
+  >
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-purple-600 px-4">
+      <div className="w-full max-w-md space-y-6 ">
+        <div className="text-center">
+          <div className="flex justify-center mb-4">
+            <AppBranding />
+          </div>
+          <h2 className="text-3xl font-bold text-white">{title}</h2>
+          {description && (
+            <p className="mt-2 text-sm text-gray-200">{description}</p>
+          )}
+        </div>
 
-    <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-      <div className="bg-white py-8 px-4 shadow-xl rounded-2xl sm:px-10">
-        {children}
+        <div className="rounded-2xl shadow-2xl px-6 py-8 bg-zinc-900">
+          {children}
+        </div>
       </div>
     </div>
-  </div>
   </Suspense>
 );
 
