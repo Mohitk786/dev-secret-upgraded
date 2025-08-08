@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
 import React, { useState } from "react";
-import { Mail, Lock } from "lucide-react";
+import { Mail, Lock } from 'lucide-react';
 import Link from "next/link";
 import { useLoginMutation } from "@/hooks/mutations/authMutaions";
 import InputField from "@/components/ui/InputField";
@@ -11,7 +11,6 @@ import AuthForm from "@/components/Auth/AuthForm";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const { mutate: login, isPending } = useLoginMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -24,10 +23,7 @@ export default function Login() {
       title="Welcome back to DevVault"
       description="Your secrets are safe with us 🔐"
     >
-      <form
-        className="space-y-6 rounded-2xl  p-8 shadow-xl ring-1"
-        onSubmit={handleSubmit}
-      >
+      <form className="space-y-6" onSubmit={handleSubmit}>
         <InputField
           id="email"
           label="Email address"
@@ -48,19 +44,14 @@ export default function Login() {
           placeholder="••••••••"
           required
         />
-
         <SubmitButton
           isPending={isPending}
           text={isPending ? "Signing in..." : "Sign in"}
           onClick={handleSubmit}
         />
-
-        <div className="mt-6 text-center text-sm text-zinc-400">
+        <div className="mt-6 text-center text-sm text-zinc-500">
           Don’t have an account?{" "}
-          <Link
-            href="/signup"
-            className="font-semibold text-indigo-500 hover:underline"
-          >
+          <Link href="/signup" className="font-semibold text-indigo-600 hover:underline transition-colors">
             Sign up
           </Link>
         </div>

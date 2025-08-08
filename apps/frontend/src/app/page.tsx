@@ -1,322 +1,336 @@
-"use client";
+import Link from "next/link"
+import Image from "next/image"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Lock, Users, ShieldCheck, ScrollText, Sparkles, MailPlus, Code, Rocket, GitFork, Quote, Github, Mail, FileText } from 'lucide-react'
 
-import { Button } from "@/components/ui/button";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/components/ui/carousel";
-import Link from "next/link";
-import {
-  Clock,
-  Key,
-  Lock,
-  type LucideIcon,
-  RefreshCw,
-  Shield,
-  Trash2,
-  Users,
-  Zap,
-  FileCode,
-  ChevronRight,
-  Check,
-  X,
-} from "lucide-react";
-import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
-import { APP_ROUTES } from "@/constants/data";
-import { getToken } from "@/lib/helper";
-import { useEffect } from "react";
+export default function DevVaultLandingPage() {
+return (
+  <div className="flex flex-col min-h-[100dvh] bg-devvault-white text-devvault-graphite">
+    <header className="px-4 lg:px-6 h-16 flex items-center bg-devvault-navy text-devvault-white shadow-md sticky top-0 z-50 bg-background border-b  border-devvault-electric-blue/20">
+      <Link href="/" className="flex items-center justify-center gap-2 font-mono text-xl font-bold">
+        <Code className="h-6 w-6 text-devvault-electric-blue" />
+        DevVault
+      </Link>
+      <nav className="ml-auto flex gap-4 sm:gap-6">
+        <Link href="#features" className="text-sm font-medium hover:underline underline-offset-4">
+          Features
+        </Link>
+        <Link href="#how-it-helps" className="text-sm font-medium hover:underline underline-offset-4">
+          Solutions
+        </Link>
+        <Link href="#why-choose" className="text-sm font-medium hover:underline underline-offset-4">
+          Why DevVault
+        </Link>
+        <Link href="#testimonials" className="text-sm font-medium hover:underline underline-offset-4">
+          Testimonials
+        </Link>
+        <Link href="#contact" className="text-sm font-medium hover:underline underline-offset-4">
+          Contact
+        </Link>
+      </nav>
+    </header>
 
-const features = [
-  {
-    icon: <Shield className="w-10 h-10 text-primary" />,
-    title: "Secure Storage",
-    description: "Military-grade encryption for your sensitive information",
-  },
-  {
-    icon: <Users className="w-10 h-10 text-primary" />,
-    title: "Team Collaboration",
-    description: "Share secrets safely with your team members",
-  },
-  {
-    icon: <Key className="w-10 h-10 text-primary" />,
-    title: "Access Control",
-    description: "Fine-grained permissions and access management",
-  },
-];
-
-const testimonials = [
-  {
-    text: "KeyVault has revolutionized how we manage our development secrets. It's secure and intuitive!",
-    author: "Sarah Johnson",
-    role: "CTO at TechCorp",
-  },
-  {
-    text: "The collaboration features are outstanding. Perfect for our remote team!",
-    author: "Mike Chen",
-    role: "Lead Developer at StartupX",
-  },
-  {
-    text: "Best investment for our team's security. The audit logs are invaluable.",
-    author: "Emma Davis",
-    role: "Security Engineer at SecureNet",
-  },
-];
-
-const Index = () => {
-  const router = useRouter();
-  const token = getToken();
-
-  useEffect(() => {
-    if (token) {
-      router.push(APP_ROUTES.DASHBOARD);
-    }
-  }, [token, router]);
-
-  return (
-    <div className="min-h-screen bg-background">
-      {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 bg-background/95 backdrop-blur-sm border-b">
-        <div className="container mx-auto px-4 py-2">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-2">
-              <Lock className="h-7 w-7 text-primary" />
-              <span className="text-lg font-bold">KeyVault</span>
-            </div>
-            <div className="flex space-x-3">
-              {!token && (
-                <Button
-                  variant="ghost"
-                  onClick={() => router.push(APP_ROUTES.LOGIN)}
-                >
-                  Sign In
-                </Button>
-              )}
-              <Button onClick={() => router.push(APP_ROUTES.SIGNUP)}>
-                {token ? "Go to Dashboard" : "Get Started"}
+    <main className="flex-1">
+      <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-br from-devvault-navy to-devvault-graphite text-devvault-white">
+        <div className="container px-4 md:px-6 grid gap-8 lg:grid-cols-2 lg:gap-12 items-center">
+          <div className="space-y-6 text-center lg:text-left">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tighter font-mono leading-tight">
+              Secure. Collaborative. Developer-first.
+            </h1>
+            <p className="max-w-[700px] mx-auto lg:mx-0 text-lg md:text-xl text-devvault-white/90">
+              DevVault is a real-time collaboration platform for developers, tech teams, and content creators to securely
+              store, edit, and manage coding documents and knowledge vaults.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <Button
+                className="inline-flex h-12 items-center justify-center rounded-md bg-devvault-electric-blue px-8 text-base font-medium text-devvault-white shadow-lg transition-colors hover:bg-devvault-electric-blue/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-devvault-electric-blue/50"
+                asChild
+              >
+                <Link href="#waitlist">Get Early Access</Link>
+              </Button>
+              <Button
+                variant="outline"
+                className="inline-flex h-12 items-center justify-center rounded-md border border-devvault-electric-blue bg-transparent px-8 text-base font-medium text-devvault-electric-blue shadow-md transition-colors hover:bg-devvault-electric-blue hover:text-devvault-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-devvault-electric-blue/50"
+                asChild
+              >
+                <Link href="/login">Start Now</Link>
               </Button>
             </div>
           </div>
-        </div>
-      </nav>
-
-      {/* Hero */}
-      <section className="pt-28 pb-16 px-4">
-        <div className="container mx-auto text-center max-w-4xl">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60"
-          >
-            Secure Your Development Secrets
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="mt-4 text-lg text-muted-foreground"
-          >
-            KeyVault offers robust encryption and collaboration tools for
-            managing API keys, credentials, and secrets safely.
-          </motion.p>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="mt-6 flex justify-center gap-3"
-          >
-            <Button size="lg" onClick={() => router.push(APP_ROUTES.SIGNUP)}>
-              Start Free Trial
-            </Button>
-            <Button size="lg" variant="outline">
-              View Demo
-            </Button>
-          </motion.div>
-        </div>
-      </section>
-
-      <section
-        id="features"
-        className="w-full py-12 md:py-24 lg:py-32 relative"
-      >
-        <div className="absolute inset-0 bg-muted/40 -z-10"></div>
-        <div className="container px-4 md:px-6">
-          <div className="flex flex-col items-center justify-center space-y-4 text-center">
-            <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-sm font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-vault-DEFAULT/20 bg-vault-DEFAULT/10 text-vault-DEFAULT">
-              Key Features
-            </div>
-            <div className="space-y-2">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                Enterprise-Grade Secret Management
-              </h2>
-              <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                deVault provides a comprehensive set of features to help your
-                team manage secrets securely and efficiently.
-              </p>
-            </div>
-          </div>
-          <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 py-12 md:grid-cols-2 lg:grid-cols-3">
-            <FeatureCard
-              icon={Lock}
-              title="End-to-End Encryption"
-              description="Your secrets are encrypted before they leave your browser, ensuring only authorized team members can access them."
-            />
-            <FeatureCard
-              icon={Zap}
-              title="Real-Time Collaboration"
-              description="Work together with your team in real-time, with instant updates and notifications."
-            />
-            <FeatureCard
-              icon={RefreshCw}
-              title="Access Control & Permissions"
-              description="Fine-grained access controls let you decide who can view, edit, or manage your secrets."
-            />
-            <FeatureCard
-              icon={Trash2}
-              title="Trash Recovery"
-              description="Accidentally deleted a secret? No problem. Recover it from the trash within 30 days."
-            />
-            <FeatureCard
-              icon={Clock}
-              title="Activity Logs"
-              description="Keep track of who did what and when with detailed activity logs for all your secrets."
-            />
-            <FeatureCard
-              icon={FileCode}
-              title="API Access (Coming Soon)"
-              description="Integrate deVault with your CI/CD pipeline and other tools with our upcoming API."
+          <div className="flex justify-center lg:justify-end">
+            <Image
+              src="/placeholder.svg?height=500&width=700"
+              width={700}
+              height={500}
+              alt="DevVault Dashboard Mockup"
+              className="rounded-xl object-cover shadow-2xl border border-devvault-electric-blue/20"
             />
           </div>
         </div>
       </section>
 
-      <section
-        id="use-cases"
-        className="w-full py-12 md:py-24 lg:py-32 relative"
-      >
-        <div className="absolute inset-0 bg-muted/40 -z-10"></div>
-        <div className="container px-4 md:px-6">
-          <div className="flex flex-col items-center justify-center space-y-4 text-center">
-            <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-sm font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-vault-DEFAULT/20 bg-vault-DEFAULT/10 text-vault-DEFAULT">
-              Use Cases
-            </div>
-            <div className="space-y-2">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                Build more securely with your team
-              </h2>
-              <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                See how teams are using deVault to manage their secrets
-                securely.
-              </p>
-            </div>
-          </div>
-          <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 py-12 md:grid-cols-3">
-            <UseCaseCard
-              title="SaaS Development"
-              description="Keep API keys, database credentials, and other sensitive information secure while collaborating with your team."
-              icon={Users}
-            />
-            <UseCaseCard
-              title=".env Management"
-              description="Manage your environment variables across different environments and share them securely with your team."
-              icon={Key}
-            />
-            <UseCaseCard
-              title="Secure Sharing"
-              description="Share secrets with contractors, clients, or team members without compromising security."
-              icon={Shield}
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* Contact / Collaborate */}
-      <section className="py-14 bg-muted">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-2xl font-bold mb-3">
-            Want to Collaborate or Have Questions?
+      <section id="features" className="w-full py-16 md:py-24 lg:py-32 bg-devvault-white">
+        <div className="container px-4 md:px-6 text-center">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tighter font-mono mb-12 text-devvault-navy">
+            Core Features Designed for Developers
           </h2>
-          <p className="text-muted-foreground mb-6">
-            We&apos;re always excited to partner and assist you. Reach out to us
-            anytime!
-          </p>
-          <div className="flex justify-center gap-4">
-            <Button
-              size="lg"
-              variant="outline"
-              onClick={() => window.open("mailto:support@keyvault.com")}
-            >
-              Email Us
-            </Button>
-            <Button size="lg" onClick={() => router.push("/contact")}>
-              Contact Form
-            </Button>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <Card className="p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border-devvault-electric-blue/10">
+              <CardHeader className="flex flex-col items-center p-0 pb-4">
+                <Users className="h-12 w-12 text-devvault-electric-blue mb-4" />
+                <CardTitle className="text-xl font-semibold font-mono text-devvault-graphite">Real-time Collaboration</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0 text-muted-foreground">
+                <p>Edit, delete, view, and add content simultaneously with your team. See changes as they happen.</p>
+              </CardContent>
+            </Card>
+            <Card className="p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border-devvault-electric-blue/10">
+              <CardHeader className="flex flex-col items-center p-0 pb-4">
+                <Lock className="h-12 w-12 text-devvault-electric-blue mb-4" />
+                <CardTitle className="text-xl font-semibold font-mono text-devvault-graphite">End-to-End Encryption</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0 text-muted-foreground">
+                <p>Every document and interaction is completely private and secure, ensuring your data is safe.</p>
+              </CardContent>
+            </Card>
+            <Card className="p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border-devvault-electric-blue/10">
+              <CardHeader className="flex flex-col items-center p-0 pb-4">
+                <ShieldCheck className="h-12 w-12 text-devvault-electric-blue mb-4" />
+                <CardTitle className="text-xl font-semibold font-mono text-devvault-graphite">Granular Access Control</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0 text-muted-foreground">
+                <p>Invite collaborators, revoke or grant access, and view detailed access logs with ease.</p>
+              </CardContent>
+            </Card>
+            <Card className="p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border-devvault-electric-blue/10">
+              <CardHeader className="flex flex-col items-center p-0 pb-4">
+                <ScrollText className="h-12 w-12 text-devvault-electric-blue mb-4" />
+                <CardTitle className="text-xl font-semibold font-mono text-devvault-graphite">Comprehensive Audit Logs</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0 text-muted-foreground">
+                <p>Track every action (edit, delete, view, invite) with timestamps for complete transparency.</p>
+              </CardContent>
+            </Card>
+            <Card className="p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border-devvault-electric-blue/10">
+              <CardHeader className="flex flex-col items-center p-0 pb-4">
+                <Sparkles className="h-12 w-12 text-devvault-electric-blue mb-4" />
+                <CardTitle className="text-xl font-semibold font-mono text-devvault-graphite">Intuitive UI/UX</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0 text-muted-foreground">
+                <p>A developer-first, minimal yet powerful interface designed for efficiency and clarity.</p>
+              </CardContent>
+            </Card>
+            <Card className="p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border-devvault-electric-blue/10">
+              <CardHeader className="flex flex-col items-center p-0 pb-4">
+                <MailPlus className="h-12 w-12 text-devvault-electric-blue mb-4" />
+                <CardTitle className="text-xl font-semibold font-mono text-devvault-graphite">Invite & Collaboration Management</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0 text-muted-foreground">
+                <p>View all invites, accept/reject, and track their status within a centralized system.</p>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-10 border-t bg-background">
-        <div className="container mx-auto px-4 flex justify-between items-center text-sm">
-          <div className="flex items-center space-x-2">
-            <Lock className="h-5 w-5 text-primary" />
-            <span className="font-medium">KeyVault</span>
+      <section className="w-full py-16 md:py-24 lg:py-32 bg-devvault-navy text-devvault-white">
+        <div className="container px-4 md:px-6 text-center">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tighter font-mono mb-12">
+            See DevVault in Action
+          </h2>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="flex flex-col items-center space-y-4">
+              <Image
+                src="/placeholder.svg?height=350&width=550"
+                width={550}
+                height={350}
+                alt="DevVault Dashboard"
+                className="rounded-lg object-cover shadow-xl border border-devvault-electric-blue/20"
+              />
+              <h3 className="text-xl font-semibold font-mono">Dashboard Overview</h3>
+              <p className="text-devvault-white/80">Quick access to your vaults and recent activity.</p>
+            </div>
+            <div className="flex flex-col items-center space-y-4">
+              <Image
+                src="/placeholder.svg?height=350&width=550"
+                width={550}
+                height={350}
+                alt="DevVault Access Control"
+                className="rounded-lg object-cover shadow-xl border border-devvault-electric-blue/20"
+              />
+              <h3 className="text-xl font-semibold font-mono">Granular Permissions</h3>
+              <p className="text-devvault-white/80">Manage who sees what with fine-grained controls.</p>
+            </div>
+            <div className="flex flex-col items-center space-y-4">
+              <Image
+                src="/placeholder.svg?height=350&width=550"
+                width={550}
+                height={350}
+                alt="DevVault Live Collaboration"
+                className="rounded-lg object-cover shadow-xl border border-devvault-electric-blue/20"
+              />
+              <h3 className="text-xl font-semibold font-mono">Live Editing Experience</h3>
+              <p className="text-devvault-white/80">Collaborate in real-time on code and documents.</p>
+            </div>
           </div>
-          <p className="text-muted-foreground">
-            © 2025 KeyVault. All rights reserved.
-          </p>
         </div>
-      </footer>
-    </div>
-  );
-};
+      </section>
 
-export default Index;
+      <section id="how-it-helps" className="w-full py-16 md:py-24 lg:py-32 bg-devvault-white">
+        <div className="container px-4 md:px-6 text-center">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tighter font-mono mb-12 text-devvault-navy">
+            Who Benefits from DevVault?
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <Card className="p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border-devvault-electric-blue/10">
+              <CardHeader className="flex flex-col items-center p-0 pb-4">
+                <Code className="h-10 w-10 text-devvault-electric-blue mb-3" />
+                <CardTitle className="text-lg font-semibold font-mono text-devvault-graphite">Developers & Engineers</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0 text-muted-foreground">
+                <p>Streamline code reviews, share snippets, and collaborate on documentation without friction.</p>
+              </CardContent>
+            </Card>
+            <Card className="p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border-devvault-electric-blue/10">
+              <CardHeader className="flex flex-col items-center p-0 pb-4">
+                <Rocket className="h-10 w-10 text-devvault-electric-blue mb-3" />
+                <CardTitle className="text-lg font-semibold font-mono text-devvault-graphite">Startups & Tech Teams</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0 text-muted-foreground">
+                <p>Accelerate product development with secure, real-time knowledge sharing and project documentation.</p>
+              </CardContent>
+            </Card>
+            <Card className="p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border-devvault-electric-blue/10">
+              <CardHeader className="flex flex-col items-center p-0 pb-4">
+                <GitFork className="h-10 w-10 text-devvault-electric-blue mb-3" />
+                <CardTitle className="text-lg font-semibold font-mono text-devvault-graphite">Open-Source Projects</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0 text-muted-foreground">
+                <p>Maintain clear, versioned documentation and collaborate on contributions securely.</p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
 
-interface FeatureCardProps {
-  icon: LucideIcon;
-  title: string;
-  description: string;
-}
+      <section id="why-choose" className="w-full py-16 md:py-24 lg:py-32 bg-devvault-graphite text-devvault-white">
+        <div className="container px-4 md:px-6 text-center">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tighter font-mono mb-12">
+            Why DevVault Stands Out
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <div className="flex items-start gap-4 text-left">
+              <Lock className="h-8 w-8 text-devvault-electric-blue shrink-0 mt-1" />
+              <div>
+                <h3 className="text-xl font-semibold font-mono mb-2">Uncompromised Security</h3>
+                <p className="text-devvault-white/80">
+                  End-to-end encryption ensures your sensitive code and documents are always private.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4 text-left">
+              <ScrollText className="h-8 w-8 text-devvault-electric-blue shrink-0 mt-1" />
+              <div>
+                <h3 className="text-xl font-semibold font-mono mb-2">Transparent Audit Logs</h3>
+                <p className="text-devvault-white/80">
+                  Every action is logged with timestamps, providing full accountability and traceability.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4 text-left">
+              <Users className="h-8 w-8 text-devvault-electric-blue shrink-0 mt-1" />
+              <div>
+                <h3 className="text-xl font-semibold font-mono mb-2">Seamless Real-time Editing</h3>
+                <p className="text-devvault-white/80">
+                  Collaborate on documents live, eliminating version conflicts and improving team efficiency.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4 text-left">
+              <Sparkles className="h-8 w-8 text-devvault-electric-blue shrink-0 mt-1" />
+              <div>
+                <h3 className="text-xl font-semibold font-mono mb-2">Purpose-Built for Devs</h3>
+                <p className="text-devvault-white/80">
+                  No more clunky workarounds. DevVault is designed from the ground up for coding and technical documentation.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-function FeatureCard({ icon: Icon, title, description }: FeatureCardProps) {
-  return (
-    <div className="group relative flex flex-col space-y-3 rounded-2xl border bg-background p-6 shadow-sm transition-all hover:shadow-md">
-      <div className="absolute right-6 top-6 h-8 w-8 rounded-full bg-vault-DEFAULT/10 opacity-0 transition-opacity group-hover:opacity-100"></div>
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-vault-DEFAULT/10">
-        <Icon className="h-6 w-6 text-vault-DEFAULT" />
-      </div>
-      <h3 className="text-lg font-medium">{title}</h3>
-      <p className="text-sm text-muted-foreground">{description}</p>
-    </div>
-  );
-}
+      <section id="testimonials" className="w-full py-16 md:py-24 lg:py-32 bg-devvault-white">
+        <div className="container px-4 md:px-6 text-center">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tighter font-mono mb-12 text-devvault-navy">
+            Loved by Teams Worldwide
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <Card className="p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border-devvault-electric-blue/10">
+              <CardContent className="p-0">
+                <Quote className="h-8 w-8 text-devvault-electric-blue mb-4" />
+                <p className="text-lg italic text-muted-foreground mb-4">
+                  &quot;DevVault has transformed how our team collaborates on sensitive code. The encryption and audit logs are a game-changer!&quot;
+                </p>
+                <p className="font-semibold text-devvault-graphite">- Jane Doe, Lead Developer at TechCorp</p>
+              </CardContent>
+            </Card>
+            <Card className="p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border-devvault-electric-blue/10">
+              <CardContent className="p-0">
+                <Quote className="h-8 w-8 text-devvault-electric-blue mb-4" />
+                <p className="text-lg italic text-muted-foreground mb-4">
+                  &quot;Finally, a collaboration tool built with developers in mind. The UI is clean, and the real-time editing is flawless.&quot;
+                </p>
+                <p className="font-semibold text-devvault-graphite">- John Smith, Founder of IndieDev Studio</p>
+              </CardContent>
+            </Card>
+            <Card className="p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border-devvault-electric-blue/10">
+              <CardContent className="p-0">
+                <Quote className="h-8 w-8 text-devvault-electric-blue mb-4" />
+                <p className="text-lg italic text-muted-foreground mb-4">
+                  &quot;The granular access control and invite management features are incredibly powerful for managing our open-source contributions.&quot;
+                </p>
+                <p className="font-semibold text-devvault-graphite">- Sarah Lee, Open Source Contributor</p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
 
-interface UseCaseCardProps {
-  title: string;
-  description: string;
-  icon: LucideIcon;
-}
+      <section id="waitlist" className="w-full py-16 md:py-24 lg:py-32 bg-devvault-electric-blue text-devvault-white text-center">
+        <div className="container px-4 md:px-6 space-y-6">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tighter font-mono">
+            Ready to Elevate Your Collaboration?
+          </h2>
+          <p className="max-w-2xl mx-auto text-lg md:text-xl text-devvault-white/90">
+            Join our waitlist for early access and be among the first to experience secure, real-time collaboration.
+          </p>
+          <Button
+            className="inline-flex h-14 items-center justify-center rounded-md bg-devvault-navy px-10 text-lg font-medium text-devvault-white shadow-xl transition-colors hover:bg-devvault-navy/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-devvault-white/50"
+            asChild
+          >
+            <Link href="#contact">Join the Waitlist</Link>
+          </Button>
+        </div>
+      </section>
+    </main>
 
-function UseCaseCard({ title, description, icon: Icon }: UseCaseCardProps) {
-  return (
-    <div className="group relative flex flex-col space-y-3 rounded-2xl border bg-background p-6 shadow-sm transition-all hover:shadow-md">
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-vault-DEFAULT/10">
-        <Icon className="h-6 w-6 text-vault-DEFAULT" />
-      </div>
-      <h3 className="text-lg font-medium">{title}</h3>
-      <p className="text-sm text-muted-foreground">{description}</p>
-      <div className="mt-auto pt-4">
-        <Link
-          href="#"
-          className="inline-flex items-center text-sm font-medium text-vault-DEFAULT"
-        >
-          Learn more
-          <ChevronRight className="ml-1 h-4 w-4" />
+    <footer id="contact" className="flex flex-col gap-4 sm:flex-row py-8 w-full shrink-0 items-center px-4 md:px-6 border-t border-devvault-navy/20 bg-devvault-navy text-devvault-white">
+      <p className="text-sm text-devvault-white/80">
+        &copy; {new Date().getFullYear()} DevVault. All rights reserved.
+      </p>
+      <nav className="sm:ml-auto flex gap-6 sm:gap-8">
+        <Link href="#" className="text-sm hover:underline underline-offset-4 flex items-center gap-1">
+          <FileText className="h-4 w-4" /> Privacy Policy
         </Link>
-      </div>
-    </div>
-  );
+        <Link href="#" className="text-sm hover:underline underline-offset-4 flex items-center gap-1">
+          <Mail className="h-4 w-4" /> Contact
+        </Link>
+        <Link href="#" className="text-sm hover:underline underline-offset-4 flex items-center gap-1">
+          <Github className="h-4 w-4" /> GitHub
+        </Link>
+      </nav>
+    </footer>
+  </div>
+)
 }
