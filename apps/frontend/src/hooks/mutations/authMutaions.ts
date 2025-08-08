@@ -1,5 +1,5 @@
 
-import { login, signup } from "@/services/authServices";
+import { login, signup, uploadPublicKey } from "@/services/authServices";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter,  useSearchParams } from "next/navigation";
 import useToast from "../utils/useToast";
@@ -41,4 +41,12 @@ export const useSignupMutation = () => {
         }
     })  
 
+}
+
+
+export const useUploadPublicKeyMutation = () => {
+    return useMutation({
+        mutationFn: uploadPublicKey,
+        
+    })
 }

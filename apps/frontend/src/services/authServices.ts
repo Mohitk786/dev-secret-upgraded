@@ -3,7 +3,6 @@ import { axiosInstance } from "@/lib/axiosInstance";
 export interface SignupData {
   email: string;
   password: string;
-  publicKey: string;
   name: string;
 }
 
@@ -28,3 +27,10 @@ export const fetchUser = async () => {
   });
   return response.data;
 };
+
+export const uploadPublicKey = async (data: {publicKey: string, userId: string}) => {
+  const response = await axiosInstance.post("/upload-public-key", data, {
+    withCredentials: true,
+  });
+  return response.data;
+}

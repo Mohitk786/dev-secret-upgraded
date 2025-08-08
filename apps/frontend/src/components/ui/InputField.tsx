@@ -52,13 +52,16 @@ const InputField: React.FC<InputFieldProps> = ({
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setShowPassword(!showPassword)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowPassword(!showPassword);
+            }}
             className="absolute right-0 top-0 h-full px-2 hover:bg-transparent"
           >
             {showPassword ? (
-              <Eye className="w-4 h-4 text-gray-500" />
+              <Eye onClick={(e) => e.stopPropagation()} className="w-4 h-4 text-gray-500" />
             ) : (
-              <EyeOff className="w-4 h-4 text-gray-500" />
+              <EyeOff onClick={(e) => e.stopPropagation()} className="w-4 h-4 text-gray-500" />
             )}
           </Button>
         )}

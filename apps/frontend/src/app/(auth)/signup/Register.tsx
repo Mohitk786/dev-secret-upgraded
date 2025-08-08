@@ -1,25 +1,34 @@
-'use client';
+"use client";
 
 import React, { useState } from "react";
-import { UserPlus, Mail, Lock } from 'lucide-react';
+import { UserPlus, Mail, Lock } from "lucide-react";
 import Link from "next/link";
-import { useSignupMutation } from "@/hooks/mutations/authMutaions";
-import { generateRSAKeyPair } from "@/E2E/rsaKeyGen";
+import {
+  useSignupMutation,
+  useUploadPublicKeyMutation,
+} from "@/hooks/mutations/authMutaions";
+import { downloadPrivateKey, generateRSAKeyPair } from "@/E2E/rsaKeyGen";
 import InputField from "@/components/ui/InputField";
 import SubmitButton from "@/components/ui/SubmitButton";
 import AuthForm from "@/components/Auth/AuthForm";
 import useToast from "@/hooks/utils/useToast";
+import { useRouter } from "next/navigation";
 
 const Register = () => {
+  const { showToast } = useToast();
+  const router = useRouter();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [name, setName] = useState("");
+
   const { mutate: signup, isPending } = useSignupMutation();
-  const { showToast } = useToast();
+  const { mutate: uploadPublicKey } = useUploadPublicKeyMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (password !== confirmPassword) {
       showToast({
         type: "error",
@@ -27,8 +36,35 @@ const Register = () => {
       });
       return;
     }
-    const pubKeyBase64 = await generateRSAKeyPair();
-    signup({ email, password, publicKey: pubKeyBase64, name });
+
+    signup(
+      { email, password, name },
+      {
+        onSuccess: async (data: any) => {
+          const { publicKey, privateKey } = await generateRSAKeyPair();
+          uploadPublicKey(
+            { publicKey, userId: data.userId },
+            {
+              onSuccess: async () => {
+                await downloadPrivateKey(privateKey);
+                showToast({
+                  type: "success",
+                  message: "Account created successfully",
+                });
+                router.push("/login");
+              },
+              onError: (error: any) => {
+                showToast({
+                  type: "error",
+                  message:
+                    error?.response?.data?.message || "Something went wrong",
+                });
+              },
+            }
+          );
+        },
+      }
+    );
   };
 
   return (
@@ -80,12 +116,14 @@ const Register = () => {
         <SubmitButton
           isPending={isPending}
           text={isPending ? "Creating account..." : "Create Account"}
-          onClick={handleSubmit}
         />
       </form>
       <div className="mt-6 text-center text-sm text-zinc-500">
         Already have an account?{" "}
-        <Link href="/login" className="font-semibold text-indigo-600 hover:underline transition-colors">
+        <Link
+          href="/login"
+          className="font-semibold text-indigo-600 hover:underline transition-colors"
+        >
           Sign in
         </Link>
       </div>

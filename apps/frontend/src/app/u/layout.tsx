@@ -65,7 +65,7 @@ const Layout = ({ children }: LayoutProps) => {
           </div>
         </header>
 
-        <main className="h-[calc(100vh-4rem)] overflow-y-auto md:p-8">
+        <main className="h-[calc(100vh-4rem)] overflow-y-auto md:p-8 bg-devvault-graphite">
           {children}
           <DevHumorDrawer />
         </main>

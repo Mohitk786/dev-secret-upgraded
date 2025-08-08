@@ -6,14 +6,10 @@ import { sign } from "jsonwebtoken";
 
 export const signUpUser = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { name, email, password, publicKey } =
+        const { name, email, password } =
             req.body;
 
-        if (!email || !password || !publicKey) {
-            res.status(400).json({
-                message: "All fields are requried"
-            })
-        }
+       
 
         const existingUser = await prisma.user.findFirst({
             where: {
@@ -37,14 +33,13 @@ export const signUpUser = async (req: Request, res: Response): Promise<void> => 
                 name,
                 email,
                 password: password_hash,
-                publicKey
             }
         })
 
         res.status(200).json({
             success: true,
             message: "User created successfully",
-            data: user
+            userId: user.id
         })
 
 
@@ -56,6 +51,49 @@ export const signUpUser = async (req: Request, res: Response): Promise<void> => 
         });
     }
 };
+
+
+export const uploadPublicKey = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { publicKey, userId } = req.body;
+        console.log("publicKey", publicKey, userId);
+        const user = await prisma.user.findFirst({
+            where: {
+                id: userId
+            }
+        })
+
+        
+
+        if (!user) {
+            res.status(404).json({
+                success: false,
+                message: "Something went wrong"
+            })
+            return
+        }
+
+        await prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                publicKey
+            }
+        })
+
+        res.status(200).json({
+            success: true,
+            message: "Public key uploaded successfully"
+        })
+
+    } catch (error: any) {
+        res.status(error.status || 500).json({
+            success: false,
+            message: error.message || "Something went wrong"
+        })
+    }
+}
 
 export const signInUser = async (req: Request, res: Response): Promise<void> => {
     try {

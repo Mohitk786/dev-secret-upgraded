@@ -30,17 +30,26 @@ export const generateRSAKeyPair = async () => {
 
     
 
-    // 5. Download Private Key as file
-    const blob = new Blob([privKeyBase64], { type: "text/plain" });
+    
+    
+
+        return {
+            publicKey: pubKeyBase64,
+            privateKey: privKeyBase64
+        }
+    
+}
+
+
+
+export const downloadPrivateKey = (privateKey: string) => {
+    const blob = new Blob([privateKey], { type: "text/plain" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.download = "vault-private-key.txt";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-
-    return pubKeyBase64
-    
 }
 
 export const encryptData = async (data: string, publicKeyBase64: string) => {
