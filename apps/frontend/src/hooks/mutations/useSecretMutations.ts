@@ -9,7 +9,6 @@ export const useCreateSecretMutation = () => {
   return useMutation({
     mutationFn: createSecret,
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.VAULTS] });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.VAULT(variables.vaultId) });
     },
     onError: (err: any) => showToast({
@@ -28,7 +27,6 @@ export const useUpdateSecretMutation = () => {
     mutationFn: updateSecret,
     onSuccess: (_, { secretId, data }) => {
       const vaultId = data.vaultId;
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.VAULTS] });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.VAULT(vaultId) });
       showToast({
         type: "success",
@@ -54,7 +52,6 @@ export const useDeleteSecretMutation = (vaultId: string) => {
         type: "success",
         message: "Secret deleted successfully!"
       });
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.VAULTS] });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.VAULT(vaultId) });
     },
     onError: (err: any) => showToast({

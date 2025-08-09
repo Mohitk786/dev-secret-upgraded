@@ -92,6 +92,7 @@ const VaultCollaborators = () => {
     if (collaboratorsData) {
       setCollaborators(collaboratorsData)
     }
+    //@eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collaboratorsData])
 
 
