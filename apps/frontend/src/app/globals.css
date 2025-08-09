@@ -2,109 +2,84 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    --background: 10 0% 100%;
-    --foreground: 222 47% 8%;
+:root {
+  --background: 10 0% 100%;
+  --foreground: 222 47% 8%;
 
-    --card: 100 100% 100%;
-    --card-foreground: 222 47% 10%;
+  --card: 100 100% 100%;
+  --card-foreground: 222 47% 10%;
+  --card-hover: 0 0% 98%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 10%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 10%;
 
-    --primary: 234 85% 70%; /* SaaS-friendly violet-blue */
-    --primary-foreground: 0 0% 100%;
+  --primary: 220 8% 46%; 
+  --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 24% 95%; /* soft gray-blue */
-    --secondary-foreground: 222 47% 18%;
+  --secondary: 220 24% 95%;
+  --secondary-foreground: 222 47% 18%;
 
-    --muted: 220 16% 93%;
-    --muted-foreground: 220 14% 40%;
+  --muted: 220 16% 93%;
+  --muted-foreground: 220 14% 40%;
 
-    --accent: 210 100% 97%;
-    --accent-foreground: 222 47% 12%;
+  --accent: 210 100% 97%;
+  --accent-foreground: 222 47% 12%;
 
-    --destructive: 0 72% 52%;
-    --destructive-foreground: 0 0% 100%;
+  --destructive: 0 72% 52%;
+  --destructive-foreground: 0 0% 100%;
 
-    --border: 220 14% 85%;
-    --input: 220 14% 85%;
-    --ring: 234 85% 60%;
+  --border: 220 14% 85%;
+  --input: 220 14% 85%;
+  --ring: 220 8% 46%;
 
-    --radius: 0.6rem;
+  --radius: 0.6rem;
 
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 222 47% 10%;
-    --sidebar-primary: 234 85% 60%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 24% 95%;
-    --sidebar-accent-foreground: 222 47% 15%;
-    --sidebar-border: 220 14% 85%;
-    --sidebar-ring: 234 85% 60%;
-  }
+  --sidebar-background: 0 0% 100%;
+  --sidebar-foreground: 222 47% 10%;
+  --sidebar-primary: 220 8% 46%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 220 24% 95%;
+  --sidebar-accent-foreground: 222 47% 15%;
+  --sidebar-border: 220 14% 85%;
+  --sidebar-ring: 220 8% 46%;
+}
 
-  .dark {
-    --background: 0 0 8%;
-    --foreground: 210 40% 98%;
+.dark {
+  --background: 0 0% 8%;
+  --foreground: 210 40% 98%;
 
-    --card: 0 0% 8%;
---card-foreground: 210 40% 98%;
---card-hover: 0 0% 14%;
+  --card: 0 0% 8%;
+  --card-foreground: 210 40% 98%;
+  --card-hover: 0 0% 14%;
 
+  --popover: 222 47% 10%;
+  --popover-foreground: 210 40% 98%;
 
-    --popover: 222 47% 10%;
-    --popover-foreground: 210 40% 98%;
+  --primary: 220 8% 64%;
+  --primary-foreground: 0 0% 100%;
 
-    --primary: 234 85% 70%;
-    --primary-foreground: 0 0% 100%;
+  --secondary: 220 25% 18%;
+  --secondary-foreground: 210 40% 98%;
 
-    --secondary: 220 25% 18%;
-    --secondary-foreground: 210 40% 98%;
+  --muted: 220 25% 15%;
+  --muted-foreground: 215 16% 64%;
 
-    --muted: 220 25% 15%;
-    --muted-foreground: 215 16% 64%;
+  --accent: 220 25% 12%;
+  --accent-foreground: 210 40% 98%;
 
-    --accent: 220 25% 12%;
-    --accent-foreground: 210 40% 98%;
+  --destructive: 0 72% 48%;
+  --destructive-foreground: 0 0% 100%;
 
-    --destructive: 0 72% 48%;
-    --destructive-foreground: 0 0% 100%;
+  --border: 220 16% 26%;
+  --input: 220 16% 28%;
+  --ring: 220 8% 64%;
 
-    --border: 220 16% 26%;
-    --input: 220 16% 28%;
-    --ring: 234 85% 70%;
-
-    --sidebar-background: 222 47% 7%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 234 85% 70%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 24% 14%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 220 16% 26%;
-    --sidebar-ring: 234 85% 70%;
-  }
-
-  * {
-    @apply border-border transition-all duration-200 ease-in-out;
-  }
-
-  body {
-    @apply bg-background text-foreground antialiased;
-    font-feature-settings: "rlig" 1, "calt" 1;
-  }
-
-  input,
-  textarea,
-  select {
-    @apply bg-input text-foreground border border-input rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring;
-  }
-
-  a {
-    @apply text-primary hover:underline hover:brightness-110 transition-all;
-  }
-
-  ::selection {
-    background-color: hsl(var(--primary) / 0.3);
-  }
+  --sidebar-background: 222 47% 7%;
+  --sidebar-foreground: 210 40% 98%;
+  --sidebar-primary: 220 8% 64%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 220 24% 14%;
+  --sidebar-accent-foreground: 210 40% 98%;
+  --sidebar-border: 220 16% 26%;
+  --sidebar-ring: 220 8% 64%;
 }

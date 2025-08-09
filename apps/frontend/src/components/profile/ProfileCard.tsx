@@ -33,7 +33,7 @@ const ProfileDetailCard: React.FC<ProfileDetailCardProps> = ({ user }) => {
             alt={user.name || user.email}
             className="object-cover"
           />
-          <AvatarFallback className="bg-primary/20 text-primary font-semibold text-2xl">
+          <AvatarFallback className="bg-primary/20 text-gray-200 font-semibold text-2xl">
             {firstLetter}
           </AvatarFallback>
         </Avatar>

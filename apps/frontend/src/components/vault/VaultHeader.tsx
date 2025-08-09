@@ -39,7 +39,7 @@ const VaultHeader = ({ vault, setIsAddSecretOpen }: VaultHeaderProps) => {
     <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:justify-between sm:items-center">
       <div>
         <h1 className="text-3xl font-bold flex items-center gap-2">
-          <span className="text-primary">
+          <span className="text-gray-200">
             {vault?.icon || "🔒"}
           </span>
           {vault?.name}

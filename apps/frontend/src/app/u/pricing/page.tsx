@@ -193,7 +193,7 @@ const PricingTier = ({
   >
     <CardHeader>
       {popular && (
-        <div className="inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary mb-2">
+        <div className="inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-gray-200 mb-2">
           Most Popular
         </div>
       )}
@@ -226,7 +226,7 @@ const PricingTier = ({
           }
         }}
         variant={popular ? "default" : "outline"}
-        className={`w-full ${popular ? "" : "hover:bg-primary hover:text-primary-foreground"
+        className={`w-full ${popular ? "" : "hover:bg-primary hover:text-gray-200-foreground"
           }`}
       >
         {buttonText}

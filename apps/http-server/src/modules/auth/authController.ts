@@ -105,6 +105,7 @@ export const signInUser = async (req: Request, res: Response): Promise<void> => 
             }
         })
 
+
         if (!existingUser) {
             res.status(404).json({
                 success: false,
@@ -127,14 +128,16 @@ export const signInUser = async (req: Request, res: Response): Promise<void> => 
         }
 
         const token = sign({ id: existingUser.id }, config.JWT_SECRET as string, { expiresIn: '7d' });
-
-        res.cookie('dev_secret_vault_auth_token', token, {
+        
+        console.log("token0", token);
+        res.cookie('DEV_SECRET_VAULT_AUTH_TOKEN', token, {
             secure: false,
             // sameSite: 'none',
             httpOnly: true,
             maxAge: 7 * 24 * 60 * 60 * 1000
         });
-
+        
+        console.log("token1", token);
         res.status(200).json({
             success: true,
             message: "User signed in successfully",
@@ -153,7 +156,7 @@ export const signInUser = async (req: Request, res: Response): Promise<void> => 
 
 
 export const logoutUser = async (req: Request, res: Response): Promise<void> => {
-    res.clearCookie('dev_secret_vault_auth_token');
+    res.clearCookie('DEV_SECRET_VAULT_AUTH_TOKEN');
     res.status(200).json({
         success: true,
         message: "User logged out successfully"

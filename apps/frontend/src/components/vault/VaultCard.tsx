@@ -31,7 +31,7 @@ const VaultCard = ({ vault }: { vault: any }) => {
                     </div>
                     <div className="mt-4 pt-3 border-t flex items-center justify-between">
                         <span className="text-xs text-muted-foreground">{vault?.type}</span>
-                        <span className="text-xs font-medium text-primary">View details →</span>
+                        <span className="text-xs font-medium text-gray-200">View details →</span>
                     </div>
                 </CardContent>
             </Card>

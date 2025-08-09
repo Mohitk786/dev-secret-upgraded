@@ -79,7 +79,7 @@ const CreateVault = () => {
         <>
             <div>
                 <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-                    <Sparkles className="h-6 w-6 text-primary" /> Create New Vault
+                    <Sparkles className="h-6 w-6 text-gray-200" /> Create New Vault
                 </h1>
                 <p className="text-muted-foreground mt-1">
                     Set up a new secure vault to store your development secrets.

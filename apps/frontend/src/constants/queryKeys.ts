@@ -1,6 +1,5 @@
 
 export const QUERY_KEYS = {
-  VAULTS: "vaults",
   VAULT: (id: string) => ["vault", id],
   USER: "user",
   SECRETS: "secrets",

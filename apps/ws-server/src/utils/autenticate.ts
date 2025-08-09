@@ -12,7 +12,7 @@ export const authenticated = async (
     );
 
     // Correcting cookie name
-    const token = cookies?.dev_secret_vault_auth_token;
+    const token = cookies?.DEV_SECRET_VAULT_AUTH_TOKEN;
 
     if (!token) {
       console.error("No token found in cookies");

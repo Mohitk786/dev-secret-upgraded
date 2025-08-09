@@ -236,7 +236,7 @@ const VaultCollaborators = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-primary" />
+              <Users className="h-5 w-5 text-gray-200" />
               Collaborators
             </CardTitle>
             <CardDescription>
@@ -275,7 +275,7 @@ const VaultCollaborators = () => {
                           {collaborator?.user?.avatarUrl ? (
                             <Image src={collaborator?.user?.avatarUrl} alt={collaborator?.user?.name || collaborator?.user?.email} className="w-8 h-8 rounded-full" />
                           ) : (
-                            <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center text-primary">
+                            <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center text-gray-200">
                               {collaborator?.user?.name?.charAt(0) || collaborator?.user?.email.charAt(0)}
                             </div>
                           )}

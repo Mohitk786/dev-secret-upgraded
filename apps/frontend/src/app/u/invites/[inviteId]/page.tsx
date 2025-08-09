@@ -56,7 +56,7 @@ const Page = () => {
                     <CardContent className="pt-6">
                         <div className="text-center space-y-4">
                             <div className="animate-pulse bg-primary/20 h-12 w-12 rounded-full mx-auto flex items-center justify-center">
-                                <Shield className="h-6 w-6 text-primary/70" />
+                                <Shield className="h-6 w-6 text-gray-200/70" />
                             </div>
                             <h3 className="text-xl font-medium">Processing invitation...</h3>
                             <p className="text-muted-foreground">Please wait while we verify your invitation</p>

@@ -46,7 +46,7 @@ const InviteTable = ({ invites, onAccept, onReject, showActions = false, activeT
         <Card>
           <CardContent className="pt-6 flex flex-col items-center justify-center min-h-[200px] text-center">
             <div className="mb-4 p-3 rounded-full bg-primary/10">
-              <ShieldCheck className="h-6 w-6 text-primary" />
+              <ShieldCheck className="h-6 w-6 text-gray-200" />
             </div>
             <h3 className="text-xl font-medium mb-2">No Invites Found</h3>
             <p className="text-muted-foreground max-w-md">

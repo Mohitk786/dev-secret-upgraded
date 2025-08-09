@@ -78,7 +78,7 @@ const InviteColloborators = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <UserPlus className="h-5 w-5 text-primary" /> 
+            <UserPlus className="h-5 w-5 text-gray-200" /> 
             Send Invitation
           </CardTitle>
           <CardDescription>

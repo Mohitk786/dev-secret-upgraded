@@ -6,7 +6,7 @@ const VaultDetailSkeleton: React.FC = () => {
   return (
     <div className="space-y-6 animate-pulse">
       <div className="flex items-center justify-center h-[70vh]">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <Loader2 className="h-8 w-8 animate-spin text-gray-200" />
         <span className="ml-2 text-lg">Loading vault details...</span>
       </div>
     </div>

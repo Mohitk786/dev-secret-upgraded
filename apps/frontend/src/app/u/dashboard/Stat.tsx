@@ -1,4 +1,3 @@
-"use client"
 
 import React from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Eye, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { APP_ROUTES } from "@/constants/data";
-import { useDashboardData } from "@/hooks/queries/dashboard";
-import { Loading } from '@/components/ui/Loading';
+import { serverFetch } from '@/lib/serverFetch';
+import { StatCard } from '@/components/stat-card';
+ 
 
 const recentActivity = [
   { id: 1, name: "AWS Development", type: "API Keys", time: "2 minutes ago", emoji: "🔑" },
@@ -16,66 +16,19 @@ const recentActivity = [
 ];
 
 
-const Stats = () => {
- const {data:dashboardData, isLoading} = useDashboardData() || [];
- if(isLoading){
-  <Loading />
- }
 
+const Stats = async () => {
+
+ const dashboardData = await serverFetch("/dashboard-stats");
+ 
   return (
     <>
         {/* Stats overview */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="border-primary/20">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Vaults</CardTitle>
-            <div className="text-2xl">🔒</div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{dashboardData?.vaultCount}</div>
-            <p className="text-xs text-muted-foreground">
-              Across all projects
-            </p>
-          </CardContent>
-        </Card>
-        <Card className="border-primary/20">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Secrets</CardTitle>
-            <div className="text-2xl">🔑</div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {dashboardData?.secretsCount}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Stored securely
-            </p>
-          </CardContent>
-        </Card>
-        <Card className="border-primary/20">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Collaborators</CardTitle>
-            <div className="text-2xl">⏱️</div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{dashboardData?.collaboratorCount}</div>
-            <p className="text-xs text-muted-foreground">
-              contributing to your vaults
-            </p>
-          </CardContent>
-        </Card>
-        <Card className="border-primary/20">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Shared With Me</CardTitle>
-            <div className="text-2xl">🛡️</div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{dashboardData?.sharedWithMe}</div>
-            <p className="text-xs text-muted-foreground">
-              End-to-end encrypted
-            </p>
-          </CardContent>
-        </Card>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <StatCard title="Total Vaults" icon="🔒" value={dashboardData.vaultCount} description="Across all projects" />
+        <StatCard title="Total Secrets" icon="🔑" value={dashboardData.secretsCount} description="Stored securely" />
+        <StatCard title="Total Collaborators" icon="⏱️" value={dashboardData.collaboratorCount} description="Contributing to your vaults" />
+        <StatCard title="Shared With Me" icon="🛡️" value={dashboardData.sharedWithMe} description="End-to-end encrypted" />
       </div>
 
       {/* Recent activity and vaults */}
@@ -117,7 +70,7 @@ const Stats = () => {
               <CardDescription>Access your secure vaults</CardDescription>
             </div>
             <Link href={APP_ROUTES.VAULTS}>
-              <Button variant="ghost" size="sm" className="gap-1 text-primary hover:text-primary/90">
+              <Button variant="ghost" size="sm" className="gap-1 text-gray-200 hover:text-gray-200/90">
                 View All <ArrowRight className="h-3 w-3" />
               </Button>
             </Link>
@@ -132,13 +85,13 @@ const Stats = () => {
                         <div className="flex items-center gap-3">
                           <div className="text-2xl">{vault?.icon}</div>
                           <div>
-                            <h3 className="font-medium group-hover:text-primary transition-colors">{vault.name}</h3>
+                            <h3 className="font-medium group-hover:text-gray-200 transition-colors">{vault.name}</h3>
                             <p className="text-sm text-muted-foreground">
                               {vault._count.secrets} secrets • created At: {vault.createdAt.split("T")[0]}
                             </p>
                           </div>
                         </div>
-                        <Button variant="ghost" size="icon" className="text-muted-foreground group-hover:text-primary transition-colors">
+                        <Button variant="ghost" size="icon" className="text-muted-foreground group-hover:text-gray-200 transition-colors">
                           <ArrowRight className="h-4 w-4" />
                         </Button>
                       </div>

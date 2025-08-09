@@ -1,9 +1,5 @@
 import { axiosInstance } from "@/lib/axiosInstance";
 
-export const getVaults = async () => {
-  const res = await axiosInstance.get("/vaults/all");
-  return res.data?.vaults;
-};
 
 export const getVault = async (vaultId: string) => {
   const res = await axiosInstance.get(`/vaults/${vaultId}`);

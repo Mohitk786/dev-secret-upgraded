@@ -126,7 +126,7 @@ const VaultActivityLogs = () => {
 
             <div>
                 <div className="flex items-center gap-2">
-                    <FileText className="h-5 w-5 text-primary" />
+                    <FileText className="h-5 w-5 text-gray-200" />
                     <h1 className="text-3xl font-bold">Activity Logs</h1>
                 </div>
                 <p className="text-muted-foreground">

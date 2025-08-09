@@ -38,7 +38,7 @@
 // const FeatureCheck = ({ value }: { value: boolean | string }) => {
 //   if (typeof value === "boolean") {
 //     return value ? (
-//       <Check className="h-5 w-5 text-primary" />
+//       <Check className="h-5 w-5 text-gray-200" />
 //     ) : (
 //       <X className="h-5 w-5 text-muted-foreground" />
 //     );

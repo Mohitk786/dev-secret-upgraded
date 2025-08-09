@@ -33,8 +33,8 @@ const Sidebar = () => {
             ? "bg-destructive/10 text-destructive"
             : "text-muted-foreground hover:bg-destructive/5 hover:text-destructive"
           : isActive
-          ? "bg-primary/10 text-primary shadow"
-          : "text-muted-foreground hover:bg-primary/5 hover:text-primary"
+          ? "bg-primary/10 text-gray-200 shadow"
+          : "text-muted-foreground hover:bg-primary/5 hover:text-gray-200"
       );
 
       const iconClasses = cn(
@@ -93,7 +93,7 @@ const Sidebar = () => {
   return (
     <aside
       className={cn(
-        "flex h-full flex-col bg-sidebar px-2 py-4 transition-all duration-300 ease-in-out",
+        "flex h-full flex-col px-2 py-4 transition-all duration-300 ease-in-out",
         collapsed ? "w-20" : "w-64",
         "border-r border-sidebar-border"
       )}

@@ -1,18 +1,12 @@
-"use client"
 
-
-import { useGetVaultsQuery } from "@/hooks/queries/useVaultQuery";
 import VaultPage from "@/components/vault/vaultPage";
+import { serverFetch } from "@/lib/serverFetch";
 
-const VaultList = () => {
-
-
-  const { data: vaults, isLoading, error } = useGetVaultsQuery();
-
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
+const VaultList = async() => {
 
 
+ const data = await serverFetch("/vaults/all");
+ const vaults = data?.vaults;
 
 
   return (
