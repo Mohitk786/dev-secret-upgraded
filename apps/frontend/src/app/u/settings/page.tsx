@@ -36,7 +36,7 @@ const Settings = () => {
 
   return (
     <div className="">
-      <h1 className="text-3xl font-bold mb-8">Settings</h1>
+      <h1 className="text-primary text-3xl font-bold mb-8">Settings</h1>
 
       <Tabs defaultValue="account">
         <TabsList className="mb-6">

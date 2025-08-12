@@ -50,7 +50,7 @@ export default function LayoutClient({ children, user }: LayoutProps) {
       <Sidebar />
       <div className="flex flex-col flex-1 h-full overflow-hidden">
         <header className="border-b h-16 flex items-center justify-between px-4 sticky top-0 bg-background/95 backdrop-blur-sm z-10">
-          <Link href="/" className="flex items-center gap-2 font-semibold text-gray-200">
+          <Link href="/" className="flex items-center gap-2 font-semibold">
             <AppBranding />
           </Link>
           <div className="flex items-center space-x-3">

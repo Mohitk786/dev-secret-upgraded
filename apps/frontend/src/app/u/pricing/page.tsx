@@ -10,7 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Check } from "lucide-react";
 import { axiosInstance } from "@/lib/axiosInstance";
 
 
@@ -90,7 +89,7 @@ const Pricing = () => {
   return (
     <div className="flex flex-col items-center">
       <div className="text-center mb-12 md:mb-16">
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
+        <h1 className="text-primary text-3xl md:text-4xl font-bold tracking-tight mb-4">
           Simple, Transparent Pricing
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -155,7 +154,7 @@ const Pricing = () => {
           Contact our sales team for custom pricing options tailored to your
           specific requirements.
         </p>
-        <Button variant="outline" size="lg">
+        <Button variant="outline" size="lg" className="bg-primary hover:bg-primary-hover">
           Contact Sales
         </Button>
       </div>

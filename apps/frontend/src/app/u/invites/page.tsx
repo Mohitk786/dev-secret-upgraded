@@ -45,8 +45,8 @@ const InviteTable = ({ invites, onAccept, onReject, showActions = false, activeT
       {invites.length === 0 ? (
         <Card>
           <CardContent className="pt-6 flex flex-col items-center justify-center min-h-[200px] text-center">
-            <div className="mb-4 p-3 rounded-full bg-primary/10">
-              <ShieldCheck className="h-6 w-6 text-gray-200" />
+            <div className="mb-4 p-3 rounded-full bg-primary">
+              <ShieldCheck className="h-6 w-6 " />
             </div>
             <h3 className="text-xl font-medium mb-2">No Invites Found</h3>
             <p className="text-muted-foreground max-w-md">
@@ -165,7 +165,7 @@ const Invites = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Vault Invitations</h1>
+        <h1 className="text-primary text-3xl font-bold">Vault Invitations</h1>
         <p className="text-muted-foreground">Manage your vault collaboration invites</p>
       </div>
 

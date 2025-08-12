@@ -51,8 +51,8 @@ const VaultPage = ({
     <>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-            <span className="text-gray-200">{icon}</span> {title}
+          <h1 className="text-primary text-3xl font-bold tracking-tight flex items-center gap-2">
+            <span>{icon}</span> {title}
           </h1>
           <p className="text-muted-foreground mt-1">{description}</p>
         </div>

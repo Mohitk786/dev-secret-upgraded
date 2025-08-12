@@ -1,15 +1,15 @@
-"use client"
 
 
-import { useSharedVaults } from "@/hooks/queries/useCollabQuery";
 import VaultPage from "@/components/vault/vaultPage";
+import { serverFetch } from "@/lib/serverFetch";
 
 
-const SharedWithMe = () => {
+const SharedWithMe = async () => {
 
-    const { data: vaults, isLoading, error } = useSharedVaults();
-      if (isLoading) return <div>Loading...</div>;
-      if (error) return <div>Error: {error.message}</div>;
+    const data = await serverFetch("/collab/shared-with-me");
+    const vaults = data?.vaults;
+
+    if (!vaults) return <div>Loading...</div>;
 
     return (
         <div className="space-y-6 animate-fade-in">

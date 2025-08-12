@@ -62,7 +62,7 @@ paymentRouter.post("/payment/create", isAuthenticated, async (req: CustomRequest
 paymentRouter.post("/payment/webhook", async (req: CustomRequest, res: Response): Promise<any> => {
     try {
         console.log("Webhook Called");
-        const webhookSignature = req.get("X-Razorpay-Signature");
+        const webhookSignature = req.get("X-Razorpay-Signature")
         console.log("Webhook Signature", webhookSignature);
 
         if (!webhookSignature) {
@@ -84,7 +84,6 @@ paymentRouter.post("/payment/webhook", async (req: CustomRequest, res: Response)
         // Udpate my payment Status in DB
         const paymentDetails = req.body.payload.payment.entity;
 
-        console.log("paymentDetails", paymentDetails);
 
 
         const payment = await prisma.payment.findFirst({
@@ -96,7 +95,6 @@ paymentRouter.post("/payment/webhook", async (req: CustomRequest, res: Response)
             return res.status(404).json({ msg: "Payment not found" });
         }
 
-        console.log("payment", payment);
 
         await prisma.payment.update({
             where: { id: payment.id },
@@ -106,7 +104,6 @@ paymentRouter.post("/payment/webhook", async (req: CustomRequest, res: Response)
             }
         });
 
-        console.log("Payment saved");
 
 
         const user = await prisma.user.findFirst({ where: { id: payment.userId } });

@@ -7,7 +7,6 @@ import { APP_ROUTES } from "@/constants/data";
 
 
 export const useCreateVaultMutation = () => {
-  const queryClient = useQueryClient();
   const router = useRouter();
   const { showToast } = useToast();
   return useMutation({
@@ -16,7 +15,7 @@ export const useCreateVaultMutation = () => {
       showToast({type: "success", message: "Vault created successfully! ✨"});
       router.push(APP_ROUTES.VAULTS);
     },
-    onError: (err: any) => showToast({type: "error", message: err.response?.data?.message || "Error"}),
+      onError: (err: any) => showToast({type: "error", message: err.response?.data?.message || "Error"}),
   });
 };
 

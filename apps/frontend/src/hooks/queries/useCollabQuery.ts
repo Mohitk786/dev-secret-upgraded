@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getInvites, getSharedWithMeVaults, getSharedVault, getVaultCollaborators } from "@/services/collabServices";
+import { getInvites, getSharedVault, getVaultCollaborators } from "@/services/collabServices";
 import { getVaultKey } from "@/services/vaultServices";
 
 
@@ -13,14 +13,7 @@ export const useInvitesQuery = (type: string, status: string) => {
     return { data, isLoading, error, refetch };
 };
 
-export const useSharedVaults = () => {
-    const {data, isLoading, error, refetch} = useQuery({
-        queryKey:["shared-vaults"],
-        queryFn:getSharedWithMeVaults
-    })
 
-    return {data, isLoading, error, refetch}
-}
 
 export const useGetSharedVaultQuery = (vaultId: string) => {
     return useQuery({

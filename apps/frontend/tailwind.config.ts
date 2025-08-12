@@ -1,7 +1,7 @@
 import type { Config } from "tailwindcss";
 
 export default {
-  darkMode: ["class"], // Enables dark mode via class="dark"
+  darkMode: ["class"],
   content: [
     "./pages/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
@@ -18,7 +18,7 @@ export default {
     },
     extend: {
       colors: {
-        // App base tokens
+        // Core app tokens (dark/light switchable via CSS vars)
         hover: "hsl(var(--card-hover))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -54,14 +54,16 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
 
-        // Vault specific
+     
+
+        // 🧠 Vault specific
         vault: {
-          DEFAULT: "#8B5CF6",
+          DEFAULT: "#8B5CF6", 
           hover: "#7C3AED",
           active: "#6D28D9",
         },
 
-        // Sidebar
+        // 🔒 Sidebar + Surface
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -119,11 +121,10 @@ export default {
       },
 
       backgroundImage: {
-        shimmer:
+        "shimmer":
           "linear-gradient(90deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.05) 100%)",
       },
     },
   },
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  plugins: [require("tailwindcss-animate")],
+
 } satisfies Config;

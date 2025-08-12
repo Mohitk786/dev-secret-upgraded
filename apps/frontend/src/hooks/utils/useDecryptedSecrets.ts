@@ -31,7 +31,7 @@ export const useDecryptedSecrets = (
       } catch (err: any) {
         showToast({
           type: "error",
-          message: `Error decrypting vault key: ${err?.message}`,
+          message: `Error decrypting vault key: ${err}`,
         });
       }
     };
@@ -42,9 +42,6 @@ export const useDecryptedSecrets = (
   return {
     decryptedVaultKey,
     decryptedSecrets,
-    // isLoading,
-    // error,
-    // vault,
     setDecryptedSecrets
   };
 };

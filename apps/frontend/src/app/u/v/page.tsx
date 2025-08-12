@@ -3,11 +3,8 @@ import VaultPage from "@/components/vault/vaultPage";
 import { serverFetch } from "@/lib/serverFetch";
 
 const VaultList = async() => {
-
-
  const data = await serverFetch("/vaults/all");
  const vaults = data?.vaults;
-
 
   return (
     <div className="space-y-6 animate-fade-in">

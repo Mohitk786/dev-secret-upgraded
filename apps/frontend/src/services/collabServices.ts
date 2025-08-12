@@ -47,10 +47,7 @@ export const getVaultLogs = async (vaultId: string) => {
     return response.data;
 };
 
-export const getSharedWithMeVaults = async () => {
-    const response = await axiosInstance.get("/collab/shared-with-me");
-    return response.data?.vaults;
-}
+
 
 export const getSharedVault = async (vaultId: string) => {
     const response = await axiosInstance.get(`/collab/vault/${vaultId}`);

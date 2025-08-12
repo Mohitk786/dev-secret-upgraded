@@ -1,7 +1,8 @@
-'use client';
+"use client";
 
-import React, { useState } from "react";
-import { Mail, Lock } from 'lucide-react';
+import type React from "react";
+import { useState } from "react";
+import { Mail, Lock } from "lucide-react";
 import Link from "next/link";
 import { useLoginMutation } from "@/hooks/mutations/authMutaions";
 import InputField from "@/components/ui/InputField";
@@ -49,13 +50,16 @@ export default function Login() {
           text={isPending ? "Signing in..." : "Sign in"}
           onClick={handleSubmit}
         />
-        <div className="mt-6 text-center text-sm text-zinc-500">
-          Don’t have an account?{" "}
-          <Link href="/signup" className="font-semibold text-indigo-600 hover:underline transition-colors">
-            Sign up
-          </Link>
-        </div>
       </form>
+      <div className="mt-6 text-center text-sm text-zinc-500">
+        Don't have an account?{" "}
+        <Link
+          href="/signup"
+          className="font-semibold text-indigo-600 hover:underline transition-colors"
+        >
+          Sign up
+        </Link>
+      </div>
     </AuthForm>
   );
 }

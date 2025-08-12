@@ -1,19 +1,20 @@
-"use client";
+"use client"
 
-import React, { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "./button";
-import { Eye, EyeOff } from "lucide-react";
+import type React from "react"
+import { useState } from "react"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button" 
+import { Eye, EyeOff } from "lucide-react"
 
 interface InputFieldProps {
-  id: string;
-  label: string;
-  type: string;
-  value: string;
-  onChange: React.ChangeEventHandler<HTMLInputElement>;
-  icon: React.ReactNode;
-  placeholder: string;
-  required?: boolean;
+  id: string
+  label: string
+  type: string
+  value: string
+  onChange: React.ChangeEventHandler<HTMLInputElement>
+  icon: React.ReactNode
+  placeholder: string
+  required?: boolean
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -26,7 +27,7 @@ const InputField: React.FC<InputFieldProps> = ({
   placeholder,
   required = false,
 }) => {
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false)
 
   return (
     <div>
@@ -34,14 +35,10 @@ const InputField: React.FC<InputFieldProps> = ({
         {label}
       </label>
       <div className="mt-1 relative">
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-          {icon}
-        </div>
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">{icon}</div>
         <Input
           id={id}
-          type={
-            type === "password" ? (showPassword ? "text" : "password") : type
-          }
+          type={type === "password" ? (showPassword ? "text" : "password") : type}
           required={required}
           className="block w-full pl-10 pr-3 py-2 border border-gray-300 text-gray-400"
           placeholder={placeholder}
@@ -50,24 +47,25 @@ const InputField: React.FC<InputFieldProps> = ({
         />
         {type === "password" && (
           <Button
+            type="button" // Added type="button" to prevent form submission
             variant="ghost"
             size="icon"
             onClick={(e) => {
-              e.stopPropagation();
-              setShowPassword(!showPassword);
+              e.preventDefault() // Changed from stopPropagation to preventDefault
+              setShowPassword(!showPassword)
             }}
             className="absolute right-0 top-0 h-full px-2 hover:bg-transparent"
           >
             {showPassword ? (
-              <Eye onClick={(e) => e.stopPropagation()} className="w-4 h-4 text-gray-500" />
+              <Eye className="w-4 h-4 text-gray-500" /> // Removed redundant onClick handler
             ) : (
-              <EyeOff onClick={(e) => e.stopPropagation()} className="w-4 h-4 text-gray-500" />
+              <EyeOff className="w-4 h-4 text-gray-500" /> // Removed redundant onClick handler
             )}
           </Button>
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default InputField;
+export default InputField
