@@ -6,9 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "start": "nodemon src/index.ts",
-    "dev": "nodemon src/index.ts",
-    "deploy": "npm run build && serverless deploy",
-    "offline": "serverless offline"
+    "dev": "nodemon src/index.ts"
   },
   "dependencies": {
     "@secret-vault/backend-common": "*",

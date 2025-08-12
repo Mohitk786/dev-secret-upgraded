@@ -1,4 +1,3 @@
-import { Response } from "express";
 import prisma from "@secret-vault/db/client";
 import { CreateSecretData, DeleteSecretData, GetSecretsData, UpdateSecretData } from "../types/types";
 

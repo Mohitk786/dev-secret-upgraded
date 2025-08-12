@@ -17,31 +17,43 @@ export const useDecryptedSecrets = (
 
   useEffect(() => {
     if (!vaultKey) return;
-
+    let cancelled = false;
+  
     const decryptVaultKey = async () => {
       try {
         const key = await decryptVaultKeyWithPrivateKey(vaultKey);
+        if (cancelled) return;
+  
         setDecryptedVaultKey(key);
+  
         const secrets = await Promise.all(
-          encryptedSecrets && encryptedSecrets.length > 0 ? encryptedSecrets.map((secret: Secret) =>
-            DecryptSecret(secret, key)
-          ) : []
+          encryptedSecrets.length > 0
+            ? encryptedSecrets.map(secret => DecryptSecret(secret, key))
+            : []
         );
-        setDecryptedSecrets(secrets);
+  
+        if (!cancelled) setDecryptedSecrets(secrets);
+  
       } catch (err: any) {
         showToast({
           type: "error",
-          message: `Error decrypting vault key: ${err}`,
+          message: `Error decrypting vault key: ${err?.message}`,
         });
       }
     };
-
+  
     decryptVaultKey();
-  }, [vaultKey, encryptedSecrets, showToast]);
+  
+    return () => { cancelled = true; };
+  }, [vaultKey, showToast, encryptedSecrets]);
+  
 
   return {
     decryptedVaultKey,
     decryptedSecrets,
+    // isLoading,
+    // error,
+    // vault,
     setDecryptedSecrets
   };
 };

@@ -1,55 +1,45 @@
 import { useState, useEffect } from "react";
-import { decryptData } from "@/E2E/rsaKeyGen";
-import { getPrivateKey } from "@/E2E/rsaKeyGen";
-import  useToast  from "@/hooks/utils/useToast";
+import { decryptData, getPrivateKey } from "@/E2E/rsaKeyGen";
+import useToast from "@/hooks/utils/useToast";
 
-export const DecryptSecret = ({key, value}: { key: string; value: string }) => {
-    
+export const useDecryptSecret = (key: string, value: string) => {
   const [decryptedKey, setDecryptedKey] = useState<string | null>(null);
-    const [decryptedValue, setDecryptedValue] = useState<string | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
-    const {showToast} = useToast();
-  
-    useEffect(() => {
-      const fetchSecret = async () => {
-        try {
-          const privateKey = getPrivateKey(); 
-          if(!privateKey){
-            showToast({
-              type: "error",
-              message: "Please enter your private key to decrypt the secret"
-            });
-            return;
-          }
-          const decryptedKey = await decryptData(key, privateKey); // Decrypt key
-          const decryptedValue = await decryptData(value, privateKey); // Decrypt value
-         
-          setDecryptedKey(decryptedKey);
-          setDecryptedValue(decryptedValue);
+  const [decryptedValue, setDecryptedValue] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const { showToast } = useToast();
 
-        } catch (error: any) {
-          setError("Failed to decrypt the secret");
-            showToast({
+  useEffect(() => {
+    const fetchSecret = async () => {
+      try {
+        const privateKey = getPrivateKey();
+        if (!privateKey) {
+          showToast({
             type: "error",
-            message: "Failed to decrypt the secret",
+            message: "Please enter your private key to decrypt the secret",
           });
-
-        } finally {
-          setLoading(false);
+          return;
         }
-      };
-  
-      if (key && value) {
-        fetchSecret(); 
+        const dKey = await decryptData(key, privateKey);
+        const dValue = await decryptData(value, privateKey);
+
+        setDecryptedKey(dKey);
+        setDecryptedValue(dValue);
+      } catch {
+        setError("Failed to decrypt the secret");
+        showToast({
+          type: "error",
+          message: "Failed to decrypt the secret",
+        });
+      } finally {
+        setLoading(false);
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [key, value]);
-  
-    return {
-      decryptedKey,
-      decryptedValue,
-      loading,
-      error,
     };
-  };
+
+    if (key && value) {
+      fetchSecret();
+    }
+  }, [key, showToast, value]);
+
+  return { decryptedKey, decryptedValue, loading, error };
+};

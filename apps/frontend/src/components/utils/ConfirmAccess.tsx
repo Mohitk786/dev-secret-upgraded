@@ -39,13 +39,13 @@ const ConfirmAccess = ({open, onOpenChange, modalData}: AddSecretPopupProps) => 
           <DialogTitle className="flex items-center gap-2 text-xl">
             <span>{modalData.title}</span>
           </DialogTitle>
-          <DialogDescription>
+          <div>
             {modalData.description1}
-          </DialogDescription>
+          </div>
         </DialogHeader>
-        <div>
-          <p>{modalData.description2}</p>
-        </div>
+        <DialogDescription>
+          {modalData.description2}
+        </DialogDescription>
         <DialogFooter>
           <Button onClick={() => onOpenChange(false)}>Cancel</Button>
           <Button className={`${modalData.buttonText === "Logout" ? "bg-destructive" : ""}`} onClick={() => (

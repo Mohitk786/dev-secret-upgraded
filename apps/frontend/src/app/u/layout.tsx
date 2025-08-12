@@ -1,4 +1,3 @@
-// app/(dashboard)/layout.tsx  <-- server
 import { serverFetch } from "@/lib/serverFetch";
 import LayoutClient from "@/components/profile/LayoutClient";
 

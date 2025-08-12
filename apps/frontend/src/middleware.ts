@@ -13,11 +13,10 @@ export async function middleware(request: NextRequest) {
   const isPublicRoute = checkPublicRoute(path);
 
   const token = (await cookies()).get("DEV_SECRET_VAULT_AUTH_TOKEN")?.value;
+  
   if (!token && !isPublicRoute) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
-
-  console.log("token", token);
 
   if (token && isPublicRoute) {
     return NextResponse.redirect(new URL('/u/dashboard', request.url));

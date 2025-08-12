@@ -20,22 +20,26 @@ export default function ProfileDropdownClient({ user }: { user: any }) {
   const router = useRouter();
 
   const handleLogout = async () => {
-    await fetch(`${BASE_URL}/logout`, {
+    const res = await fetch(`${BASE_URL}/logout`, {
       method: "POST",
       credentials: "include",
     });
-    router.push(APP_ROUTES.LOGIN);
+    if (res.ok) {
+      localStorage.removeItem("PRIVATE_KEY");
+      router.push(APP_ROUTES.LOGIN);
+    }
   };
 
   const modalData: ModalData = {
     title: "Logout",
     description1: "Are you sure you want to logout?",
+    description2: "This will delete your private key from the browser and you will need to upload it again.",
     buttonText: "Logout",
     onConfirm: handleLogout,
   };
 
   if (!user) {
-    return <div>Loading...</div>; // SSR failed or no token
+    return <div>Loading...</div>; 
   }
 
   return (

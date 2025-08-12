@@ -18,7 +18,6 @@ export default {
     },
     extend: {
       colors: {
-        // Core app tokens (dark/light switchable via CSS vars)
         hover: "hsl(var(--card-hover))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -56,14 +55,12 @@ export default {
 
      
 
-        // 🧠 Vault specific
         vault: {
           DEFAULT: "#8B5CF6", 
           hover: "#7C3AED",
           active: "#6D28D9",
         },
 
-        // 🔒 Sidebar + Surface
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -98,14 +95,7 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
-        "fade-in": {
-          from: { opacity: "0" },
-          to: { opacity: "1" },
-        },
-        "pulse-slow": {
-          "0%, 100%": { opacity: "1" },
-          "50%": { opacity: "0.8" },
-        },
+       
         "shimmer": {
           "0%": { backgroundPosition: "-700px 0" },
           "100%": { backgroundPosition: "700px 0" },
@@ -115,8 +105,7 @@ export default {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "fade-in": "fade-in 0.3s ease-out",
-        "pulse-slow": "pulse-slow 3s infinite",
+     
         shimmer: "shimmer 2s infinite linear",
       },
 
@@ -126,5 +115,6 @@ export default {
       },
     },
   },
-
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  plugins: [require("tailwindcss-animate")],
 } satisfies Config;

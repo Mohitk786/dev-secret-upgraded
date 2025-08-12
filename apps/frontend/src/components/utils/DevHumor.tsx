@@ -62,8 +62,11 @@ export function DevHumorDrawer() {
                 src={meme.imageUrl}
                 alt={meme.title}
                 className="max-h-64 w-full object-contain rounded-lg shadow-md cursor-pointer"
+                width={500}
+                height={500}
+                quality={85}
               />
-             
+
               <p className="text-sm text-muted-foreground">By {meme.author}</p>
               <a
                 href={meme.postLink}

@@ -30,7 +30,6 @@ export const io = new Server(8000, {
   },
 });
 
-console.log("🚀 Socket.io server running on port 8000");
 
 const vaultOnlineUsers: Record<string, Set<string>> = {};
 export const userSocketMap: Map<string, string> = new Map();
