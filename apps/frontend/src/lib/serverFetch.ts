@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { config } from "@secret-vault/backend-common/config";
 
 export async function serverFetch(endpoint: string, options: RequestInit = {}) {
   const cookieStore = await cookies();
@@ -9,7 +10,7 @@ export async function serverFetch(endpoint: string, options: RequestInit = {}) {
   }
 
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_URL || "https://api.developermatch.me/api"}${endpoint}`,
+    `${config.BASE_URL}${endpoint}`,
     {
       ...options,
       headers: {

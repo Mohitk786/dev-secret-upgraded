@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 
 
 const checkPublicRoute = (path: string) => {
-  return path === '/login' || path === '/signup' || path === '/';
+  return path === '/login' || path === '/signup';
 }
 
 export async function middleware(request: NextRequest) {
@@ -13,8 +13,18 @@ export async function middleware(request: NextRequest) {
   const isPublicRoute = checkPublicRoute(path);
 
   const token = (await cookies()).get("DEV_SECRET_VAULT_AUTH_TOKEN")?.value;
+
+
   
-  if (!token && !isPublicRoute) {
+  if (path === '/') {
+    if (token) {
+      return NextResponse.redirect(new URL('/u/dashboard', request.url));
+    } else {
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
+  }
+  
+  if (!token && (!isPublicRoute)) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
@@ -27,5 +37,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/u/:path*", "/", "/login", "/signup"], 
+  matcher: ["/u/:path*", "/login", "/signup", "/"], 
 };

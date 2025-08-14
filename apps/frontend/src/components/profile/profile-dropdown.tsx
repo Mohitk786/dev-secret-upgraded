@@ -10,9 +10,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { User, Settings, LogOut } from "lucide-react";
-import { APP_ROUTES, BASE_URL } from "@/constants/data";
+import { APP_ROUTES } from "@/constants/data";
 import { useRouter } from "next/navigation";
 import ConfirmAccess, { ModalData } from "../utils/ConfirmAccess";
+import { config } from "@secret-vault/backend-common/config";
 
 export default function ProfileDropdownClient({ user }: { user: any }) {
   const [open, setOpen] = useState(false);
@@ -20,7 +21,7 @@ export default function ProfileDropdownClient({ user }: { user: any }) {
   const router = useRouter();
 
   const handleLogout = async () => {
-    const res = await fetch(`${BASE_URL}/logout`, {
+    const res = await fetch(`${config.BASE_URL}/logout`, {
       method: "POST",
       credentials: "include",
     });

@@ -1,5 +1,4 @@
 import express from 'express';
-import dotenv from 'dotenv';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import { config } from '@secret-vault/backend-common/config';
@@ -12,7 +11,6 @@ import invitesRoutes from './modules/invites/invitesRoutes';
 import paymentRoutes from './modules/payment/paymentController';
 import utilityRoutes from './modules/utilities/utilityRoutes';
 import { isAuthenticated } from './middleware/auth';
-dotenv.config();
 
 const app = express();
 
@@ -34,6 +32,6 @@ app.use('/api/invites', isAuthenticated, invitesRoutes);
 app.use('/api', isAuthenticated, paymentRoutes);
 
 app.listen(config.PORT, () => {
-  console.log(`Server running on ${config.SERVER_URL}`);
+  console.log(`Server running on ${config.PORT}`);
 });
 

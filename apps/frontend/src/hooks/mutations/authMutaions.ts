@@ -17,7 +17,6 @@ export const useLoginMutation = () => {
         onSuccess: (data) => {
             localStorage.setItem("DEV_SECRET_VAULT_AUTH_TOKEN", data?.data?.token);
             localStorage.setItem("PUBLIC_KEY", data?.data?.user?.publicKey);
-            console.log("push kar raha hu")
             router.push(redirectTo);
         },
         onError: (error: any) => {

@@ -11,7 +11,6 @@ export const authenticated = async (
       rawCookies.split("; ").map((c) => c.split("="))
     );
 
-    // Correcting cookie name
     const token = cookies?.DEV_SECRET_VAULT_AUTH_TOKEN;
 
     if (!token) {
@@ -19,7 +18,7 @@ export const authenticated = async (
       return;
     }
 
-    // Verifying JWT token
+
     const decoded = jwt.verify(token, config.JWT_SECRET as string);
     if (typeof decoded === "string") return;
 
