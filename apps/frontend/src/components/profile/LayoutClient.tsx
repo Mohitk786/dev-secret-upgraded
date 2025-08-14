@@ -1,8 +1,6 @@
-// components/LayoutClient.tsx  <-- client
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
-import { usePathname } from "next/navigation";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 
 import Sidebar from "@/components/user/sidebar";
@@ -11,15 +9,14 @@ import { ThemeToggle } from "@/components/utils/ThemeToggle";
 import { DevHumorDrawer } from "@/components/utils/DevHumor";
 import AppBranding from "@/components/ui/AppName";
 import UploadPrivateKey from "@/components/Auth/UploadPrivateKey";
+import { User } from "@/types/types";
 
 interface LayoutProps {
   children: React.ReactNode;
-  user: any; 
+  user: User; 
 }
 
 export default function LayoutClient({ children, user }: LayoutProps) {
-  const pathname = usePathname();
-  const isAuthPage = useMemo(() => pathname === "/login" || pathname === "/register", [pathname]);
   const [hasPrivateKey, setHasPrivateKey] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -42,7 +39,6 @@ export default function LayoutClient({ children, user }: LayoutProps) {
     };
   }, []);
 
-  if (isAuthPage) return <div className="bg-background">{children}</div>;
   if (!hasPrivateKey) return <UploadPrivateKey />;
 
   return (

@@ -5,7 +5,6 @@ import Link from "next/link";
 import { APP_ROUTES } from "@/constants/data";
 import Stats from "./Stat";
 
-
 const Dashboard = async () => {
 
   return (
@@ -27,7 +26,6 @@ const Dashboard = async () => {
           </Button>
         </Link>
       </div>
-
 
       <Stats />
 

@@ -4,7 +4,11 @@ import { serverFetch } from "@/lib/serverFetch";
 
 const VaultList = async() => {
  const data = await serverFetch("/vaults/all");
+ const  user  = await serverFetch("/me");
  const vaults = data?.vaults;
+
+
+ console.log(user);
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -15,6 +19,7 @@ const VaultList = async() => {
         icon="📂"
         vaults={vaults}
         isSharedVault={false}
+        user={user}
       />
 
 

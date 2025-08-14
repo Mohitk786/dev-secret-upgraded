@@ -47,19 +47,19 @@ const InputField: React.FC<InputFieldProps> = ({
         />
         {type === "password" && (
           <Button
-            type="button" // Added type="button" to prevent form submission
+            type="button"
             variant="ghost"
             size="icon"
             onClick={(e) => {
-              e.preventDefault() // Changed from stopPropagation to preventDefault
+              e.preventDefault() 
               setShowPassword(!showPassword)
             }}
             className="absolute right-0 top-0 h-full px-2 hover:bg-transparent"
           >
             {showPassword ? (
-              <Eye className="w-4 h-4 text-gray-500" /> // Removed redundant onClick handler
+              <Eye className="w-4 h-4 text-gray-500" /> 
             ) : (
-              <EyeOff className="w-4 h-4 text-gray-500" /> // Removed redundant onClick handler
+              <EyeOff className="w-4 h-4 text-gray-500" /> 
             )}
           </Button>
         )}

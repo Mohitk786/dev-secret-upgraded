@@ -1,23 +1,20 @@
 
 import { login, signup, uploadPublicKey } from "@/services/authServices";
 import { useMutation } from "@tanstack/react-query";
-import { useRouter,  useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import useToast from "../utils/useToast";
 import { APP_ROUTES } from "@/constants/data";
 
 export const useLoginMutation = () => {
     const router = useRouter();
-    const searchParams = useSearchParams(); 
     const { showToast } = useToast();
-
-    const redirectTo = searchParams.get("redirectTo") || "/u/dashboard";
 
     return useMutation({
         mutationFn: login,
         onSuccess: (data) => {
             localStorage.setItem("DEV_SECRET_VAULT_AUTH_TOKEN", data?.data?.token);
             localStorage.setItem("PUBLIC_KEY", data?.data?.user?.publicKey);
-            router.push(redirectTo);
+            router.push("/u/dashboard");
         },
         onError: (error: any) => {
             showToast({type: "error", message: error?.response?.data?.message});

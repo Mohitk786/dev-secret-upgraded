@@ -15,17 +15,32 @@ export async function checkVaultAccess(userId: string, vaultId: string) {
   return { isOwner: false, collaborator };
 }
 
-
-
-export const getUser = async (req: CustomRequest, res: Response): Promise<void> => {
+export const getUser = async (
+  req: CustomRequest,
+  res: Response
+): Promise<void> => {
   const user_id = req.user?.id;
 
   const user = await prisma.user.findFirst({
     where: {
-      id: user_id
-    }
-  })
+      id: user_id,
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      avatarUrl: true,
+      publicKey: true,
+      createdAt: true,
+      isPremium: true,
+      membershipType: true,
+    },
+  });
 
-  if (!user) res.status(401).json({ message: "Not logged in" });
-  res.status(200).json(user);
+  if (!user) {
+    res.status(404).json({ error: "User not found" });
+    return;
+  }
+
+  res.status(200).json({ user });
 };

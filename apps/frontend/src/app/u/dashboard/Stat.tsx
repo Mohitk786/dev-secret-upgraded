@@ -77,7 +77,7 @@ const Stats = async () => {
           </CardHeader>
           <CardContent>
             <ul className="space-y-4">
-              {dashboardData?.vaults && dashboardData?.vaults.length > 0 ? dashboardData?.vaults.map((vault:any) => (
+              {dashboardData?.vaults.length > 0 ? dashboardData?.vaults.map((vault:any) => (
                 <li key={vault.id}>
                   <Link href={`/vaults/${vault.id}`}>
                     <div className="vault-card hover:border-primary/50 group">

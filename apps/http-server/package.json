@@ -5,9 +5,8 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "build": "tsc",
-        "dev": "tsc --watch",
-        "start": "node dist/index.js",
-        "start:prod": "node dist/index.js"
+        "start": "nodemon src/index.ts",
+        "dev": "nodemon src/index.ts"
     },
     "dependencies": {
         "@secret-vault/backend-common": "*",

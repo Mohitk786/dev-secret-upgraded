@@ -76,6 +76,18 @@ export interface AuditLog {
 }
 
 
+export interface User{
+  id: string;
+  email: string;
+  name: string;
+  avatarUrl: string | null;
+  publicKey: string;
+  createdAt: string; 
+  isPremium: boolean;
+  membershipType: string | null;
+};
+
+
 export const formSchema = z.object({
     key: z.string().min(1, { message: "Secret name is required" }),
     value: z.string().min(1, { message: "Secret value is required" }),

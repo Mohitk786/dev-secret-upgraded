@@ -98,7 +98,7 @@ const Sidebar = () => {
         "border-r border-sidebar-border"
       )}
     >
-      {/* Header */}
+   
       <div className="mb-4 flex items-center px-2">
         <Button
           variant="ghost"
@@ -111,7 +111,7 @@ const Sidebar = () => {
         </Button>
       </div>
 
-      {/* Navigation Sections */}
+    
       <nav className="flex-1 space-y-2 overflow-y-auto">
         <div>
           {!collapsed && (

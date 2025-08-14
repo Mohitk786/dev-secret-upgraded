@@ -6,8 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import VaultCard from "./VaultCard";
 import { APP_ROUTES } from "@/constants/data";
+import dynamic from "next/dynamic";
+import { User } from "@/types/types";
+
+const VaultCard = dynamic(() => import("./VaultCard"), { ssr: true });
 
 export interface Vault {
   id: string;
@@ -28,6 +31,7 @@ interface VaultPageHeaderProps {
   icon: string;
   vaults: Vault[];
   isSharedVault: boolean;
+  user: User;
 }
 
 const VaultPage = ({
@@ -36,9 +40,10 @@ const VaultPage = ({
   icon,
   vaults,
   isSharedVault,
+  user,
 }: VaultPageHeaderProps) => {
   const [searchQuery, setSearchQuery] = useState("");
-
+  
   const filteredVaults = vaults?.filter((vault: Vault) => {
     return (
       vault?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -70,7 +75,7 @@ const VaultPage = ({
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {filteredVaults &&
           filteredVaults.map((vault) => (
-            <VaultCard key={vault?.id} vault={vault} />
+            <VaultCard key={vault?.id} vault={vault} user={user}/>
           ))}
 
         {isSharedVault ? (
