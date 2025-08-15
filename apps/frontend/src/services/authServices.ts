@@ -34,3 +34,10 @@ export const uploadPublicKey = async (data: {publicKey: string, userId: string})
   });
   return response.data;
 }
+
+export const logout = async () => {
+  const response = await axiosInstance.post("/logout", {}, {
+    withCredentials: true,
+  });
+  return response.data;
+};

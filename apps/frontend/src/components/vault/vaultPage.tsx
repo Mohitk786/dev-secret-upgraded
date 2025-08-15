@@ -7,10 +7,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { APP_ROUTES } from "@/constants/data";
-import dynamic from "next/dynamic";
 import { User } from "@/types/types";
+import VaultCard from "./VaultCard";
 
-const VaultCard = dynamic(() => import("./VaultCard"), { ssr: true });
 
 export interface Vault {
   id: string;
@@ -79,7 +78,8 @@ const VaultPage = ({
           ))}
 
         {isSharedVault ? (
-          <></>
+          <>
+          </>
         ) : (
           <Link href={APP_ROUTES.VAULTS_NEW}>
             <Card className="h-full overflow-hidden transition-all border-dashed border-primary/30 hover:border-primary/70 flex items-center justify-center">

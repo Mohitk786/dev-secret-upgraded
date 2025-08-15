@@ -6,8 +6,11 @@ import { serverFetch } from "@/lib/serverFetch";
 
 const SharedWithMe = async () => {
 
+    const { user } = await serverFetch("/me");
     const data = await serverFetch("/collab/shared-with-me");
     const vaults = data?.vaults;
+
+    console.log("shareed vaults", vaults)
 
     if (!vaults) return <div>Loading...</div>;
 
@@ -18,7 +21,7 @@ const SharedWithMe = async () => {
                 title="Shared with me"
                 description="Collaborate with others on shared vaults and make your work easier."
                 icon="📂"
-
+                user={user}
                 vaults={vaults}
                 isSharedVault={true}
             />

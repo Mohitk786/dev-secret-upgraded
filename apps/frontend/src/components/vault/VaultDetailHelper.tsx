@@ -1,21 +1,17 @@
 "use client"
 
 import React, { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import AddSecretPopup from "@/components/vault/AddSecretPopup";
-import { useGetVaultQuery } from "@/hooks/queries/useVaultQuery";
 
 import VaultHeader from "@/components/vault/VaultHeader";
 import SecretList from "@/components/vault/SecretList";
 
 import useToast from "@/hooks/utils/useToast";
-import { Secret } from "@/types/types";
-import VaultDetailError from "./VaultDetailError";
-import VaultDetailSkeleton from "./VaultDetailSkeleton";
+import { Secret, User} from "@/types/types";
 import { DecryptSecret } from "@/E2E/decryption";
 import { z } from "zod";
 import useSocket from "@/hooks/utils/useSocket";
-import { useAuth } from "@/hooks/queries/authQueries";
 import { useDecryptedSecrets } from "@/hooks/utils/useDecryptedSecrets";
 import { APP_ROUTES } from "@/constants/data";
 
@@ -39,16 +35,13 @@ const decryptEachSecret = async (secret: Secret, decryptedVaultKey: CryptoKey): 
   };
 }
 
-const VaultDetail = ({ isSharedVault }: { isSharedVault: boolean }) => {
+const VaultDetail = ({ isSharedVault, user, vault, vaultId }: { isSharedVault: boolean, user: User, vault: any, vaultId: string }) => {
 
-  const { vaultId } = useParams<{ vaultId: string }>();
   const [searchQuery, setSearchQuery] = useState("");
   const [visibleSecrets, setVisibleSecrets] = useState<string[]>([]);
   const [isAddSecretOpen, setIsAddSecretOpen] = useState(false);
   const { showToast } = useToast();
-  const { user } = useAuth();
   const router = useRouter();
-  const { data: vault, isLoading, error } = useGetVaultQuery(vaultId);
 
   const socket = useSocket();
 
@@ -63,6 +56,7 @@ const VaultDetail = ({ isSharedVault }: { isSharedVault: boolean }) => {
       setHasAccess(vault?.collaborators?.hasSecretAccess)
     }
   }, [vault, user?.id]);
+
 
 
   useEffect(() => {
@@ -143,6 +137,7 @@ const VaultDetail = ({ isSharedVault }: { isSharedVault: boolean }) => {
     socket.on("secret-deleted", onSecretDeleted);
     socket.on("secret-updated", onSecretUpdated);
     return () => {
+      socket.emit("leave-vault", vaultId);
       socket.off("secret-created", onSecretCreated);
       socket.off("secret-deleted", onSecretDeleted);
       socket.off("secret-updated", onSecretUpdated);
@@ -150,7 +145,7 @@ const VaultDetail = ({ isSharedVault }: { isSharedVault: boolean }) => {
       socket.off("vault-deleted", onVaultDeleted);
     };
      // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vaultId, decryptedVaultKey,]);
+  }, [vaultId, decryptedVaultKey, decryptedSecrets]);
 
 
 
@@ -164,15 +159,12 @@ const VaultDetail = ({ isSharedVault }: { isSharedVault: boolean }) => {
 
 
 
+  // if (error || !vault) {
+  //   return <VaultDetailError error={error} />;
+  // }
 
-  if (isLoading) {
-    return <VaultDetailSkeleton />;
-  }
 
 
-  if (error || !vault) {
-    return <VaultDetailError error={error} />;
-  }
 
 
 
@@ -183,9 +175,10 @@ const VaultDetail = ({ isSharedVault }: { isSharedVault: boolean }) => {
       <VaultHeader
         vault={vault}
         setIsAddSecretOpen={setIsAddSecretOpen}
+        user={user}
       />
 
-      {hasAccess && vault?.isDeleted === false ?
+      {hasAccess ?
         <SecretList
           isSharedVault={isSharedVault}
           secrets={decryptedSecrets}
@@ -194,6 +187,7 @@ const VaultDetail = ({ isSharedVault }: { isSharedVault: boolean }) => {
           visibleSecrets={visibleSecrets}
           toggleSecretVisibility={toggleSecretVisibility}
           setIsAddSecretOpen={setIsAddSecretOpen}
+          isOwner={vault?.ownerId === user?.id}
         />
         : vault?.isDeleted ?
           <div className="text-center py-8">
@@ -214,13 +208,6 @@ const VaultDetail = ({ isSharedVault }: { isSharedVault: boolean }) => {
           onOpenChange={setIsAddSecretOpen}
         />}
 
-      {/* {editingSecret && (
-        <EditSecretPopup 
-          open={isEditSecretOpen}
-          onOpenChange={setIsEditSecretOpen}
-          secret={editingSecret}
-        />
-      )} */}
     </div>
   );
 };

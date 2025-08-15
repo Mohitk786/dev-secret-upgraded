@@ -156,9 +156,24 @@ export const signInUser = async (req: Request, res: Response): Promise<void> => 
 
 
 export const logoutUser = async (req: Request, res: Response): Promise<void> => {
-    res.clearCookie('DEV_SECRET_VAULT_AUTH_TOKEN');
-    res.status(200).json({
-        success: true,
-        message: "User logged out successfully"
-    })
+    try {
+        res.clearCookie('DEV_SECRET_VAULT_AUTH_TOKEN', {
+            httpOnly: true,
+            secure: config.NODE_ENV === "production", 
+            sameSite: 'lax',
+            path: '/',
+            expires: new Date(0)
+        });
+        
+        res.status(200).json({
+            success: true,
+            message: "User logged out successfully"
+        });
+    } catch (error) {
+        console.error('Logout error:', error);
+        res.status(500).json({
+            success: false,
+            message: "Error during logout"
+        });
+    }
 }

@@ -1,31 +1,42 @@
+"use client"
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff, Copy, Edit, Trash, Loader2 } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import useToast from "@/hooks/utils/useToast";
-import { Secret, SecretItemProps } from "@/types/types";
+import { Secret } from "@/types/types";
 import { useGetVaultQuery } from "@/hooks/queries/useVaultQuery";
 import { useParams } from "next/navigation";
 import { useAuth } from "@/hooks/queries/authQueries";
 import useSocket from "@/hooks/utils/useSocket";
 import EditSecretPopup from "@/components/vault/EditSecretPopup";
 
+ interface SecretItemProps {
+  secret: Secret;
+  visibleSecrets: string[];
+  toggleSecretVisibility: (secretId: string) => void;
+  isSharedVault: boolean;
+  vault?: any;
+  isOwner: boolean;
+}
+
 const SecretItem: React.FC<SecretItemProps> = ({
   secret,
   visibleSecrets,
   toggleSecretVisibility,
+  isOwner,
 }) => {
 
   const { vaultId } = useParams();
   const { showToast } = useToast();
-  const { user } = useAuth();
   const socket = useSocket();
   const [isPending, setIsPending] = useState(false);
   const [isEditSecretOpen, setIsEditSecretOpen] = useState(false);
   const [editingSecret, setEditingSecret] = useState<Secret | null>(null);
   
+
   const { data: vault } = useGetVaultQuery(vaultId as string);
-  const isOwner = vault?.ownerId === user?.id;
 
   const copyToClipboard = (value: string, name: string) => {
     navigator.clipboard.writeText(value);
@@ -81,6 +92,7 @@ const SecretItem: React.FC<SecretItemProps> = ({
     setEditingSecret(secret);
     setIsEditSecretOpen(true);
   };
+
 
 
   return (

@@ -13,22 +13,22 @@ import { User, Settings, LogOut } from "lucide-react";
 import { APP_ROUTES } from "@/constants/data";
 import { useRouter } from "next/navigation";
 import ConfirmAccess, { ModalData } from "../utils/ConfirmAccess";
-import { config } from "@secret-vault/backend-common/config";
+import { User as UserType } from "@/types/types";
+import { axiosInstance } from "@/lib/axiosInstance";
 
-export default function ProfileDropdownClient({ user }: { user: any }) {
+export default function ProfileDropdownClient({ user }: { user: UserType }) {
   const [open, setOpen] = useState(false);
   const [handleModalOpen, setHandleModalOpen] = useState(false);
   const router = useRouter();
 
   const handleLogout = async () => {
-    const res = await fetch(`${config.BASE_URL}/logout`, {
-      method: "POST",
-      credentials: "include",
-    });
-    if (res.ok) {
-      localStorage.removeItem("PRIVATE_KEY");
-      router.push(APP_ROUTES.LOGIN);
-    }
+   const res = await axiosInstance.post("/logout", {}, {
+    withCredentials: true,
+   })
+   if (res.status === 200) {
+    localStorage.removeItem("PRIVATE_KEY");
+    router.push(APP_ROUTES.LOGIN);
+   }
   };
 
   const modalData: ModalData = {

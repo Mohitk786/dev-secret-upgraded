@@ -20,15 +20,16 @@ import {
 import { useAuth } from "@/hooks/queries/authQueries";
 import  useSocket  from "@/hooks/utils/useSocket";
 import { APP_ROUTES } from "@/constants/data";
+import { User } from "@/types/types";
 interface VaultHeaderProps {
   vault: any;
   setIsAddSecretOpen: (value: boolean) => void;
+  user  : User
 }
 
-const VaultHeader = ({ vault, setIsAddSecretOpen }: VaultHeaderProps) => {
+const VaultHeader = ({ vault, setIsAddSecretOpen, user }: VaultHeaderProps) => {
 
   const socket = useSocket();
-  const { user } = useAuth();
   const isOwner = vault?.ownerId === user?.id;
 
   const handleDeleteVault = async (vaultId: string) => {

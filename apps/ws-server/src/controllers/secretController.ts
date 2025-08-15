@@ -20,6 +20,8 @@ export async function checkVaultAccess(userId: string, vaultId: string) {
         }
     });
 
+    
+
     if (!collaborator) throw new Error("Access denied");
     return { owner: null, collaborator: collaborator };
 }

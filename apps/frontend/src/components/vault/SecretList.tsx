@@ -16,6 +16,7 @@ interface SecretListProps {
   setIsAddSecretOpen: (value: boolean) => void;
   isLoading?: boolean;
   isSharedVault?: boolean;
+  isOwner?: boolean;
 }
 
 const SecretList: React.FC<SecretListProps> = ({
@@ -27,6 +28,7 @@ const SecretList: React.FC<SecretListProps> = ({
   setIsAddSecretOpen,
   isLoading,
   isSharedVault,
+  isOwner=false,
 }) => {
   if (isLoading) {
     return (
@@ -64,6 +66,7 @@ const SecretList: React.FC<SecretListProps> = ({
                 secret={secret}
                 visibleSecrets={visibleSecrets}
                 toggleSecretVisibility={toggleSecretVisibility}
+                isOwner={isOwner}
               />
             ))
           ) : (

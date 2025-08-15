@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useAcceptInvite, useRejectInvite } from "@/hooks/mutations/useCollab";
-import { useParams, useRouter } from "next/navigation";
+import {  useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, XCircle, Shield, PenLine, Trash2, Plus } from "lucide-react";
@@ -21,12 +21,13 @@ interface Invite {
     status: string;
 }
 
-const Page = () => {
-    const { inviteId } = useParams();
+const Page = ({params}:{params:Promise<{inviteId:string}>}) => {
+    const { inviteId } = use(params);
     const router = useRouter();
     const [accepted, setAccepted] = useState(false);
     const { mutate: acceptInvite, isPending: acceptPending, error: acceptError } = useAcceptInvite();
     const { mutate: rejectInvite, isPending: rejectPending, error: rejectError } = useRejectInvite();
+    
     const  {data: invite, isLoading: inviteLoading} = useQuery<Invite>({
         queryKey: ['invite', inviteId],
         queryFn: () => getInvite(inviteId as string),

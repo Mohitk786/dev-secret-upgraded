@@ -1,8 +1,7 @@
 "use client"
 
-import { useState } from 'react';
+import { use, useState } from 'react';
 import { useInviteCollab } from '@/hooks/mutations/useCollab';
-import { useParams } from 'next/navigation';
 import { useGetVaultQuery } from '@/hooks/queries/useVaultQuery';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -13,9 +12,9 @@ import  useToast  from '@/hooks/utils/useToast';
 import { UserPlus,  ShieldCheck, PenLine, Trash2, Plus } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
-const InviteColloborators = () => {
-
-  const  vaultId:any  = useParams().vaultId 
+const InviteColloborators = ({ params }:{params:Promise<{   vaultId: string  }>}) => {
+  
+  const {vaultId} = use(params)
   const { showToast } = useToast();
 
   const [email, setEmail] = useState('');

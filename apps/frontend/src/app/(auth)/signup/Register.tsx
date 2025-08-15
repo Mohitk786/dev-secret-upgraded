@@ -45,6 +45,8 @@ const Register = () => {
             {
               onSuccess: async () => {
                 await downloadPrivateKey(privateKey)
+            showToast({type: "success", message:"Private key saved to your device. Please keep it safe. You will need it in future to login to your account otherwise you will not be able to access your account."});
+
                 showToast({
                   type: "success",
                   message: "Account created successfully",

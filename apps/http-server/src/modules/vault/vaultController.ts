@@ -331,7 +331,8 @@ export async function sentInvite(req: CustomRequest, res: Response): Promise<any
       invite,
     });
 
-  } catch (err: any) {
+  } catch (err: Error | any) {
+    console.log(err);
     res.status(500).json({ message: 'Failed to send invite', error: err.message });
   }
 }

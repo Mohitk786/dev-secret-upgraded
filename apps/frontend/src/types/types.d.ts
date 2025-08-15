@@ -18,13 +18,7 @@ export interface Secret {
     updatedAt?: string
 }
 
-export interface SecretItemProps {
-    secret: Secret;
-    visibleSecrets: string[];
-    toggleSecretVisibility: (secretId: string) => void;
-    isSharedVault: boolean;
-    vault?: any;
-  }
+
 
 export interface NavItem {
     title: string;
