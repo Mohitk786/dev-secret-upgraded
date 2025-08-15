@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useGetVaultQuery } from "@/hooks/queries/useVaultQuery";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -63,9 +63,9 @@ interface Collaborator {
   hasSecretAccess: boolean;
 }
 
-const VaultCollaborators = () => {
+const VaultCollaborators = ({params}: {params: Promise<{vaultId: string}>}) => {
 
-  const { vaultId } = useParams(); 
+  const {vaultId} = use(params);
   const socket = useSocket();
   const queryClient = useQueryClient();
   const [isAccessConfirmModalOpen, setIsAccessConfirmModalOpen] = useState(false);
@@ -81,7 +81,7 @@ const VaultCollaborators = () => {
   const { data: vault } = useGetVaultQuery(vaultId as string);
   const { data: collaboratorsData, isLoading } = useGetVaultCollaboratorsQuery(vaultId as string)
   const [collaborators, setCollaborators] = useState<Collaborator[]>([]);
-  const { user } = useAuth()
+  const { user:{user} } = useAuth()
   const { mutate: confirmAccess, isPending: isConfirmingAccess } = useConfirmAccess();
   const [onlineUsers, setOnlineUsers] = useState<any[]>([]);
   const router = useRouter()
@@ -141,8 +141,8 @@ const VaultCollaborators = () => {
     };
     
   const handleConfirmAccess = async () => {
-    const finalData = await accessToAll(vault?.id, collaboratorsData)
-    await confirmAccess({ finalData, vaultId: vaultId as string })
+      const finalData = await accessToAll(vault?.id, collaboratorsData)
+      await confirmAccess({ finalData, vaultId: vaultId as string })
   }
   
   const handleToggleAccess = async (collaborator: Collaborator) => {
@@ -152,15 +152,27 @@ const VaultCollaborators = () => {
   }
   
   const handleActionClick = async (flag: string, collaborator?: Collaborator) => {
-    setIsAccessConfirmModalOpen(true)
-
     if (flag === "access_to_all") {
       setModalData({ ...ConfirmModalData.access_to_all, onConfirm: handleConfirmAccess })
     }
 
     if (flag === "toggle_access") {
-      setModalData({ ...ConfirmModalData.toggle_access, onConfirm: handleToggleAccess, collaborator: collaborator })
+      const isCurrentlyAllowed = collaborator?.hasSecretAccess;
+      const modalData = {
+        title: isCurrentlyAllowed ? "Revoke Access" : "Allow Access",
+        description1: isCurrentlyAllowed 
+          ? "Are you sure you want to revoke access from this collaborator?"
+          : "Are you sure you want to allow access to this collaborator?",
+        description2: isCurrentlyAllowed
+          ? "This will prevent the collaborator from accessing the vault secrets"
+          : "This will allow the collaborator to access the vault secrets",
+        buttonText: isCurrentlyAllowed ? "Revoke Access" : "Allow Access",
+        onConfirm: handleToggleAccess,
+        collaborator: collaborator
+      };
+      setModalData(modalData);
     }
+    
     if (flag === "remove_collaborator") {
       setModalData({ ...ConfirmModalData.remove_collaborator, onConfirm: handleRemoveCollaborator, collaborator: collaborator })
     }
@@ -198,12 +210,20 @@ const VaultCollaborators = () => {
 
     }
 
+    const handleToggleAccessRealtime = (data: { collaboratorId: string, hasSecretAccess: boolean }) => {
+      setCollaborators(prev => prev.map((collab: Collaborator) => collab.userId === data.collaboratorId ? { ...collab, hasSecretAccess: data.hasSecretAccess } : collab))
+    };
+
+    socket.on("access-toggled", handleToggleAccessRealtime);
     socket.on("collaborator-removed", handleRemoveCollaborator)
     socket.on("online-users", handleOnlineUsers)
     return () => {
+      socket.emit("leave-vault", vaultId as string);
       socket.off("collaborator-removed", handleRemoveCollaborator)
       socket.off("online-users", handleOnlineUsers)
+       socket.off("access-toggled", handleToggleAccessRealtime);
     }
+
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vaultId])

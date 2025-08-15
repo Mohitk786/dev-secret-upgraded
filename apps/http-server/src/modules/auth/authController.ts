@@ -129,7 +129,6 @@ export const signInUser = async (req: Request, res: Response): Promise<void> => 
 
         const token = sign({ id: existingUser.id }, config.JWT_SECRET as string, { expiresIn: '7d' });
         
-        console.log("token0", token);
         res.cookie('DEV_SECRET_VAULT_AUTH_TOKEN', token, {
             secure: false,
             // sameSite: 'none',

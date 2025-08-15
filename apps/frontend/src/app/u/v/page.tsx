@@ -6,6 +6,7 @@ const VaultList = async() => {
  const data = await serverFetch("/vaults/all");
  const  {user}  = await serverFetch("/me");
  const vaults = data?.vaults;
+ console.log("vaults ", vaults)
 
 
 

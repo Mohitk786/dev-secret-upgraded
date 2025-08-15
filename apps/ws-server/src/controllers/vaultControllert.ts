@@ -1,25 +1,47 @@
 import prisma from '@secret-vault/db/client';
-import {  VaultDeletedData, VaultKey, VaultUpdatedData } from '../types/types';
+import {  
+    VaultDeletedData, 
+    VaultKey, 
+    VaultUpdatedData,
+    VaultResponse,
+    VaultOwnershipResponse,
+    CollaboratorResponse
+} from '../types/types';
 
-async function checkVaultOwnership(userId: string, vaultId: string) {
-    const vault = await prisma.vault.findUnique({
-        where: { id: vaultId },
-    });
+async function checkVaultOwnership(userId: string, vaultId: string): Promise<VaultOwnershipResponse> {
+    try {
+        const vault = await prisma.vault.findUnique({
+            where: { id: vaultId },
+        });
 
-    if (!vault) throw new Error('Vault not found');
-    if (vault.ownerId !== userId) throw new Error('Unauthorized access to this vault');
+        if (!vault) {
+            return { success: false, message: 'Vault not found' };
+        }
+        
+        if (vault.ownerId !== userId) {
+            return { success: false, message: 'Unauthorized access to this vault' };
+        }
 
-    return vault;
+        return { success: true, vault };
+    } catch (error) {
+        console.error("Error checking vault ownership:", error);
+        return { success: false, message: 'Failed to check vault ownership' };
+    }
 }
 
-export const updateVault = async (data: VaultUpdatedData, userId: string) => {
-
+export const updateVault = async (data: VaultUpdatedData, userId: string): Promise<VaultResponse> => {
     try {
         const { vaultId, name, description, icon } = data;
 
-        if (!name || !vaultId) throw new Error('Name and vaultId are required');
+        if (!name || !vaultId) {
+            return { success: false, message: 'Name and vaultId are required' };
+        }
 
-        await checkVaultOwnership(userId, vaultId);
+        const ownershipCheck = await checkVaultOwnership(userId, vaultId);
+        if (!ownershipCheck.success) {
+            return ownershipCheck;
+        }
+
         const updated = await prisma.vault.update({
             where: { id: vaultId },
             data: { name, description, icon },
@@ -34,67 +56,68 @@ export const updateVault = async (data: VaultUpdatedData, userId: string) => {
             },
         });
 
-        return updated;
-
+        return { success: true, vault: updated };
     } catch (error) {
-        console.error(error);
-        throw new Error('Failed to update vault');
+        console.error("Error updating vault:", error);
+        return { success: false, message: 'Failed to update vault' };
     }
 }
 
-
-export async function deleteVault(data: VaultDeletedData, userId: string) {
+export async function deleteVault(data: VaultDeletedData, userId: string): Promise<VaultResponse> {
     try {
-      const { vaultId } = data;
-  
-      if (!userId) {
-        throw new Error('Unauthorized');
-      }
-  
-      const vault = await checkVaultOwnership(userId!, vaultId);
-  
-      if (!vault) {
-        throw new Error('Vault not found');
-      }
-  
-      await prisma.vault.update({
-        where: { id: vaultId },
-        data: {
-          isDeleted: true,
-        },
-      });
+        const { vaultId } = data;
 
-     //delete all collaborators
-     await prisma.collaborator.deleteMany({
-        where: {
-            vaultId,
-        },
-     });
+        if (!userId) {
+            return { success: false, message: 'Unauthorized' };
+        }
 
-      //remove all vault keys except the owner
-      await prisma.vaultKey.deleteMany({
-        where: {
-            vaultId,
-            userId: {
-                not: userId,
+        const ownershipCheck = await checkVaultOwnership(userId, vaultId);
+        if (!ownershipCheck.success) {
+            return ownershipCheck;
+        }
+
+        const vault = ownershipCheck.vault;
+
+        await prisma.vault.update({
+            where: { id: vaultId },
+            data: {
+                isDeleted: true,
             },
-        },
-      });
+        });
 
-      return { message: 'Vault deleted successfully',  vaultId, };
+        // Delete all collaborators
+        await prisma.collaborator.deleteMany({
+            where: {
+                vaultId,
+            },
+        });
 
-    } catch (err: any) {
-        console.error(err);
-        throw new Error('Failed to delete vault');
+        // Remove all vault keys except the owner
+        await prisma.vaultKey.deleteMany({
+            where: {
+                vaultId,
+                userId: {
+                    not: userId,
+                },
+            },
+        });
+
+        return { 
+            success: true, 
+            message: 'Vault deleted successfully',  
+            vaultId 
+        };
+    } catch (error) {
+        console.error("Error deleting vault:", error);
+        return { success: false, message: 'Failed to delete vault' };
     }
-  }
+}
 
-export const revokeCollaboratorAccess = async (userId: string, vaultId: string, collaboratorId: string) => {
+export const revokeCollaboratorAccess = async (userId: string, vaultId: string, collaboratorId: string): Promise<CollaboratorResponse> => {
     try {
-
-        const vault = await checkVaultOwnership(userId, vaultId);
-        if (!vault) {
-            throw new Error('Vault not found');
+        const ownershipCheck = await checkVaultOwnership(userId, vaultId);
+        if (!ownershipCheck.success) {
+            return ownershipCheck;
         }
 
         const collaborator = await prisma.collaborator.findUnique({
@@ -107,7 +130,7 @@ export const revokeCollaboratorAccess = async (userId: string, vaultId: string, 
         });
 
         if (!collaborator) {
-            throw new Error('Collaborator not found');
+            return { success: false, message: 'Collaborator not found' };
         }
 
         await prisma.collaborator.delete({
@@ -119,7 +142,6 @@ export const revokeCollaboratorAccess = async (userId: string, vaultId: string, 
             },
         });
 
-
         await prisma.auditLog.create({
             data: {
                 vaultId,
@@ -129,19 +151,18 @@ export const revokeCollaboratorAccess = async (userId: string, vaultId: string, 
             },
         });
 
-        return true;
-
+        return { success: true, message: 'Collaborator access revoked successfully' };
     } catch (error) {
-        console.error(error);
-        throw new Error('Failed to revoke collaborator access');
+        console.error("Error revoking collaborator access:", error);
+        return { success: false, message: 'Failed to revoke collaborator access' };
     }
 }
 
-export const allowAllCollaborators = async (userId: string, vaultId: string, collaborators: VaultKey[]) => {
+export const allowAllCollaborators = async (userId: string, vaultId: string, collaborators: VaultKey[]): Promise<VaultResponse> => {
     try {
-        const vault = await checkVaultOwnership(userId, vaultId);
-        if (!vault) {
-            throw new Error('You are not the owner of this vault');
+        const ownershipCheck = await checkVaultOwnership(userId, vaultId);
+        if (!ownershipCheck.success) {
+            return ownershipCheck;
         }
         
         const allowed = await prisma.vault.update({
@@ -164,19 +185,18 @@ export const allowAllCollaborators = async (userId: string, vaultId: string, col
             },
         });
 
-        return allowed;
-
+        return { success: true, vault: allowed };
     } catch (error) {
-        console.error(error);
-        throw new Error('Failed to allow all collaborators');
+        console.error("Error allowing all collaborators:", error);
+        return { success: false, message: 'Failed to allow all collaborators' };
     }
 }
 
-export const toggleCollaboratorAccess = async (userId: string, vaultId: string, collaboratorId: string) => {
+export const toggleCollaboratorAccess = async (userId: string, vaultId: string, collaboratorId: string): Promise<CollaboratorResponse> => {
     try {
-        const vault = await checkVaultOwnership(userId, vaultId);
-        if (!vault) {
-            throw new Error('You are not the owner of this vault');
+        const ownershipCheck = await checkVaultOwnership(userId, vaultId);
+        if (!ownershipCheck.success) {
+            return ownershipCheck;
         }
 
         const collaborator = await prisma.collaborator.findUnique({
@@ -189,7 +209,7 @@ export const toggleCollaboratorAccess = async (userId: string, vaultId: string, 
         });
         
         if (!collaborator) {
-            throw new Error('Collaborator not found');
+            return { success: false, message: 'Collaborator not found' };
         }
 
         const updatedCollaborator = await prisma.collaborator.update({
@@ -205,21 +225,24 @@ export const toggleCollaboratorAccess = async (userId: string, vaultId: string, 
                 },
             },
         });
-        return {message: `Your access to this vault has been ${collaborator.hasSecretAccess ? 'Revoked' : 'Enabled'}. by owner`, updatedCollaborator};
-
-    } catch (error:any) {
-        console.error(error);
-        return {message: error?.message}
+        
+        return {
+            success: true,
+            message: `Your access to this vault has been ${collaborator.hasSecretAccess ? 'Revoked' : 'Enabled'} by owner`, 
+            updatedCollaborator
+        };
+    } catch (error) {
+        console.error("Error toggling collaborator access:", error);
+        return { success: false, message: 'Failed to toggle collaborator access' };
     }
 }
 
-export const removeCollaborator = async (userId: string, vaultId: string, collaboratorId: string) => {
+export const removeCollaborator = async (userId: string, vaultId: string, collaboratorId: string): Promise<CollaboratorResponse> => {
     try {
-        const vault = await checkVaultOwnership(userId, vaultId);
-        if (!vault) {
-            throw new Error('You are not the owner of this vault');
+        const ownershipCheck = await checkVaultOwnership(userId, vaultId);
+        if (!ownershipCheck.success) {
+            return ownershipCheck;
         }
-
 
         const collaborator = await prisma.collaborator.findUnique({
             where: {
@@ -237,15 +260,13 @@ export const removeCollaborator = async (userId: string, vaultId: string, collab
             },
         });
 
-
         if (!collaborator) {
-            throw new Error('Collaborator not found');
+            return { success: false, message: 'Collaborator not found' };
         }
 
         await prisma.collaborator.delete({
             where: { id: collaborator.id, vaultId },
         });
-
 
         await prisma.vaultKey.delete({
             where: {        
@@ -263,9 +284,8 @@ export const removeCollaborator = async (userId: string, vaultId: string, collab
             },
         });
 
-
         if (!collaboratorUser) {
-            throw new Error('Collaborator user not found');
+            return { success: false, message: 'Collaborator user not found' };
         }
 
         await prisma.auditLog.create({
@@ -277,10 +297,13 @@ export const removeCollaborator = async (userId: string, vaultId: string, collab
             },  
         });
 
-        return {message: `Collaborator ${collaboratorUser?.name} has been removed from the vault.`, collaborator: collaborator};
-
-    } catch (error:any) {
-        console.error(error);
-        throw new Error('Failed to remove collaborator');
+        return {
+            success: true,
+            message: `Collaborator ${collaboratorUser?.name} has been removed from the vault.`, 
+            collaborator: collaborator
+        };
+    } catch (error) {
+        console.error("Error removing collaborator:", error);
+        return { success: false, message: 'Failed to remove collaborator' };
     }
 }   

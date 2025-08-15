@@ -13,6 +13,7 @@ export const authenticated = async (
 
     const token = cookies?.DEV_SECRET_VAULT_AUTH_TOKEN;
 
+
     if (!token) {
       console.error("No token found in cookies");
       return;

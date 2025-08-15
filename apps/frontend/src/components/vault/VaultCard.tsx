@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
-import { Check } from "lucide-react";
+
 import { APP_ROUTES } from "@/constants/data";
 import { User } from "@/types/types";
 
@@ -23,13 +23,10 @@ const VaultCard = ({ vault, user }: { vault: any; user: User }) => {
             </div>
             <p>
               {" "}
-              {vault?.ownerId === user?.id ? (
                 <span className="text-xs text-muted-foreground ">
                   {vault?._count?.collaborators || 0} collaborators
                 </span>
-              ) : (
-                <Check className="h-4 w-4 text-green-500" />
-              )}
+              
             </p>
           </div>
           <div className="mt-4">

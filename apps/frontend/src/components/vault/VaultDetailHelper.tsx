@@ -61,6 +61,7 @@ const VaultDetail = ({ isSharedVault, user, vault, vaultId }: { isSharedVault: b
 
   useEffect(() => {
   
+    socket.emit("authenticate", user?.id);
     socket.emit("join-vault", vaultId as string)
 
     const onSecretCreated = async (data: { message: string, secret: Secret }) => {
@@ -96,6 +97,8 @@ const VaultDetail = ({ isSharedVault, user, vault, vaultId }: { isSharedVault: b
     }
 
     const onAccessToggled = async (data: { message: string, hasSecretAccess: boolean }) => {
+
+
       showToast({
         type: "success",
         message: data?.message,
@@ -105,15 +108,8 @@ const VaultDetail = ({ isSharedVault, user, vault, vaultId }: { isSharedVault: b
         setVisibleSecrets([])
         setHasAccess(false)
       } else {
-
-        if (vault?.secrets && decryptedVaultKey) {
-          //kyoki jab access toggle hoga toh vault.secrets mein kuch bhi nahi hoga
-          const decrypted = await Promise.all(
-            vault.secrets.map((secret: Secret) => DecryptSecret(secret, decryptedVaultKey))
-          );
-          setDecryptedSecrets(decrypted);
+          setDecryptedSecrets(decryptedSecrets);
           setHasAccess(true)
-        }
 
       }
     }
@@ -131,6 +127,8 @@ const VaultDetail = ({ isSharedVault, user, vault, vaultId }: { isSharedVault: b
       });
     }
 
+   
+    
     socket.on("vault-deleted", onVaultDeleted);
     socket.on("access-toggled", onAccessToggled);
     socket.on("secret-created", onSecretCreated);
@@ -145,7 +143,7 @@ const VaultDetail = ({ isSharedVault, user, vault, vaultId }: { isSharedVault: b
       socket.off("vault-deleted", onVaultDeleted);
     };
      // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vaultId, decryptedVaultKey, decryptedSecrets]);
+  }, [vaultId]);
 
 
 

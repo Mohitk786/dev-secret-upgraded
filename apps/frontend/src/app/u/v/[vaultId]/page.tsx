@@ -9,7 +9,6 @@ const page = async ({params}:{params:{vaultId:string}}) => {
   const {vaultId} = await params;
   const {vault} = await serverFetch(`/vaults/${vaultId}`);
 
-  console.log("vault", vault)
 
 
   return (

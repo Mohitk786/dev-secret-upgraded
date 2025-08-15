@@ -1,40 +1,65 @@
 import prisma from "@secret-vault/db/client";
-import { CreateSecretData, DeleteSecretData, GetSecretsData, UpdateSecretData } from "../types/types";
+import { 
+    CreateSecretData, 
+    DeleteSecretData, 
+    GetSecretsData, 
+    UpdateSecretData,
+    VaultAccessResponse,
+    SecretResponse,
+    SecretsResponse
+} from "../types/types";
 
+export async function checkVaultAccess(userId: string, vaultId: string): Promise<VaultAccessResponse> {
+    try {
+        const vault = await prisma.vault.findUnique({
+            where: { id: vaultId }, 
+            include: {
+                owner: true
+            }
+        });
 
-export async function checkVaultAccess(userId: string, vaultId: string) {
-
-    const vault = await prisma.vault.findUnique({
-        where: { id: vaultId }, include: {
-            owner: true
+        if (!vault) {
+            return { success: false, message: "Vault not found" };
         }
-    });
-
-    if (!vault) throw new Error("Vault not found");
-    if (vault.ownerId === userId) return { owner: vault.owner };
-
-    const collaborator = await prisma.collaborator.findFirst({
-        where: { userId, vaultId },
-        include: {
-            user: true
+        
+        if (vault.ownerId === userId) {
+            return { success: true, owner: vault.owner, collaborator: null };
         }
-    });
 
-    
+        const collaborator = await prisma.collaborator.findFirst({
+            where: { userId, vaultId },
+            include: {
+                user: true
+            }
+        });
 
-    if (!collaborator) throw new Error("Access denied");
-    return { owner: null, collaborator: collaborator };
+        if (!collaborator) {
+            return { success: false, message: "Access denied" };
+        }
+        
+        return { success: true, owner: null, collaborator: collaborator };
+    } catch (error) {
+        console.error("Error checking vault access:", error);
+        return { success: false, message: "Failed to check vault access" };
+    }
 }
 
-export const createSecret = async (data: CreateSecretData, userId: string) => {
+export const createSecret = async (data: CreateSecretData, userId: string): Promise<SecretResponse> => {
     try {
-        if (!data.encryptedSecret || !data.vaultId)
-            throw new Error("Missing required fields")
+        if (!data.encryptedSecret || !data.vaultId) {
+            return { success: false, message: "Missing required fields" };
+        }
 
-        const { owner, collaborator } = await checkVaultAccess(userId, data.vaultId)
+        const accessCheck = await checkVaultAccess(userId, data.vaultId);
+        if (!accessCheck.success) {
+            return accessCheck;
+        }
 
-        if (!owner && !collaborator?.canAdd)
-            throw new Error("Access denied")
+        const { owner, collaborator } = accessCheck;
+
+        if (!owner && !collaborator?.canAdd) {
+            return { success: false, message: "Access denied" };
+        }
 
         const secret = await prisma.secret.create({
             data: {
@@ -42,7 +67,7 @@ export const createSecret = async (data: CreateSecretData, userId: string) => {
                 vaultId: data.vaultId,
                 createdById: userId,
             }
-        })
+        });
 
         await prisma.auditLog.create({
             data: {
@@ -53,46 +78,61 @@ export const createSecret = async (data: CreateSecretData, userId: string) => {
             },
         });
 
-        return { message: `${owner?.name || collaborator?.user?.name} Encrypted & Saved a secret 🔒`, secret };
+        return { 
+            success: true, 
+            message: `${owner?.name || collaborator?.user?.name} Encrypted & Saved a secret 🔒`, 
+            secret 
+        };
 
     } catch (error) {
-        console.error(error)
-        throw new Error("Failed to create secret")
+        console.error("Error creating secret:", error);
+        return { success: false, message: "Failed to create secret" };
     }
 }
 
-
-export const getSecrets = async (data: GetSecretsData, userId: string) => {
+export const getSecrets = async (data: GetSecretsData, userId: string): Promise<SecretsResponse> => {
     try {
-        const { owner, collaborator } = await checkVaultAccess(userId, data.vaultId)
-        if (!owner && !collaborator)
-            throw new Error("Access denied")
+        const accessCheck = await checkVaultAccess(userId, data.vaultId);
+        if (!accessCheck.success) {
+            return accessCheck;
+        }
+
+        const { owner, collaborator } = accessCheck;
+        if (!owner && !collaborator) {
+            return { success: false, message: "Access denied" };
+        }
 
         const secrets = await prisma.secret.findMany({
             where: { vaultId: data.vaultId }
-        })
-        return secrets
+        });
+        
+        return { success: true, secrets };
 
     } catch (error) {
-        console.error(error)
-        throw new Error("Failed to get secrets")
+        console.error("Error getting secrets:", error);
+        return { success: false, message: "Failed to get secrets" };
     }
 }
 
-
-export const deleteSecret = async (data: DeleteSecretData, userId: string) => {
+export const deleteSecret = async (data: DeleteSecretData, userId: string): Promise<SecretResponse> => {
     try {
-        const secretId = data.secretId
+        const secretId = data.secretId;
 
         const secret = await prisma.secret.findUnique({ where: { id: secretId } });
-        if (!secret) throw new Error("Secret not found")
+        if (!secret) {
+            return { success: false, message: "Secret not found" };
+        }
 
-        const { owner, collaborator } = await checkVaultAccess(userId, secret.vaultId);
+        const accessCheck = await checkVaultAccess(userId, secret.vaultId);
+        if (!accessCheck.success) {
+            return accessCheck;
+        }
 
-        if (!owner && !collaborator?.canDelete)
-            throw new Error("Access denied")
+        const { owner, collaborator } = accessCheck;
 
-
+        if (!owner && !collaborator?.canDelete) {
+            return { success: false, message: "Access denied" };
+        }
 
         await prisma.secret.update({
             where: { id: secretId },
@@ -108,26 +148,37 @@ export const deleteSecret = async (data: DeleteSecretData, userId: string) => {
             },
         });
 
-        return { message: `${owner?.name || collaborator?.user?.name} deleted a secret` , secretId };
+        return { 
+            success: true, 
+            message: `${owner?.name || collaborator?.user?.name} deleted a secret`, 
+            secretId 
+        };
 
     } catch (error) {
-        console.error(error)
-        throw new Error("Failed to delete secret")
+        console.error("Error deleting secret:", error);
+        return { success: false, message: "Failed to delete secret" };
     }
 }
 
-
-export const updateSecret = async (data: UpdateSecretData, userId: string) => {
+export const updateSecret = async (data: UpdateSecretData, userId: string): Promise<SecretResponse> => {
     try {
-        const secretId = data.secretId
+        const secretId = data.secretId;
 
         const secret = await prisma.secret.findUnique({ where: { id: secretId } });
-        if (!secret) throw new Error("Secret not found")
+        if (!secret) {
+            return { success: false, message: "Secret not found" };
+        }
 
-        const { owner, collaborator } = await checkVaultAccess(userId, secret.vaultId);
+        const accessCheck = await checkVaultAccess(userId, secret.vaultId);
+        if (!accessCheck.success) {
+            return accessCheck;
+        }
 
-        if (!owner && !collaborator?.canEdit)
-            throw new Error("Access denied")
+        const { owner, collaborator } = accessCheck;
+
+        if (!owner && !collaborator?.canEdit) {
+            return { success: false, message: "Access denied" };
+        }
 
         const updated = await prisma.secret.update({
             where: { id: secretId },
@@ -143,10 +194,14 @@ export const updateSecret = async (data: UpdateSecretData, userId: string) => {
             },
         });
 
-        return { message: `${owner?.name || collaborator?.user?.name} updated a Secret`, encryptedSecret: updated };
+        return { 
+            success: true, 
+            message: `${owner?.name || collaborator?.user?.name} updated a Secret`, 
+            encryptedSecret: updated 
+        };
 
     } catch (error) {
-        console.error(error)
-        throw new Error("Failed to update secret")
+        console.error("Error updating secret:", error);
+        return { success: false, message: "Failed to update secret" };
     }
 }

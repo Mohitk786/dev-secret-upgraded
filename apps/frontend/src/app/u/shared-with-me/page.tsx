@@ -10,7 +10,8 @@ const SharedWithMe = async () => {
     const data = await serverFetch("/collab/shared-with-me");
     const vaults = data?.vaults;
 
-    console.log("shareed vaults", vaults)
+    console.log("vaults shared", vaults)
+
 
     if (!vaults) return <div>Loading...</div>;
 

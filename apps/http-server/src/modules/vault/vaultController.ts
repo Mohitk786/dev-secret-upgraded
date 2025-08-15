@@ -1,7 +1,7 @@
 import { Response } from 'express';
 import prisma from '@secret-vault/db/client';
 import { CustomRequest } from '../../middleware/auth';
-import { sendInviteEmail } from '@secret-vault/backend-common/emailTemplates';
+import { sendAcceptanceEmail, sendInviteEmail } from '@secret-vault/backend-common/emailTemplates';
 import { checkVaultAccess } from '../secret/secretController';
 import { config } from '@secret-vault/backend-common/config';
 
@@ -409,6 +409,7 @@ export async function acceptInvite(req: CustomRequest, res: Response): Promise<a
       },
     });
 
+
     res.status(200).json({
       message: 'Invite accepted successfully',
       collaborator,
@@ -526,10 +527,18 @@ export async function getSharedWithMeVaults(req: CustomRequest, res: Response): 
         },
       },
       include: {
-        vault: true,
+        vault: {
+          include: {
+            _count: {
+              select: {
+                collaborators: true,
+                secrets:true
+              },
+            },
+          },
+        },
       },
     });
-
 
     if (collaborators.length === 0) {
       res.status(200).json({

@@ -66,3 +66,38 @@ export interface RemoveCollaboratorData {
     vaultId: string;
     collaboratorId: string;
 }
+
+// Return type interfaces
+export interface BaseResponse {
+    success: boolean;
+    message?: string;
+}
+
+export interface SecretResponse extends BaseResponse {
+    secret?: any;
+    encryptedSecret?: any;
+    secretId?: string;
+}
+
+export interface SecretsResponse extends BaseResponse {
+    secrets?: any[];
+}
+
+export interface VaultResponse extends BaseResponse {
+    vault?: any;
+    vaultId?: string;
+}
+
+export interface CollaboratorResponse extends BaseResponse {
+    collaborator?: any;
+    updatedCollaborator?: any;
+}
+
+export interface VaultAccessResponse extends BaseResponse {
+    owner?: any;
+    collaborator?: any;
+}
+
+export interface VaultOwnershipResponse extends BaseResponse {
+    vault?: any;
+}

@@ -13,6 +13,7 @@ export const config = {
   REACT_URL: process.env.REACT_URL,
   BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
   PORT: process.env.PORT || 5000,
+  SOCKET_PORT: process.env.SOCKET_PORT,
   JWT_SECRET: process.env.JWT_SECRET || "default_jwt_secret",
   EMAIL: process.env.EMAIL || "",
   PASSWORD: process.env.PASSWORD || "",
