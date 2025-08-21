@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { decryptVaultKeyWithPrivateKey } from "@/E2E/decryption";
 import { Secret, } from "@/types/types";
 import { useGetVaultKeyQuery } from "@/hooks/queries/useCollabQuery";
@@ -13,6 +13,8 @@ export const useDecryptedSecrets = (
   const [decryptedSecrets, setDecryptedSecrets] = useState<Secret[]>([]);
   const { showToast } = useToast();
   const { data: vaultKey } = useGetVaultKeyQuery(vaultId);
+  
+  const memoizedEncryptedSecrets = React.useMemo(() => encryptedSecrets, [encryptedSecrets]);
 
 
   useEffect(() => {
@@ -27,12 +29,19 @@ export const useDecryptedSecrets = (
         setDecryptedVaultKey(key);
   
         const secrets = await Promise.all(
-          encryptedSecrets.length > 0
-            ? encryptedSecrets.map(secret => DecryptSecret(secret, key))
+          memoizedEncryptedSecrets.length > 0
+            ? memoizedEncryptedSecrets.map(secret => DecryptSecret(secret, key))
             : []
         );
   
-        if (!cancelled) setDecryptedSecrets(secrets);
+        if (!cancelled) {
+          setDecryptedSecrets(prev => {
+            if (JSON.stringify(prev) === JSON.stringify(secrets)) {
+              return prev; 
+            }
+            return secrets;
+          });
+        }
   
       } catch (err: any) {
         showToast({
@@ -45,7 +54,7 @@ export const useDecryptedSecrets = (
     decryptVaultKey();
   
     return () => { cancelled = true; };
-  }, [vaultKey, showToast, encryptedSecrets]);
+  }, [vaultKey, memoizedEncryptedSecrets, encryptedSecrets, showToast]); 
   
 
   return {

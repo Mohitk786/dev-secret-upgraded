@@ -1,12 +1,10 @@
 "use client"
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import AddSecretPopup from "@/components/vault/AddSecretPopup";
-
 import VaultHeader from "@/components/vault/VaultHeader";
 import SecretList from "@/components/vault/SecretList";
-
 import useToast from "@/hooks/utils/useToast";
 import { Secret, User} from "@/types/types";
 import { DecryptSecret } from "@/E2E/decryption";
@@ -59,73 +57,94 @@ const VaultDetail = ({ isSharedVault, user, vault, vaultId }: { isSharedVault: b
 
 
 
+  const onSecretCreated = useCallback(async (data: { message: string, secret: Secret }) => {
+    if (!decryptedVaultKey) return;
+    
+    setDecryptedSecrets(prev => {
+      if (prev.some(secret => secret.id === data.secret.id)) {
+        return prev; 
+      }
+      
+      decryptEachSecret(data.secret, decryptedVaultKey).then(decryptedSecret => {
+        setDecryptedSecrets(current => {
+          if (current.some(secret => secret.id === decryptedSecret.id)) {
+            return current;
+          }
+          return [...current, decryptedSecret];
+        });
+      });
+      
+      return prev;
+    });
+
+    showToast({
+      type: "info",
+      message: `New secret created! 🔐`,
+    });
+  }, [decryptedVaultKey, setDecryptedSecrets, showToast]);
+
+
+  const onSecretDeleted = useCallback(async (data: { message: string, secretId: string }) => {
+    setDecryptedSecrets(prev => {
+      const filtered = prev.filter(secret => secret.id !== data?.secretId);
+      if (filtered.length === prev.length) {
+        return prev; 
+      }
+      return filtered;
+    });
+    showToast({
+      type: "success",
+      message: data?.message,
+    });
+  }, [setDecryptedSecrets, showToast]);
+
+
+
+  const onSecretUpdated = useCallback(async (data: { message: string, encryptedSecret: Secret }) => {
+    if (!decryptedVaultKey) return;
+    const decryptedSecret = await decryptEachSecret(data.encryptedSecret, decryptedVaultKey);
+    setDecryptedSecrets(prev => {
+      const updated = prev.map(secret => secret.id === decryptedSecret.id ? decryptedSecret : secret);
+      if (JSON.stringify(prev) === JSON.stringify(updated)) {
+        return prev; 
+      }
+      return updated;
+    });
+    showToast({
+      type: "success",
+      message: `${data?.message}🔐`,
+    });
+  }, [decryptedVaultKey, setDecryptedSecrets, showToast]);
+
+
+  const onAccessToggled = useCallback(async (data: { message: string, hasSecretAccess: boolean }) => {
+    showToast({
+      type: "success",
+      message: data?.message,
+    });
+    setHasAccess(data?.hasSecretAccess)
+  }, [showToast]);
+
+
+  const onVaultDeleted = useCallback(async (data: { message: string, vaultId: string }) => {
+    if (vault?.ownerId === user?.id) {
+        router.push(APP_ROUTES.VAULTS);
+    } else {
+      router.push(APP_ROUTES.SHARED_WITH_ME);
+    }
+
+    showToast({
+      type: "success",  
+      message: data?.message,
+    });
+  }, [vault?.ownerId, user?.id, router, showToast]);
+
   useEffect(() => {
+    if (!user?.id || !vaultId) return;
   
+   
     socket.emit("authenticate", user?.id);
     socket.emit("join-vault", vaultId as string)
-
-    const onSecretCreated = async (data: { message: string, secret: Secret }) => {
-
-      if (!decryptedVaultKey) return;
-      const decryptedSecret = await decryptEachSecret(data.secret, decryptedVaultKey);
-
-      showToast({
-        type: "info",
-        message: `New secret created! 🔐`,
-      });
-
-      setDecryptedSecrets(prev => [...prev, decryptedSecret]);
-
-    };
-
-    const onSecretDeleted = async (data: { message: string, secretId: string }) => {
-      setDecryptedSecrets(prev => prev.filter(secret => secret.id !== data?.secretId));
-      showToast({
-        type: "success",
-        message: data?.message,
-      });
-    }
-
-    const onSecretUpdated = async (data: { message: string, encryptedSecret: Secret }) => {
-      if (!decryptedVaultKey) return;
-      const decryptedSecret = await decryptEachSecret(data.encryptedSecret, decryptedVaultKey);
-      setDecryptedSecrets(prev => prev.map(secret => secret.id === decryptedSecret.id ? decryptedSecret : secret));
-      showToast({
-        type: "success",
-        message: `${data?.message}🔐`,
-      });
-    }
-
-    const onAccessToggled = async (data: { message: string, hasSecretAccess: boolean }) => {
-
-
-      showToast({
-        type: "success",
-        message: data?.message,
-      });
-      if (!data?.hasSecretAccess) {
-        setDecryptedSecrets([])
-        setVisibleSecrets([])
-        setHasAccess(false)
-      } else {
-          setDecryptedSecrets(decryptedSecrets);
-          setHasAccess(true)
-
-      }
-    }
-
-    const onVaultDeleted = async (data: { message: string, vaultId: string }) => {
-      if (vault?.ownerId === user?.id) {
-          router.push(APP_ROUTES.VAULTS);
-      } else {
-        router.push(APP_ROUTES.SHARED_WITH_ME);
-      }
-
-      showToast({
-        type: "success",  
-        message: data?.message,
-      });
-    }
 
    
     
@@ -142,8 +161,7 @@ const VaultDetail = ({ isSharedVault, user, vault, vaultId }: { isSharedVault: b
       socket.off("access-toggled", onAccessToggled);
       socket.off("vault-deleted", onVaultDeleted);
     };
-     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vaultId]);
+  }, [vaultId, decryptedVaultKey, user?.id, socket, showToast, router, onSecretCreated, onSecretDeleted, onSecretUpdated, onAccessToggled, onVaultDeleted]);
 
 
 
@@ -154,15 +172,6 @@ const VaultDetail = ({ isSharedVault, user, vault, vaultId }: { isSharedVault: b
         : [...prevVisible, secretId]
     );
   };
-
-
-
-  // if (error || !vault) {
-  //   return <VaultDetailError error={error} />;
-  // }
-
-
-
 
 
 

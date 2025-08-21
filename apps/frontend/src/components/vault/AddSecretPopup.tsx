@@ -25,8 +25,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { useCreateSecretMutation } from "@/hooks/mutations/useSecretMutations";
-import { Loader2 } from "lucide-react";
 
 import { AddSecretFormValues } from "@/types/types";
 import useSocket from "@/hooks/utils/useSocket";
@@ -62,7 +60,6 @@ const secretTypeOptions = [
 
 const AddSecretPopup = ({ open, onOpenChange }: AddSecretPopupProps) => {
   
-  const createSecretMutation = useCreateSecretMutation();
   const socket = useSocket();
   const {showToast} = useToast();
   const {vaultId}:{vaultId:string} = useParams();
@@ -206,16 +203,8 @@ const AddSecretPopup = ({ open, onOpenChange }: AddSecretPopupProps) => {
               </Button>
               <Button 
                 type="submit"
-                disabled={createSecretMutation.isPending}
               >
-                {createSecretMutation.isPending ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Saving...
-                  </>
-                ) : (
-                  <>Save Secret</>
-                )}
+                Save Secret
               </Button>
             </DialogFooter>
           </form>

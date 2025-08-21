@@ -81,11 +81,13 @@ const VaultCollaborators = ({params}: {params: Promise<{vaultId: string}>}) => {
   const { data: vault } = useGetVaultQuery(vaultId as string);
   const { data: collaboratorsData, isLoading } = useGetVaultCollaboratorsQuery(vaultId as string)
   const [collaborators, setCollaborators] = useState<Collaborator[]>([]);
-  const { user:{user} } = useAuth()
+  const { user:userData } = useAuth()
   const { mutate: confirmAccess, isPending: isConfirmingAccess } = useConfirmAccess();
   const [onlineUsers, setOnlineUsers] = useState<any[]>([]);
   const router = useRouter()
   const { showToast } = useToast()
+
+  const user = userData?.user
  
 
   useEffect(() => {
