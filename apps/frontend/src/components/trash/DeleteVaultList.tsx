@@ -1,22 +1,11 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Store, Trash2 } from "lucide-react";
-import { useRestoreVaultMutation, usePermanentDeleteVaultMutation } from "@/hooks/mutations/useTrashMutations";
 import moment from "moment";
+import { VaultActions } from "./vault-actions";
+import { serverFetch } from "@/lib/serverFetch";
 
-interface DeletedVaultListProps {
-  vaults: any[];
-  isLoading: boolean;
-}
+export const DeletedVaultList = async () => {
 
-export const DeletedVaultList = ({ vaults, isLoading }: DeletedVaultListProps) => {
-  const restoreVault = useRestoreVaultMutation();
-  const permanentDelete = usePermanentDeleteVaultMutation();
-
-  if (isLoading) {
-    return <div className="text-center py-8">Loading...</div>;
-  }
-
+  const {vaults} = await serverFetch("/trash/vaults"); 
   if (!vaults?.length) {
     return <div className="text-center py-8 text-muted-foreground">No deleted vaults found</div>;
   }
@@ -32,7 +21,7 @@ export const DeletedVaultList = ({ vaults, isLoading }: DeletedVaultListProps) =
         </TableRow>
       </TableHeader>
       <TableBody>
-        {vaults.map((vault) => {
+        {vaults.map((vault:any) => {
           const deletedDate = new Date(vault.deletedAt);
           const daysLeft = 30 - Math.floor((Date.now() - deletedDate.getTime()) / (1000 * 60 * 60 * 24));
 
@@ -42,22 +31,7 @@ export const DeletedVaultList = ({ vaults, isLoading }: DeletedVaultListProps) =
               <TableCell>{moment(deletedDate).format('MMM dd, yyyy')}</TableCell>
               <TableCell>{daysLeft} days</TableCell>
               <TableCell className="text-right space-x-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => restoreVault.mutate(vault.id)}
-                >
-                  <Store className="h-4 w-4 mr-1" />
-                  Restore
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => permanentDelete.mutate(vault.id)}
-                >
-                  <Trash2 className="h-4 w-4 mr-1" />
-                  Delete
-                </Button>
+                <VaultActions vaultId={vault.id} />
               </TableCell>
             </TableRow>
           )}

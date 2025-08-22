@@ -1,7 +1,7 @@
 import { Server } from "socket.io";
 import { authenticated } from "./utils/autenticate";
 import {
-  createSecret,
+  createSecrets,
   deleteSecret,
   updateSecret,
 } from "./controllers/secretController";
@@ -10,14 +10,12 @@ import {
   DeleteSecretData,
   UpdateSecretData,
   VaultDeletedData,
-  AllowCollaboratorData,
   RevokeCollaboratorData,
   RemoveCollaboratorData,
 } from "./types/types";
 import {
   deleteVault,
   toggleCollaboratorAccess,
-  allowAllCollaborators,
   removeCollaborator,
 } from "./controllers/vaultControllert";
 import { getSocketByUserId } from "./utils/getSocketI";
@@ -92,8 +90,8 @@ io.on("connection", async (socket) => {
     });
   });  
 
-  socket.on("create-secret", async (data: CreateSecretData) => {
-    const result = await createSecret(data, userId);
+  socket.on("create-secrets", async (data: CreateSecretData) => {
+    const result = await createSecrets(data, userId);
     
     if (!result.success) {
       return socket.emit("error", result.message || "Failed to create secret");

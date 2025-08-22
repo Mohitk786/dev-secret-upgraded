@@ -1,17 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { getInvites, getSharedVault, getVaultCollaborators } from "@/services/collabServices";
+import { getSharedVault, getVaultCollaborators } from "@/services/collabServices";
 import { getVaultKey } from "@/services/vaultServices";
 
 
 
-export const useInvitesQuery = (type: string, status: string) => {
-    const { data, isLoading, error, refetch } = useQuery({
-        queryKey: ["invites", type, status],
-        queryFn: () => getInvites(type, status)
-    });
-
-    return { data, isLoading, error, refetch };
-};
 
 
 

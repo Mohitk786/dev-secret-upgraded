@@ -1,33 +1,29 @@
-"use client"
 
 import React from "react";
 import ProfileDetailCard from "@/components/profile/ProfileCard";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
-
 import { APP_ROUTES } from "@/constants/data";
-const Profile = () => {
-  const router = useRouter();
+import Link from "next/link";
+import { serverFetch } from "@/lib/serverFetch";
 
- 
-  const demoUser = {
-    name: "Anonymous",
-    email: "anonymous@email.com",
-    avatarUrl: "",
-  };
-  // const currentUser = user || demoUser;
-
+const Profile = async () => {
+  const {user} = await serverFetch("/me"); 
+  
   return (
     <div className="flex items-center justify-center  p-4">
       <div className="w-full max-w-2xl mx-auto animate-fade-in">
-        {/* <ProfileDetailCard user={currentUser} /> */}
+        <ProfileDetailCard user={user} />
         <div className="flex flex-col md:flex-row gap-4 mt-8 justify-center">
-          <Button variant="outline" size="lg" onClick={() => router.push(APP_ROUTES.SETTINGS)}>
-            Edit Profile
-          </Button>
-          <Button variant="default" size="lg" onClick={() => router.push(APP_ROUTES.SETTINGS)}>
+          <Link href={APP_ROUTES.SETTINGS}>
+            <Button variant="outline" size="lg">
+              Edit Profile
+            </Button>
+          </Link>
+          <Link href={APP_ROUTES.SETTINGS}>
+            <Button variant="default" size="lg">
             Account Settings
           </Button>
+          </Link>
         </div>
       </div>
     </div>

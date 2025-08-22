@@ -1,6 +1,6 @@
 
 export interface CreateSecretData {
-    encryptedSecret: string;
+    encryptedSecrets: string[];
     vaultId: string;
 }
 
@@ -74,9 +74,11 @@ export interface BaseResponse {
 }
 
 export interface SecretResponse extends BaseResponse {
-    secret?: any;
+    secrets?: any;
     encryptedSecret?: any;
     secretId?: string;
+    count?: number;
+    error?: string;
 }
 
 export interface SecretsResponse extends BaseResponse {

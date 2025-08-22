@@ -4,6 +4,7 @@ import { Plus} from "lucide-react";
 import Link from "next/link";
 import { APP_ROUTES } from "@/constants/data";
 import Stats from "./Stat";
+import { Suspense } from "react";
 
 const Dashboard = async () => {
 
@@ -27,7 +28,9 @@ const Dashboard = async () => {
         </Link>
       </div>
 
-      <Stats />
+      <Suspense fallback={<div>Loading...</div>}> 
+        <Stats />
+      </Suspense>
 
     </div>
   

@@ -44,9 +44,9 @@ export async function checkVaultAccess(userId: string, vaultId: string): Promise
     }
 }
 
-export const createSecret = async (data: CreateSecretData, userId: string): Promise<SecretResponse> => {
+export const createSecrets = async (data: CreateSecretData, userId: string): Promise<SecretResponse> => {
     try {
-        if (!data.encryptedSecret || !data.vaultId) {
+        if (!data.encryptedSecrets || !data.vaultId) {
             return { success: false, message: "Missing required fields" };
         }
 
@@ -61,32 +61,54 @@ export const createSecret = async (data: CreateSecretData, userId: string): Prom
             return { success: false, message: "Access denied" };
         }
 
-        const secret = await prisma.secret.create({
-            data: {
-                encryptedSecret: data.encryptedSecret,
-                vaultId: data.vaultId,
-                createdById: userId,
-            }
+        const result = await prisma.$transaction(async (tx) => {
+         
+            const createdSecrets = await Promise.all(
+                data.encryptedSecrets.map(encryptedSecret =>
+                    tx.secret.create({
+                        data: {
+                            encryptedSecret: encryptedSecret,
+                            vaultId: data.vaultId,
+                            createdById: userId,
+                        },
+                        select: {
+                            id: true,
+                            encryptedSecret: true,
+                            vaultId: true,
+                            createdAt: true,
+                        }
+                    })
+                )
+            );
+
+            // Create audit log
+            await tx.auditLog.create({
+                data: {
+                    vaultId: data.vaultId,
+                    actorId: userId,
+                    action: "secret_created",
+                    description: `${owner?.name || collaborator?.user?.name} Encrypted & Saved ${data.encryptedSecrets.length} secret(s) 🔒`,
+                },
+            });
+
+            return createdSecrets;
         });
 
-        await prisma.auditLog.create({
-            data: {
-                vaultId: data.vaultId,
-                actorId: userId,
-                action: "secret_created",
-                description: `${owner?.name || collaborator?.user?.name} Encrypted & Saved a secret 🔒`,
-            },
-        });
-
+        const actorName = owner?.name || collaborator?.user?.name;
+        
         return { 
             success: true, 
-            message: `${owner?.name || collaborator?.user?.name} Encrypted & Saved a secret 🔒`, 
-            secret 
+            message: `${actorName} Encrypted & Saved ${data.encryptedSecrets.length} secret(s) 🔒`, 
+            secrets: result,
+            count: data.encryptedSecrets.length
         };
 
     } catch (error) {
-        console.error("Error creating secret:", error);
-        return { success: false, message: "Failed to create secret" };
+        return { 
+            success: false, 
+            message: "Failed to create secret",
+            error: error instanceof Error ? error.message : 'Unknown error'
+        };
     }
 }
 

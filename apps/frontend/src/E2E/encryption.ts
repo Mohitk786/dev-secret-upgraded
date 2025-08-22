@@ -9,22 +9,24 @@ export const generateVaultKey = async () => {
   );
 };
 
+const vaultKeyCache = new Map<string, CryptoKey>();
+
 export const encryptSecret = async (secret: any, vaultId: string) => {
+  let decryptedVaultKey = vaultKeyCache.get(vaultId);
 
+  if (!decryptedVaultKey) {
+    const vaultKey = await getVaultKey(vaultId);
+    decryptedVaultKey = await decryptVaultKeyWithPrivateKey(vaultKey);
 
-  const vaultKey = await getVaultKey(vaultId);
-  const decryptedVaultKey = await decryptVaultKeyWithPrivateKey(vaultKey);
+    if (!decryptedVaultKey) throw new Error("Vault key not found");
 
-
-  if(!decryptedVaultKey) {
-    throw new Error("Vault key not found");
+    vaultKeyCache.set(vaultId, decryptedVaultKey);
   }
-  
- const secretDataToEncrypt = JSON.stringify(secret)
 
-
+  const secretDataToEncrypt = JSON.stringify(secret);
   const iv = crypto.getRandomValues(new Uint8Array(12));
   const encoded = new TextEncoder().encode(secretDataToEncrypt);
+
   const encrypted = await crypto.subtle.encrypt(
     { name: "AES-GCM", iv },
     decryptedVaultKey,
@@ -35,8 +37,7 @@ export const encryptSecret = async (secret: any, vaultId: string) => {
   combined.set(iv, 0);
   combined.set(new Uint8Array(encrypted), iv.byteLength);
 
-  const encryptedSecretBase64 = btoa(String.fromCharCode(...combined));
-  return encryptedSecretBase64;
+  return btoa(String.fromCharCode(...combined));
 };
 
 export const encryptVaultKeyWithRSA = async (publicKeyBase64: string, vaultKey: CryptoKey) => {

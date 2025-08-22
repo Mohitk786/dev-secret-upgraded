@@ -1,39 +1,20 @@
-"use client"
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {  Store, Trash2 } from "lucide-react";
-import { useRestoreSecretMutation, usePermanentDeleteSecretMutation } from "@/hooks/mutations/useTrashMutations";
 import moment from "moment";
+import SecretActions from "./secret-action";
+import { serverFetch } from "@/lib/serverFetch";
 
 
-interface DeletedSecretListProps {
-  secrets: any[];
-  isLoading: boolean;
-}
 
-export const DeletedSecretList = ({ secrets, isLoading }: DeletedSecretListProps) => {
-  const restoreSecret = useRestoreSecretMutation();
-  const permanentDelete = usePermanentDeleteSecretMutation();
-
-  if (isLoading) {
-    return <div className="text-center py-8">Loading...</div>;
-  }
+export const DeletedSecretList = async () => {
+ 
+  const {secrets} = await serverFetch("/trash/secrets");
 
   if (!secrets?.length) {
     return <div className="text-center py-8 text-muted-foreground">No deleted secrets found</div>;
   }
 
-  // const { decryptedVaultKey, decryptedSecrets, setDecryptedSecrets} = useDecryptedSecrets(vaultId, vault?.secrets);
- 
-  //  const decryptedSecrets = secrets.map(async (secret:any)=>{
-
-  //   const decryptedVaultKey = await decryptVaultKeyWithPrivateKey(secret.vaultKey);
-  //   const decryptedSecret = await decryptSecret(secret, decryptedVaultKey);
-  //   return decryptedSecret;
-  //  })
- 
 
   return (
     <Table>
@@ -48,7 +29,7 @@ export const DeletedSecretList = ({ secrets, isLoading }: DeletedSecretListProps
         </TableRow>
       </TableHeader>
       <TableBody>
-        {secrets.map((secret) => {
+        {secrets.map((secret:any) => {
           const deletedDate = new Date(secret.deletedAt);
           const daysLeft = 30 - Math.floor((Date.now() - deletedDate.getTime()) / (1000 * 60 * 60 * 24));
 
@@ -62,22 +43,7 @@ export const DeletedSecretList = ({ secrets, isLoading }: DeletedSecretListProps
               <TableCell>{moment(deletedDate).format('MMM dd, yyyy')}</TableCell>
               <TableCell>{daysLeft} days</TableCell>
               <TableCell className="text-right space-x-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => restoreSecret.mutate(secret.id)}
-                >
-                  <Store className="h-4 w-4 mr-1" />
-                  Restore
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => permanentDelete.mutate(secret.id)}
-                >
-                  <Trash2 className="h-4 w-4 mr-1" />
-                  Delete
-                </Button>
+                <SecretActions secretId={secret.id}/>
               </TableCell>
             </TableRow>
           )}

@@ -22,10 +22,6 @@ export const getInvite = async (inviteId: string) => {
     return response.data?.invite;
 };
 
-export const getInvites = async (type: string, status: string) => { 
-    const response = await axiosInstance.get(`/invites?type=${type || "sent"}&status=${status || "ALL"}`);
-    return response.data?.invites;
-};
 
 export const removeCollaborator = async (vaultId: string, memberId: string) => {
     const response = await axiosInstance.delete(`/collab/members/${vaultId}/${memberId}`);

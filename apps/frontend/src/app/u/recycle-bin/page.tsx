@@ -1,24 +1,12 @@
-"use client";
-
-import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getDeletedVaults, getDeletedSecrets } from "@/services/trashServices";
 import { DeletedVaultList } from "@/components/trash/DeleteVaultList";
 import { DeletedSecretList } from "@/components/trash/DeletedSecretList";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ClockIcon } from "lucide-react";
+import { Suspense } from "react";
 
 const RecycleBin = () => {
-  const { data: deletedVaults, isLoading: vaultsLoading } = useQuery({
-    queryKey: ["deletedVaults"],
-    queryFn: getDeletedVaults,
-  });
-
-  const { data: deletedSecrets, isLoading: secretsLoading } = useQuery({
-    queryKey: ["deletedSecrets"],
-    queryFn: getDeletedSecrets,
-  });
 
   return (
     <div className="container max-w-6xl mx-auto space-y-6 p-6">
@@ -43,16 +31,14 @@ const RecycleBin = () => {
               <TabsTrigger value="secrets">Secrets</TabsTrigger>
             </TabsList>
             <TabsContent value="vaults">
-              <DeletedVaultList 
-                vaults={deletedVaults} 
-                isLoading={vaultsLoading} 
-              />
+             <Suspense fallback={<div>Loading...</div>}>
+              <DeletedVaultList />
+             </Suspense>
             </TabsContent>
             <TabsContent value="secrets">
-              <DeletedSecretList 
-                secrets={deletedSecrets} 
-                isLoading={secretsLoading} 
-              />
+              <Suspense fallback={<div>Loading...</div>}>
+                <DeletedSecretList />
+              </Suspense>
             </TabsContent>
           </Tabs>
         </CardContent>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { decryptVaultKeyWithPrivateKey } from "@/E2E/decryption";
 import { Secret, } from "@/types/types";
 import { useGetVaultKeyQuery } from "@/hooks/queries/useCollabQuery";

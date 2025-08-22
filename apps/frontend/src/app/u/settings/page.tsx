@@ -1,38 +1,12 @@
-"use client"
-import React from "react";
+import React, { Suspense } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Button } from "@/components/ui/button";
-import useToast from "@/hooks/utils/useToast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Profile from "./Profile";
+import ExportData from "@/components/profile/export-data";
 
 const Settings = () => {
-  const { showToast } = useToast();
-
-  const handleExportData = () => {
-    showToast({
-      type: "info",
-      message: "Exporting data... This may take a moment."
-    })
-    // Mock implementation - in a real app, this would connect to a backend API
-    setTimeout(() => {
-      showToast({
-        type: "success",
-        message: "Data exported successfully"
-      })
-    }, 1500);
-  };
-
-  // const handleDeleteAccount = () => {
-  //   showToast({
-  //     type: "error",
-  //     message: "This feature is not yet implemented"
-  //   })
-  // };
-
- 
 
   return (
     <div className="">
@@ -46,7 +20,9 @@ const Settings = () => {
         </TabsList>
 
         <TabsContent value="account">
+         <Suspense fallback={<div>Loading...</div>}>
           <Profile />
+         </Suspense>
         </TabsContent>
 
 
@@ -78,21 +54,7 @@ const Settings = () => {
         </TabsContent>
 
         <TabsContent value="advanced">
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Data Management</CardTitle>
-                <CardDescription>
-                  Export or sync your data
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <Button onClick={handleExportData}>
-                  Export Data
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
+          <ExportData />
         </TabsContent>
       </Tabs>
     </div>

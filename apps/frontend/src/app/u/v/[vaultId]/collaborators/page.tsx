@@ -148,7 +148,6 @@ const VaultCollaborators = ({params}: {params: Promise<{vaultId: string}>}) => {
   }
   
   const handleToggleAccess = async (collaborator: Collaborator) => {
-    socket.emit("join-vault", vaultId as string)
     socket.emit("toggle-access", { collaboratorId: collaborator.user.id, vaultId: vaultId as string })
     queryClient.invalidateQueries({ queryKey: ["vault-collaborators", vaultId as string] });        
   }

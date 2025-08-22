@@ -1,15 +1,7 @@
 
 import { axiosInstance } from "@/lib/axiosInstance";
 
-export const getDeletedVaults = async () => {
-    const res = await axiosInstance.get("/trash/vaults");
-    return res.data?.vaults;
-};
 
-export const getDeletedSecrets = async () => {
-    const res = await axiosInstance.get("/trash/secrets");
-    return res.data?.secrets;
-};
 
 export const restoreVault = async (vaultId: string) => {
     const res = await axiosInstance.post(`/trash/vaults/${vaultId}/restore`);

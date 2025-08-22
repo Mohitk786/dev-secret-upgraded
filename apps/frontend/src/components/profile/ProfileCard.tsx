@@ -20,10 +20,10 @@ const ProfileDetailCard: React.FC<ProfileDetailCardProps> = ({ user }) => {
   const fallbackImage =  "https://images.unsplash.com/photo-1518495973542-4542c06a5843?auto=format&fit=facearea&w=256&h=256&q=80";
 
   return (
-    <div className="mt-4 relative rounded-3xl bg-white/70 dark:bg-card/40 backdrop-blur-md border border-border shadow-xl p-8 pb-6 flex flex-col items-center text-center transition-all duration-300">
+    <div className="mt-24 relative rounded-3xl bg-white/70 dark:bg-card/40 backdrop-blur-md border border-border shadow-xl p-8 pb-6 flex flex-col items-center text-center transition-all duration-300">
    
       <div
-        className="absolute -top-14 left-1/2 -translate-x-1/2 p-[3px] rounded-full"
+        className="absolute -top-24 left-1/2 -translate-x-1/2 p-[3px] rounded-full"
         style={{ background: gradient }}
       >
         <Avatar className="h-28 w-28 border-2 border-white/30 shadow-md">

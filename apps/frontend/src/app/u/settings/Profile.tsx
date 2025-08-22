@@ -1,19 +1,11 @@
-"use client"
 import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { serverFetch } from "@/lib/serverFetch";
+import DeleteAccount from "./delete-account";
 
-import { useAuth } from "@/hooks/queries/authQueries";
-import { Button } from "@/components/ui/button";
-
-
-
-const Profile = () => {
-    const { user } = useAuth();
-
-    const handleDeleteAccount = () => {
-        console.log("Delete Account");
-    }
+const Profile = async () => {
+  const {user} = await serverFetch("/me");
 
     return (
       <div className="space-y-6">
@@ -86,24 +78,8 @@ const Profile = () => {
 
 
             {/* Danger Zone */}
-            <Card className="border-destructive/20">
-              <CardHeader>
-                <CardTitle className="text-destructive">Danger Zone</CardTitle>
-                <CardDescription>
-                  Irreversible and destructive actions.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button
-                  variant="destructive"
-                  className="w-full sm:w-auto"
-                  onClick={handleDeleteAccount}
-                >
-                  Delete Account
-                </Button>
-              </CardContent>
-            </Card>
-          </div>        
+          <DeleteAccount />             
+      </div>        
     )
 }
 
