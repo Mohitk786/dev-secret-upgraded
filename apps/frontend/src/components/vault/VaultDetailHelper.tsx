@@ -11,9 +11,11 @@ import { DecryptSecret } from "@/E2E/decryption";
 import useSocket from "@/hooks/utils/useSocket";
 import { useDecryptedSecrets } from "@/hooks/utils/useDecryptedSecrets";
 import { APP_ROUTES } from "@/constants/data";
+import { decryptVaultKeyWithPrivateKey } from "@/E2E/decryption";
 
-const decryptEachSecret = async (secret: Secret, decryptedVaultKey: CryptoKey): Promise<Secret> => {
-  const decryptedSecret = await DecryptSecret(secret, decryptedVaultKey)
+const decryptEachSecret = async (secret: Secret, vaultKey: string): Promise<Secret> => {
+  const key = await decryptVaultKeyWithPrivateKey(vaultKey);
+  const decryptedSecret = await DecryptSecret(secret, key)
   return {
     ...decryptedSecret,
     id: secret.id,
@@ -27,17 +29,19 @@ const VaultDetail = ({
   vault,
   vaultId,
 }: { isSharedVault: boolean; user: User; vault: any; vaultId: string }) => {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [visibleSecrets, setVisibleSecrets] = useState<string[]>([])
-  const [isAddSecretOpen, setIsAddSecretOpen] = useState(false)
   const { showToast } = useToast()
   const router = useRouter()
 
+
+  const { vaultKey, decryptedSecrets, setDecryptedSecrets } = useDecryptedSecrets(vaultId, vault?.secrets)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [visibleSecrets, setVisibleSecrets] = useState<string[]>([])
+  const [isAddSecretOpen, setIsAddSecretOpen] = useState(false)
+  const [hasAccess, setHasAccess] = useState<boolean>(false)
+
   const socket = useSocket()
 
-  const { decryptedVaultKey, decryptedSecrets, setDecryptedSecrets } = useDecryptedSecrets(vaultId, vault?.secrets)
 
-  const [hasAccess, setHasAccess] = useState<boolean>(false)
 
   useEffect(() => {
     if (vault?.ownerId === user?.id) {
@@ -66,8 +70,9 @@ const VaultDetail = ({
 
   const onSecretUpdated = useCallback(
     async (data: { message: string; encryptedSecret: Secret }) => {
-      if (!decryptedVaultKey) return
-      const decryptedSecret = await decryptEachSecret(data.encryptedSecret, decryptedVaultKey)
+     
+      if (!vaultKey) return
+      const decryptedSecret = await decryptEachSecret(data.encryptedSecret, vaultKey)
       setDecryptedSecrets((prev) => {
         const updated = prev.map((secret) => (secret.id === decryptedSecret.id ? decryptedSecret : secret))
         if (JSON.stringify(prev) === JSON.stringify(updated)) {
@@ -80,7 +85,7 @@ const VaultDetail = ({
         message: `${data?.message}🔐`,
       })
     },
-    [decryptedVaultKey, setDecryptedSecrets, showToast],
+    [setDecryptedSecrets, showToast, vaultKey],
   )
 
   const onAccessToggled = useCallback(
@@ -112,10 +117,11 @@ const VaultDetail = ({
 
   const onSecretCreated = useCallback(
     async (data: { message: string; secrets: Secret[] }) => {
-      if (!decryptedVaultKey) return
+      console.log("onSecretCreated", data.secrets)
+      if (!vaultKey) return
 
       try {
-        const decrypted = await Promise.all(data.secrets.map((secret) => decryptEachSecret(secret, decryptedVaultKey)))
+        const decrypted = await Promise.all(data.secrets.map((secret) => decryptEachSecret(secret, vaultKey)))
 
         setDecryptedSecrets((prev) => [...prev, ...decrypted])
 
@@ -131,14 +137,14 @@ const VaultDetail = ({
         })
       }
     },
-    [decryptedVaultKey, setDecryptedSecrets, showToast],
+    [vaultKey, setDecryptedSecrets, showToast],
   )
 
   useEffect(() => {
     if (!user?.id || !vaultId) return
 
-    // socket.emit("authenticate", user?.id)
-    // socket.emit("join-vault", vaultId)
+    socket.emit("authenticate", user?.id)
+    socket.emit("join-vault", vaultId)
 
     socket.on("vault-deleted", onVaultDeleted)
     socket.on("access-toggled", onAccessToggled)
@@ -161,6 +167,9 @@ const VaultDetail = ({
     )
   }
 
+  console.log("descrypoted secrets", decryptedSecrets)
+
+  console.log("hasAccess", hasAccess)
 
   return (
     <div className="space-y-6 animate-fade-in">

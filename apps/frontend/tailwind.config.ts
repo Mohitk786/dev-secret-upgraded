@@ -102,13 +102,6 @@ export default {
         },
       },
 
-      animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
-     
-        shimmer: "shimmer 2s infinite linear",
-      },
-
       backgroundImage: {
         "shimmer":
           "linear-gradient(90deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.05) 100%)",

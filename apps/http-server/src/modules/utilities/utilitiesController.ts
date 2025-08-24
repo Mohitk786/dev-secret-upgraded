@@ -19,7 +19,7 @@ export const dashboardStats = async (req: CustomRequest, res: Response): Promise
         const secretsCount = await prisma.secret.count({
             where: {
                 vault: {
-
+                    ownerId: userId
                 }
             }
         })

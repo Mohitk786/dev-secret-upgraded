@@ -113,50 +113,7 @@ export async function deleteVault(data: VaultDeletedData, userId: string): Promi
     }
 }
 
-export const revokeCollaboratorAccess = async (userId: string, vaultId: string, collaboratorId: string): Promise<CollaboratorResponse> => {
-    try {
-        const ownershipCheck = await checkVaultOwnership(userId, vaultId);
-        if (!ownershipCheck.success) {
-            return ownershipCheck;
-        }
 
-        const collaborator = await prisma.collaborator.findUnique({
-            where: {
-                userId_vaultId: {
-                    vaultId,
-                    userId: collaboratorId,
-                },
-            },
-        });
-
-        if (!collaborator) {
-            return { success: false, message: 'Collaborator not found' };
-        }
-
-        await prisma.collaborator.delete({
-            where: {
-                userId_vaultId: {
-                    vaultId,
-                    userId: collaboratorId,
-                },
-            },
-        });
-
-        await prisma.auditLog.create({
-            data: {
-                vaultId,
-                actorId: userId,
-                action: 'collaborator_revoked',
-                description: `Collaborator ${collaboratorId} access has been revoked.`,
-            },
-        });
-
-        return { success: true, message: 'Collaborator access revoked successfully' };
-    } catch (error) {
-        console.error("Error revoking collaborator access:", error);
-        return { success: false, message: 'Failed to revoke collaborator access' };
-    }
-}
 
 export const allowAllCollaborators = async (userId: string, vaultId: string, collaborators: VaultKey[]): Promise<VaultResponse> => {
     try {

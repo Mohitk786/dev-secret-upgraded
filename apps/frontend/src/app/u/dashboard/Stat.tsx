@@ -17,7 +17,16 @@ const recentActivity = [
 
 
 const Stats = async () => {
- const dashboardData = await serverFetch("/dashboard-stats");
+ const dashboardRes = await serverFetch("/dashboard-stats");
+
+ if (!dashboardRes.success) {
+  return <div>Error: {dashboardRes.error}</div>;
+ }
+
+ const dashboardData = dashboardRes.data;
+
+
+
   return (
     <>
         {/* Stats overview */}

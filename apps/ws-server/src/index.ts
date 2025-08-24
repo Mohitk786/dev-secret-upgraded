@@ -208,7 +208,7 @@ io.on("connection", async (socket) => {
       collaboratorId: removed.collaborator.id,
     });
 
-    // Emit to the removed collaborator
+   
     const collaboratorSocket = getSocketByUserId(collaboratorId);
     if (collaboratorSocket) {
      

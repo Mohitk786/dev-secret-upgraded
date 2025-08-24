@@ -5,7 +5,14 @@ import { serverFetch } from "@/lib/serverFetch";
 
 export const DeletedVaultList = async () => {
 
-  const {vaults} = await serverFetch("/trash/vaults"); 
+  const vaultsRes = await serverFetch("/trash/vaults"); 
+
+  if (!vaultsRes.success) {
+    return <div>Error: {vaultsRes.error}</div>;
+  }
+
+  const vaults = vaultsRes.data?.vaults;
+
   if (!vaults?.length) {
     return <div className="text-center py-8 text-muted-foreground">No deleted vaults found</div>;
   }

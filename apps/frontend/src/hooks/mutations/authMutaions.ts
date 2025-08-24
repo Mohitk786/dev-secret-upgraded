@@ -13,7 +13,9 @@ export const useLoginMutation = () => {
         onSuccess: (data) => {
             
             localStorage.setItem("PUBLIC_KEY", data?.data?.user?.publicKey);
+            showToast({type: "success", message: "Login successful"});
             router.push("/u/dashboard");
+
         },
         onError: (error: any) => {
             showToast({type: "error", message: error?.response?.data?.message});

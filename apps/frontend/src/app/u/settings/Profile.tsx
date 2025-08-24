@@ -5,7 +5,13 @@ import { serverFetch } from "@/lib/serverFetch";
 import DeleteAccount from "./delete-account";
 
 const Profile = async () => {
-  const {user} = await serverFetch("/me");
+  const userRes = await serverFetch("/me");
+
+  if (!userRes.success) {
+    return <div>Error: {userRes.error}</div>;
+  }
+
+  const user = userRes.data?.user;
 
     return (
       <div className="space-y-6">

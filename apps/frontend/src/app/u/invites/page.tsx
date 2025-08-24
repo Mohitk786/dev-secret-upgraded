@@ -5,7 +5,13 @@ import { serverFetch } from "@/lib/serverFetch";
 
 const Invites = async ({searchParams}: {searchParams: Promise<{status: string, type: string}>  }) => {
   const {status, type} = await searchParams;
-  const {invites} = await serverFetch(`/invites?type=${type || "sent"}&status=${status || "ALL"}`)
+  const invitesRes = await serverFetch(`/invites?type=${type || "sent"}&status=${status || "ALL"}`)
+
+  if (!invitesRes.success) {
+    return <div>Error: {invitesRes.error}</div>;
+  }
+
+  const invites = invitesRes.data?.invites;
 
   return (
     <div className="space-y-6">

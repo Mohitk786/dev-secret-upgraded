@@ -6,14 +6,25 @@ import { serverFetch } from "@/lib/serverFetch";
 
 const SharedWithMe = async () => {
 
-    const { user } = await serverFetch("/me");
-    const data = await serverFetch("/collab/shared-with-me");
-    const vaults = data?.vaults;
+    const [userRes, vaultsRes] = await Promise.all([
+        serverFetch("/me"),
+        serverFetch("/collab/shared-with-me")
+    ])
 
-    console.log("vaults shared", vaults)
+
+    if (!userRes.success || !vaultsRes.success) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <p className="text-red-500 font-semibold">
+                    {userRes.error || vaultsRes.error || "Something went wrong"}
+                </p>
+            </div>
+        );
+    }
 
 
-    if (!vaults) return <div>Loading...</div>;
+    const user = userRes.data?.user;
+    const vaults = vaultsRes.data?.vaults;
 
     return (
         <div className="space-y-6 animate-fade-in">

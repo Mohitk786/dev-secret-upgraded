@@ -1,7 +1,7 @@
 import { Response } from 'express';
 import prisma from '@secret-vault/db/client';
 import { CustomRequest } from '../../middleware/auth';
-import { sendAcceptanceEmail, sendInviteEmail } from '@secret-vault/backend-common/emailTemplates';
+import { sendInviteEmail } from '@secret-vault/backend-common/emailTemplates';
 import { checkVaultAccess } from '../secret/secretController';
 import { config } from '@secret-vault/backend-common/config';
 
@@ -39,7 +39,7 @@ export async function createVault(req: CustomRequest, res: Response): Promise<an
         },
       },
       include: {
-        vaultKeys: true, // Optional: if you want to return the key with the response
+        vaultKeys: true, 
       },
     });
 
@@ -131,7 +131,8 @@ export async function getVault(req: CustomRequest, res: Response): Promise<any> 
       return;
     }
 
-    const { isOwner, collaborator } = await checkVaultAccess(userId!, vaultId);
+
+    const { isOwner, collaborator } = await checkVaultAccess(userId, vaultId);
 
     if (!isOwner && !collaborator) {
       res.status(403).json({ message: 'You are not authorized to access this vault' });
@@ -142,11 +143,7 @@ export async function getVault(req: CustomRequest, res: Response): Promise<any> 
 
     const vault = await prisma.vault.findFirst({
       where: {
-        id: vaultId, vaultKeys: {
-          some: {
-            userId,
-          },
-        },
+        id: vaultId, 
         isDeleted: false,
       },
       include: {
@@ -171,6 +168,8 @@ export async function getVault(req: CustomRequest, res: Response): Promise<any> 
     });
 
 
+
+
     let updatedVault;
     if (vault?.ownerId !== userId) {
       updatedVault = {
@@ -185,6 +184,7 @@ export async function getVault(req: CustomRequest, res: Response): Promise<any> 
           hasSecretAccess: vault?.collaborators[0]?.hasSecretAccess,
         },
       }
+
 
       return res.status(200).json({
         vault: updatedVault,
@@ -410,6 +410,8 @@ export async function acceptInvite(req: CustomRequest, res: Response): Promise<a
     });
 
 
+    
+
     res.status(200).json({
       message: 'Invite accepted successfully',
       collaborator,
@@ -574,6 +576,8 @@ export async function getVaultKey(req: CustomRequest, res: Response): Promise<an
       return;
     }
 
+    console.log("userId vaultId", userId, vaultId)
+
     const { isOwner, collaborator } = await checkVaultAccess(userId!, vaultId);
 
     if (!isOwner && !collaborator) {
@@ -587,6 +591,10 @@ export async function getVaultKey(req: CustomRequest, res: Response): Promise<an
         userId,
       },
     });
+
+    console.log("vaultKey", vaultKey)
+
+    // 587335ed-3a78-4cd9-9df9-4ebcabb1698e
 
     if (!vaultKey) {
       res.status(404).json({ message: 'Vault key not found' });

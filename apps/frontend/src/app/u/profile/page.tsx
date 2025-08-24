@@ -7,8 +7,14 @@ import Link from "next/link";
 import { serverFetch } from "@/lib/serverFetch";
 
 const Profile = async () => {
-  const {user} = await serverFetch("/me"); 
-  
+  const userRes = await serverFetch("/me"); 
+
+  if (!userRes.success) {
+    return <div>Error: {userRes.error}</div>;
+  }
+
+  const user = userRes.data?.user;
+
   return (
     <div className="flex items-center justify-center  p-4">
       <div className="w-full max-w-2xl mx-auto animate-fade-in">

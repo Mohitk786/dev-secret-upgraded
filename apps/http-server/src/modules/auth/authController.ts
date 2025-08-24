@@ -131,7 +131,6 @@ export const signInUser = async (req: Request, res: Response): Promise<void> => 
         
         res.cookie('DEV_SECRET_VAULT_AUTH_TOKEN', token, {
             secure: false,
-            // sameSite: 'none',
             httpOnly: true,
             maxAge: 7 * 24 * 60 * 60 * 1000
         });

@@ -9,7 +9,12 @@ import { serverFetch } from "@/lib/serverFetch";
 
 export const DeletedSecretList = async () => {
  
-  const {secrets} = await serverFetch("/trash/secrets");
+  const secretsRes = await serverFetch("/trash/secrets");
+  if (!secretsRes.success) {
+    return <div>Error: {secretsRes.error}</div>;
+  }
+
+  const secrets = secretsRes.data?.secrets;
 
   if (!secrets?.length) {
     return <div className="text-center py-8 text-muted-foreground">No deleted secrets found</div>;

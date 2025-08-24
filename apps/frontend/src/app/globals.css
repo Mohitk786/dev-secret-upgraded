@@ -85,10 +85,7 @@
     --sidebar-ring: 234 85% 70%;
   }
 
-  * {
-    @apply border-border transition-all duration-200 ease-in-out;
-  }
-
+  
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
